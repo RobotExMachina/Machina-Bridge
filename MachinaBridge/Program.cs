@@ -13,7 +13,8 @@ namespace MachinaBridge
 {
     class Program
     {
-        static Robot arm; 
+        static Robot arm;
+        static List<Tool> tools = new List<Tool>();
 
         static void Main(string[] args)
         {
@@ -189,6 +190,64 @@ namespace MachinaBridge
             else if (args[0].Equals("Message", StringComparison.CurrentCultureIgnoreCase))
             {
                 return arm.Message(args[1]);
+            }
+
+            // For the time being, new Tool will not be
+            //      Tool(string name, Point TCPPosition, Orientation TCPOrientation, double weightKg, Point centerOfGravity)
+            // but an itemized version of it:
+            //      Tool(name, x, y, z, x0, x1, x2, y0, y1, y2, wightkg, gx, gy, gz);
+            else if (args[0].Equals("new Tool", StringComparison.CurrentCultureIgnoreCase))
+            {
+                Tool t = new Tool(args[1],
+                    new Point(Convert.ToDouble(args[2]), Convert.ToDouble(args[3]), Convert.ToDouble(args[4])),
+                    new Orientation(Convert.ToDouble(args[5]), Convert.ToDouble(args[6]), Convert.ToDouble(args[7]), Convert.ToDouble(args[8]), Convert.ToDouble(args[9]), Convert.ToDouble(args[10])),
+                    Convert.ToDouble(args[11]),
+                    new Point(Convert.ToDouble(args[12]), Convert.ToDouble(args[13]), Convert.ToDouble(args[14])));
+
+                bool found = false;
+                for (int i = 0; i < tools.Count; i++)
+                {
+                    if (tools[i].name.Equals(args[1], StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        Console.WriteLine("Found tool with similar name, overwriting...");
+                        tools[i] = t;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    Console.WriteLine($"Adding Tool {t.name} to Machina...");
+                    tools.Add(t);
+                }
+
+                return true;
+            }
+            else if (args[0].Equals("Attach", StringComparison.CurrentCultureIgnoreCase))
+            {
+                Tool t = null;
+
+                foreach (var tool in tools)
+                {
+                    if (tool.name.Equals(args[1], StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        t = tool;
+                        break;
+                    }
+                }
+
+                if (t == null)
+                {
+                    Console.WriteLine($"ERROR: Tool \"{args[1]}\" has not been defined");
+                    return false;
+                }
+
+                return arm.Attach(t);
+            }
+            else if (args[0].Equals("Detach", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return arm.Detach();
             }
 
             return false;
