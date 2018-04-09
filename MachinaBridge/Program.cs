@@ -195,7 +195,7 @@ namespace MachinaBridge
             // For the time being, new Tool will not be
             //      Tool(string name, Point TCPPosition, Orientation TCPOrientation, double weightKg, Point centerOfGravity)
             // but an itemized version of it:
-            //      Tool(name, x, y, z, x0, x1, x2, y0, y1, y2, wightkg, gx, gy, gz);
+            //      Tool(name, x, y, z, x0, x1, x2, y0, y1, y2, weightkg, gx, gy, gz);
             else if (args[0].Equals("new Tool", StringComparison.CurrentCultureIgnoreCase))
             {
                 Tool t = new Tool(args[1],
