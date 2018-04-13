@@ -1149,6 +1149,18 @@
             Get an Orientation matching the World YZ plane.
             </summary>
         </member>
+        <member name="M:Machina.Orientation.op_Implicit(Machina.Orientation)~Machina.Quaternion">
+            <summary>
+            Implicit conversion to Quaternion object.
+            </summary>
+            <param name="ori"></param>
+        </member>
+        <member name="M:Machina.Orientation.op_Implicit(Machina.Orientation)~Machina.RotationMatrix">
+            <summary>
+            Implicit conversion to RotationMatrix object.
+            </summary>
+            <param name="ori"></param>
+        </member>
         <member name="P:Machina.Orientation.XAxis">
             <summary>
             The main X direction of this Orientation.
@@ -2804,7 +2816,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Machina.Control.GetCurrentOrientation">
+        <member name="M:Machina.Control.GetCurrentRotation">
             <summary>
             Returns a Rotation object representing the current robot's TCP orientation.
             </summary>
@@ -3088,6 +3100,24 @@
             manage robot control.
             </summary>
         </member>
+        <member name="E:Machina.Robot.BufferEmpty">
+            <summary>
+            Will be raised when Machina has finished streaming all pending actions to the controller.
+            Note that the controller still needs to receive them and execute them. This gives Machina 
+            time to prepare the next batch.
+            </summary>
+        </member>
+        <member name="E:Machina.Robot.MotionCursorUpdated">
+            <summary>
+            Will be raised when Machina received an update from the controller as has new motion
+            information available. Useful to keep track of the state of the controller.
+            </summary>
+        </member>
+        <member name="E:Machina.Robot.ActionCompleted">
+            <summary>
+            Raised whenever an action has been completed by the device. 
+            </summary>
+        </member>
         <member name="M:Machina.Robot.#ctor(System.String,System.String)">
             <summary>
             Base constructor.
@@ -3095,8 +3125,32 @@
             <param name="name">A name for this Robot</param>
             <param name="make">The robot make. This will determine which drivers/compilers are used to manage it.</param>
         </member>
+        <member name="M:Machina.Robot.Create(System.String,Machina.RobotType)">
+            <summary>
+            Create a new instance of a Robot.
+            </summary>
+            <param name="name"></param>
+            <param name="make"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.Create(System.String,System.String)">
+            <summary>
+            Create a new instance of a Robot.
+            </summary>
+            <param name="name"></param>
+            <param name="make"></param>
+            <returns></returns>
+        </member>
         <member name="M:Machina.Robot.IsBrand(System.String)">
             What was this even for? Exports checks?
+        </member>
+        <member name="M:Machina.Robot.StreamConfiguration(System.Int32,System.Int32)">
+            <summary>
+            Configure how actions are streamed to the controller.
+            </summary>
+            <param name="minActionOnController">When Machina detects that the controller has these many actions or less buffered, it will start streaming new actions.</param>
+            <param name="maxActionsOnController">When Maxhina detects that the controller has these many actions or more buffered, it will stop streaming and wait for them to reach minActionOnController to stream more.</param>
+            <returns></returns>
         </member>
         <member name="M:Machina.Robot.ControlMode(Machina.ControlType)">
             <summary>
@@ -3203,18 +3257,6 @@
             <summary>
             Immediately stops execution of the current program/s in the connected robot. 
             </summary>
-        </member>
-        <member name="M:Machina.Robot.GetCurrentPosition">
-            <summary>
-            Returns a Point representation of the Robot's TCP position in mm and World coordinates.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Robot.GetCurrentOrientation">
-            <summary>
-            Returns a Rotation representation of the Robot's TCP orientation in quaternions.
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:Machina.Robot.Export(System.Boolean,System.Boolean)">
             <summary>
@@ -3676,6 +3718,30 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Machina.Robot.GetCurrentPosition">
+            <summary>
+            Returns a Point representation of the Robot's TCP position in mm and World coordinates.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.GetCurrentRotation">
+            <summary>
+            Returns a Rotation representation of the Robot's TCP orientation in quaternions.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.GetCurrentAxes">
+            <summary>
+            Returns a Joint object representing the rotations in the robot axes.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.GetCurrentTool">
+            <summary>
+            Returns the Tool object currently attached to this Robot, null if none.
+            </summary>
+            <returns>The Tool object currently attached to this Robot, null if none.</returns>
+        </member>
         <member name="M:Machina.Robot.GetVirtualPosition">
             <summary>
             Returns a Point represnting the current location of the Tool Center Point
@@ -3684,13 +3750,6 @@
             <returns></returns>
         </member>
         <member name="M:Machina.Robot.GetVirtualRotation">
-            <summary>
-            Return a Rotation object representing the current rotation of the Tool Center Point
-            (if there is a Tool attached) or the Flange Center Point (if there isn't).
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Robot.GetVirtualOrientation">
             <summary>
             Return a Orientation object representing the current orientation of the Tool Center Point
             (if there is a Tool attached) or the Flange Center Point (if there isn't).
@@ -3735,6 +3794,11 @@
             Keeps track of things such as position, orientation, joint configuration,
             current speed, zone, etc.
             Useful as virtual representation of a simulated or controlled robot actuator. 
+            </summary>
+        </member>
+        <member name="F:Machina.RobotCursor.lastAction">
+            <summary>
+            Last Action that was applied to this cursor
             </summary>
         </member>
         <member name="F:Machina.RobotCursor.parentControl">

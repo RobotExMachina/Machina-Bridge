@@ -15,12 +15,13 @@ namespace MachinaBridge
     {
         static Robot arm;
         static List<Tool> tools = new List<Tool>();
+        static WebSocketServer wssv;
 
         static void Main(string[] args)
         {
             //var wssv = new WebSocketServer(6999);
             //var wssv = new WebSocketServer("ws://localhost:6999");  // for some reason, this doesn't work... :(
-            var wssv = new WebSocketServer("ws://127.0.0.1:6999");  // but this does...
+            wssv = new WebSocketServer("ws://127.0.0.1:6999");  // but this does...
 
 #if DEBUG
             wssv.Log.Level = LogLevel.Trace;
@@ -35,6 +36,11 @@ namespace MachinaBridge
             }
 
             arm = Robot.Create("Bridged_Robot", RobotType.ABB);
+
+            arm.BufferEmpty += OnBufferEmpty;
+            arm.MotionCursorUpdated += OnMotionCursorUpdated;
+            arm.ActionCompleted += OnActionCompleted;
+
             arm.ControlMode(ControlType.Stream);
 
             bool validInput = false;
@@ -43,7 +49,7 @@ namespace MachinaBridge
             {
                 Console.WriteLine("  --> Press M or U for 'Machina' or 'User' ConnectionManagement.");
                 ConsoleKeyInfo result = Console.ReadKey();
-                
+
                 if (result.KeyChar == 'm' || result.KeyChar == 'M')
                 {
                     machinaManagement = true;
@@ -60,7 +66,7 @@ namespace MachinaBridge
             {
                 arm.ConnectionManager(ConnectionType.Machina);
                 arm.Connect();
-            } 
+            }
             else
             {
                 validInput = false;
@@ -84,9 +90,9 @@ namespace MachinaBridge
 
             do
             {
-                Console.WriteLine("  --> CONNECTED, please press ENTER to STOP Machina Bridge app");
+                Console.WriteLine("  --> CONNECTED, please press ESCAPE to STOP Machina Bridge app");
             }
-            while (Console.ReadKey().Key != ConsoleKey.Enter);
+            while (Console.ReadKey().Key != ConsoleKey.Escape);
 
             Console.WriteLine("Disconnecting...");
 
@@ -95,8 +101,33 @@ namespace MachinaBridge
         }
 
 
+        public static void OnBufferEmpty(object sender, EventArgs e)
+        {
+            Console.WriteLine("SENDING BUFFER-EMPTY");
+            wssv.WebSocketServices.Broadcast($"{{\"msg\":\"buffer-empty\",\"data\":[]}}");
+        }
 
+        public static void OnMotionCursorUpdated(object sender, EventArgs e)
+        {
+            Robot r = sender as Robot;
+            Vector p = r.GetCurrentPosition();
+            Rotation rot = r.GetCurrentRotation();
+            Joints j = r.GetCurrentAxes();
 
+            if (p != null && rot != null)
+            {
+                wssv.WebSocketServices.Broadcast($"{{\"msg\":\"pose\",\"data\":[{p.X},{p.Y},{p.Z},{rot.Q.W},{rot.Q.X},{rot.Q.Y},{rot.Q.Z}]}}");
+            }
+            else if (j != null)
+            {
+                wssv.WebSocketServices.Broadcast($"{{\"msg\":\"joints\",\"data\":[{j.J1},{j.J2},{j.J3},{j.J4},{j.J5},{j.J6}]}}");
+            }
+        }
+
+        public static void OnActionCompleted(object sender, ActionCompletedArgs e)
+        {
+            wssv.WebSocketServices.Broadcast($"{{\"msg\":\"action-completed\",\"data\":[{e.RemainingActions}]}}");
+        }
 
 
 
@@ -292,21 +323,22 @@ namespace MachinaBridge
                 return str;
 
             string s = str;
-            while(s[0] == ' ')
+            while (s[0] == ' ')
             {
                 s = s.Remove(0, 1);
             }
 
-            while(s[s.Length - 1] == ' ')
+            while (s[s.Length - 1] == ' ')
             {
-                s = s.Remove(s.Length - 1); 
+                s = s.Remove(s.Length - 1);
             }
 
             return s;
         }
+
     }
 
-    
+
 
 
     public class BridgeBehavior : WebSocketBehavior
@@ -336,6 +368,11 @@ namespace MachinaBridge
             //base.OnClose(e);
             Console.WriteLine($"  BRIDGE: closed bridge: {e.Code} {e.Reason}");
         }
+
+        //internal void OnBufferEmpty(object sender, EventArgs e)
+        //{
+        //    Sessions.Broadcast("bufferEmpty");
+        //}
     }
 
 
