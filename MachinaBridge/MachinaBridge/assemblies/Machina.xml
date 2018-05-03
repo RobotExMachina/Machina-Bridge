@@ -422,6 +422,58 @@
             A manager for Control objects running ControlType.Stream
             </summary>
         </member>
+        <member name="M:Machina.Drivers.Communication.Protocols.URCommunicationProtocol.GetActionMessages(Machina.Action,Machina.RobotCursor)">
+            <summary>
+            Given an Action and a RobotCursor representing the state of the robot after application, 
+            return a List of strings with the messages necessary to perform this Action adhering to 
+            the Machina-ABB-Server protocol.
+            </summary>
+            <param name="action"></param>
+            <param name="cursor"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Drivers.Communication.Protocols.ABBCommunicationProtocol.GetActionMessages(Machina.Action,Machina.RobotCursor)">
+            <summary>
+            Given an Action and a RobotCursor representing the state of the robot after application, 
+            return a List of strings with the messages necessary to perform this Action adhering to 
+            the Machina-ABB-Server protocol.
+            </summary>
+            <param name="action"></param>
+            <param name="cursor"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Machina.Drivers.Communication.Protocols.Base">
+            <summary>
+            A base class representing a translator from abstract Machina Actions + Cursors
+            to messages in the communication protocol used by the device's server/firmata.
+            </summary>
+        </member>
+        <member name="M:Machina.Drivers.Communication.Protocols.Base.GetMessagesForNextAction(Machina.RobotCursor)">
+            <summary>
+            Given a (write) cursor, apply next Action in the buffer and return a List of messages
+            for the device's driver/firmata.
+            </summary>
+            <param name="cursor"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Drivers.Communication.Protocols.Base.GetBytesForNextAction(Machina.RobotCursor)">
+            <summary>
+            Given a (write cursor, apply next Action in the buffer and return a byte[] representation
+            of the message for the device's driver/firmata.
+            </summary>
+            <param name="cursor"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Drivers.Communication.Protocols.Base.GetActionMessages(Machina.Action,Machina.RobotCursor)">
+            <summary>
+            Given an Action and a RobotCursor representing the state of the robot after application, 
+            return a List of strings with the messages necessary to perform this Action adhering to 
+            the device's communication protocol.
+            </summary>
+            <param name="action"></param>
+            <param name="cursor"></param>
+            <returns></returns>
+        </member>
         <member name="T:Machina.Drivers.Communication.RobotStudioManager">
             <summary>
             This class acts as a bridge between Machina and the ABB controller, 
@@ -649,23 +701,65 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="T:Machina.Drivers.Communication.TCPCommunicationManager">
+        <member name="T:Machina.Drivers.Communication.TCPCommunicationManagerUR">
             <summary>
-            A class that manages TCP communication with devices, including sending/receiving messages, 
-            queuing them, releasing them to the TCP server when appropriate, and raining events on 
+            A class that manages TCP communication with UR devices, including sending/receiving messages, 
+            queuing them, releasing them to the TCP server when appropriate, and raising events on 
             buffer empty.
             </summary>
         </member>
-        <member name="M:Machina.Drivers.Communication.TCPCommunicationManager.ParseResponse(System.String)">
+        <member name="P:Machina.Drivers.Communication.TCPCommunicationManagerUR.ClientSocketStatus">
+            Machina communication with UR robots:
+             - Machina will connect via TCP/IP socket client to the robot's real time client at port 30003.
+             - From this port, it will receive a buffer with information about the robot state at 125Hz.
+             - To this port, Machina will send string buffers with compiled programs containing a number of actions
+                 determined by _maxStreamCount. 
+             - Machina will also establish a TCP server to receive acknowledgement messages from the robot. Every uplaoded
+                 program contains instructions to connect to this server, and send an acknowledgement. This will help 
+                 Machina track program execution at runtime.
+             - Machina will listens to these acknowledgements, and when, upon remining _sendNewBatchOn, compile and upload
+                 a new program with the next batch of actions. If _sendNewBatchOn is less than 2, Machina will
+                 duplicate the remaining actions.
+             
+             References:
+                 https://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/remote-control-via-tcpip-16496/
+        </member>
+        <member name="F:Machina.Drivers.Communication.TCPCommunicationManagerUR._clientSocket">
+            <summary>
+             The client socket that connects to the robot's secondary client.
+            </summary>
+        </member>
+        <member name="M:Machina.Drivers.Communication.TCPCommunicationManagerUR.ClientReceivingMethod(System.Object)">
+            <summary>
+            This method reads the buffer coming from the robot socket server and parses it into state info.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Machina.Drivers.Communication.TCPCommunicationManagerUR.ServerSendingMethod(System.Object)">
+            <summary>
+            This method sends buffered instructions to the client socket on the robot whenever necessary
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Machina.Drivers.Communication.TCPCommunicationManagerUR.ServerReceivingMethod(System.Object)">
+            <summary>
+            This method listens to int messages from the client socket on the robots, and parses them as ids
+            of completed actions.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="T:Machina.Drivers.Communication.TCPCommunicationManagerABB">
+            <summary>
+            A class that manages TCP communication with ABB devices, including sending/receiving messages, 
+            queuing them, releasing them to the TCP server when appropriate, and raising events on 
+            buffer empty.
+            </summary>
+        </member>
+        <member name="M:Machina.Drivers.Communication.TCPCommunicationManagerABB.ParseResponse(System.String)">
             <summary>
             Parse the response and decide what to do with it.
             </summary>
             <param name="res"></param>
-        </member>
-        <member name="T:Machina.Drivers.Communication.TCPWriter">
-            <summary>
-            This class represents a TCP 
-            </summary>
         </member>
         <member name="T:Machina.Drivers.Driver">
             <summary>
@@ -677,14 +771,24 @@
             A reference to parent Machina Control object commanding this Driver.
             </summary>
         </member>
-        <member name="F:Machina.Drivers.Driver._writeCursor">
+        <member name="P:Machina.Drivers.Driver.WriteCursor">
             <summary>
             A reference to the shared Write RobotCursor object
             </summary>
         </member>
-        <member name="P:Machina.Drivers.Driver.WriteCursor">
+        <member name="P:Machina.Drivers.Driver.Connected">
             <summary>
-            A reference to the shared streamQueue object
+            Is connected to device?
+            </summary>
+        </member>
+        <member name="P:Machina.Drivers.Driver.IP">
+            <summary>
+            Device's IP
+            </summary>
+        </member>
+        <member name="P:Machina.Drivers.Driver.Port">
+            <summary>
+            Device's port
             </summary>
         </member>
         <member name="P:Machina.Drivers.Driver.User">
@@ -754,6 +858,38 @@
             <param name="password"></param>
             <returns></returns>
         </member>
+        <member name="M:Machina.Drivers.DriverUR.#ctor(Machina.Control)">
+            <summary>
+            Main constructor
+            </summary>
+        </member>
+        <member name="M:Machina.Drivers.DriverUR.ConnectToDevice(System.String,System.Int32)">
+            <summary>
+            Start a TCP connection to device via its address on the network.
+            </summary>
+            <param name="ip"></param>
+            <param name="port"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Drivers.DriverUR.ConnectToDevice(System.Int32)">
+            <summary>
+            Performs all necessary actions to establish a connection to a real/virtual device, 
+            including connecting to the controller, loggin in, checking required states, etc.
+            </summary>
+            <param name="deviceId"></param>
+        </member>
+        <member name="M:Machina.Drivers.DriverUR.DisconnectFromDevice">
+            <summary>
+            Forces disconnection from current controller and manages associated logoffs, disposals, etc.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Drivers.DriverUR.SetupStreamingMode">
+            <summary>
+            Performs necessary operations to set up 'stream' control mode in the controller
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Machina.Drivers.DriverABB.#ctor(Machina.Control)">
             <summary>
             Main constructor
@@ -790,40 +926,6 @@
             <summary>
             A dummy Driver object to use for offline control
             </summary>
-        </member>
-        <member name="M:Machina.Drivers.Protocols.ABBServerProtocol.GetActionMessages(Machina.Action,Machina.RobotCursor)">
-            <summary>
-            Given an Action and a RobotCursor representing the state of the robot after application, 
-            return a List of strings with the messages necessary to perform this Action adhering to 
-            the Machina-ABB-Server protocol.
-            </summary>
-            <param name="action"></param>
-            <param name="cursor"></param>
-            <returns></returns>
-        </member>
-        <member name="T:Machina.Drivers.Protocols.ProtocolBase">
-            <summary>
-            A base class representing a translator from abstract Machina Actions + Cursors
-            to messages in the communication protocol used by the device's server/firmata.
-            </summary>
-        </member>
-        <member name="M:Machina.Drivers.Protocols.ProtocolBase.GetMessagesForNextAction(Machina.RobotCursor)">
-            <summary>
-            Given a (write) cursor, apply next Action in the buffer and return a List of messages
-            for the device's server/firmata.
-            </summary>
-            <param name="cursor"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Drivers.Protocols.ProtocolBase.GetActionMessages(Machina.Action,Machina.RobotCursor)">
-            <summary>
-            Given an Action and a RobotCursor representing the state of the robot after application, 
-            return a List of strings with the messages necessary to perform this Action adhering to 
-            the device's communication protocol.
-            </summary>
-            <param name="action"></param>
-            <param name="cursor"></param>
-            <returns></returns>
         </member>
         <member name="T:Machina.ControlType">
             <summary>
@@ -947,6 +1049,17 @@
             Returns an IEnumerable of strings from a streamReader provider. https://stackoverflow.com/a/13312954/1934487
             </summary>
             <param name="streamProvider"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Net.GetLocalIPAddressInNetwork(System.String,System.String,System.String@)">
+            <summary>
+            Given a remote IP address and a subnet mask, tries to find the local IP address of this host in the same subnet.
+            This is useful to figure out which IP this host is using in the same network as the remote. 
+            Inspired by https://stackoverflow.com/a/6803109/1934487
+            </summary>
+            <param name="remoteIP">The remote IP of the device we are trying to find the local network for.</param>
+            <param name="subnetMask">Typically "255.255.255.0", filters how many hosts are accepted in the subnet. https://www.iplocation.net/subnet-mask </param>
+            <param name="localIP">The found localIP</param>
             <returns></returns>
         </member>
         <member name="T:Machina.AxisAngle">
@@ -2585,17 +2698,17 @@
         </member>
         <member name="P:Machina.RotationVector.X">
             <summary>
-            X coordinate of the Rotation Vector
+            X coordinate of the Rotation Vector in degrees.
             </summary>
         </member>
         <member name="P:Machina.RotationVector.Y">
             <summary>
-            Y coordinate of the Rotation Vector
+            Y coordinate of the Rotation Vector in degrees.
             </summary>
         </member>
         <member name="P:Machina.RotationVector.Z">
             <summary>
-            Z coordinate of the Rotation Vector
+            Z coordinate of the Rotation Vector in degrees.
             </summary>
         </member>
         <member name="M:Machina.RotationVector.IsSimilar(Machina.RotationVector)">
@@ -2890,12 +3003,6 @@
             <param name="action"></param>
             <returns></returns>
         </member>
-        <member name="M:Machina.Control.IssueSpeedRequest(System.Int32,System.Boolean)">
-            <summary>
-            Sets the speed parameter for future issued actions.
-            </summary>
-            <param name="speed">In mm/s</param>
-        </member>
         <member name="M:Machina.Control.IssueTranslationRequest(Machina.Vector,System.Boolean)">
             <summary>
             Issue a Translation action request that falls back on the state of current settings.
@@ -2990,25 +3097,13 @@
             <param name="initiate"></param>
             <returns></returns>
         </member>
-        <member name="M:Machina.Control.InitializeCommunication">
-            <summary>
-            Initializes the Communication object.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:Machina.Control.DropCommunication">
             <summary>
             Disconnects and resets the Communication object.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Machina.Control.ResetCommunication">
-            <summary>
-            If there was a running Communication protocol, drop it and restart it again.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Control.InitializeRobotCursors(Machina.Point,Machina.Rotation,Machina.Joints,System.Int32,System.Int32,Machina.MotionType,Machina.ReferenceCS)">
+        <member name="M:Machina.Control.InitializeRobotCursors(Machina.Point,Machina.Rotation,Machina.Joints,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,Machina.MotionType,Machina.ReferenceCS)">
             <summary>
             Initializes all instances of robotCursors with base information
             </summary>
@@ -3102,7 +3197,7 @@
         </member>
         <member name="E:Machina.Robot.BufferEmpty">
             <summary>
-            Will be raised when Machina has finished streaming all pending actions to the controller.
+            Will be raised when Machina has finished streaming all pending Actions to the controller.
             Note that the controller still needs to receive them and execute them. This gives Machina 
             time to prepare the next batch.
             </summary>
@@ -3146,10 +3241,10 @@
         </member>
         <member name="M:Machina.Robot.StreamConfiguration(System.Int32,System.Int32)">
             <summary>
-            Configure how actions are streamed to the controller.
+            Configure how Actions are streamed to the controller.
             </summary>
-            <param name="minActionOnController">When Machina detects that the controller has these many actions or less buffered, it will start streaming new actions.</param>
-            <param name="maxActionsOnController">When Maxhina detects that the controller has these many actions or more buffered, it will stop streaming and wait for them to reach minActionOnController to stream more.</param>
+            <param name="minActionOnController">When Machina detects that the controller has these many Actions or less buffered, it will start streaming new Actions.</param>
+            <param name="maxActionsOnController">When Maxhina detects that the controller has these many Actions or more buffered, it will stop streaming and wait for them to reach minActionOnController to stream more.</param>
             <returns></returns>
         </member>
         <member name="M:Machina.Robot.ControlMode(Machina.ControlType)">
@@ -3260,8 +3355,8 @@
         </member>
         <member name="M:Machina.Robot.Export(System.Boolean,System.Boolean)">
             <summary>
-            Create a program with all the buffered actions and return it as a string List.
-            Note all buffered actions will be removed from the queue.
+            Create a program with all the buffered Actions and return it as a string List.
+            Note all buffered Actions will be removed from the queue.
             </summary>
             <param name="inlineTargets">Write inline targets on action statements, or declare them as independent variables?</param>
             <param name="humanComments">If true, a human-readable description will be added to each line of code</param>
@@ -3269,8 +3364,8 @@
         </member>
         <member name="M:Machina.Robot.Export(System.String,System.Boolean,System.Boolean)">
             <summary>
-            Create a program with all the buffered actions and save it to a file. 
-            Note all buffered actions will be removed from the queue.
+            Create a program with all the buffered Actions and save it to a file. 
+            Note all buffered Actions will be removed from the queue.
             </summary>
             <param name="filepath"></param>
             <param name="inlineTargets">Write inline targets on action statements, or declare them as independent variables?</param>
@@ -3279,7 +3374,7 @@
         </member>
         <member name="M:Machina.Robot.Execute">
             <summary>
-            In 'execute' mode, flushes all pending actions, creates a program, 
+            In 'execute' mode, flushes all pending Actions, creates a program, 
             uploads it to the controller and runs it.
             </summary>
             <returns></returns>
@@ -3299,17 +3394,73 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Machina.Robot.Speed(System.Int32)">
+        <member name="M:Machina.Robot.Speed(System.Double)">
             <summary>
-            Increase the default velocity new actions will be run at.
+            Increase the TCP velocity value new Actions will be ran at.
             </summary>
-            <param name="speedInc"></param>
+            <param name="speedInc">TCP speed increment in mm/s.</param>
         </member>
-        <member name="M:Machina.Robot.SpeedTo(System.Int32)">
+        <member name="M:Machina.Robot.SpeedTo(System.Double)">
             <summary>
-            Sets the default velocity new actions will be run at.
+            Set the TCP velocity value new Actions will be ran at.
             </summary>
-            <param name="speed"></param>
+            <param name="speed">TCP speed value in mm/s</param>
+        </member>
+        <member name="M:Machina.Robot.Acceleration(System.Double)">
+            <summary>
+            Increase the TCP acceleration value new Actions will be ran at.
+            </summary>
+            <param name="accInc">TCP acceleration increment in mm/s^2. Decreasing the total to zero or less will reset it back the robot's default.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.AccelerationTo(System.Double)">
+            <summary>
+            Set the TCP acceleration value new Actions will be ran at. 
+            </summary>
+            <param name="acceleration">TCP acceleration value in mm/s^2. Setting this value to zero or less will reset acceleration to the robot's default.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.RotationSpeed(System.Double)">
+            <summary>
+            Increase the TCP angular rotation speed value new Actions will be ran at.
+            </summary>
+            <param name="rotationSpeedInc">TCP angular rotation speed increment in deg/s. Decreasing the total to zero or less will reset it back to the robot's default.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.RotationSpeedTo(System.Double)">
+            <summary>
+            Set the TCP angular rotation speed value new Actions will be ran at.
+            </summary>
+            <param name="rotationSpeed">TCP angular rotation speed value in deg/s. Setting this value to zero or less will reset it back to the robot's default.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.JointSpeed(System.Double)">
+            <summary>
+            Increase the maximum joint angular rotation speed value. Movement will be constrained so that the fastest joint rotates below this threshold. 
+            </summary>
+            <param name="jointSpeedInc">Maximum joint angular rotation speed increment in deg/s. Decreasing the total to zero or less will reset it back to the robot's default.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.JointSpeedTo(System.Double)">
+            <summary>
+            Set the maximum joint angular rotation speed value. Movement will be constrained so that the fastest joint rotates below this threshold. 
+            </summary>
+            <param name="jointSpeed">Maximum joint angular rotation speed value in deg/s. Setting this value to zero or less will reset it back to the robot's default.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.JointAcceleration(System.Double)">
+            <summary>
+            Increase the maximum joint angular rotation acceleration value. Movement will be constrained so that the fastest joint accelerates below this threshold. 
+            </summary>
+            <param name="jointAccelerationInc">Maximum joint angular rotation acceleration increment in deg/s^2. Decreasing the total to zero or less will reset it back to the robot's default.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.JointAccelerationTo(System.Double)">
+            <summary>
+            Set the maximum joint angular rotation acceleration value. Movement will be constrained so that the fastest joint accelerates below this threshold. 
+            </summary>
+            <param name="jointAcceleration">Maximum joint angular rotation acceleration value in deg/s^2. Setting this value to zero or less will reset it back to the robot's default.</param>
+            <returns></returns>
         </member>
         <member name="M:Machina.Robot.Zone">
             <summary>
@@ -3317,47 +3468,47 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Machina.Robot.Zone(System.Int32)">
+        <member name="M:Machina.Robot.Zone(System.Double)">
             <summary>
-            Increase the default zone value new actions will be given.
+            Increase the default zone value new Actions will be given.
             </summary>
             <param name="zoneInc"></param>
         </member>
-        <member name="M:Machina.Robot.ZoneTo(System.Int32)">
+        <member name="M:Machina.Robot.ZoneTo(System.Double)">
             <summary>
-            Sets the default zone value new actions will be given.
+            Sets the default zone value new Actions will be given.
             </summary>
             <param name="zone"></param>
         </member>
-        <member name="M:Machina.Robot.Precision(System.Int32)">
+        <member name="M:Machina.Robot.Precision(System.Double)">
             <summary>
-            Increase the default precision value new actions will be given. 
+            Increase the default precision value new Actions will be given. 
             Precision is measured as the radius of the smooth interpolation
             between motion targets. This is refered to as "Zone", "Approximate
             Positioning" or "Blending Radius" in different platforms. 
             </summary>
-            <param name="radiusInc">Smoothing radius increment in mm</param>
+            <param name="radiusInc">Smoothing radius increment in mm.</param>
         </member>
-        <member name="M:Machina.Robot.PrecisionTo(System.Int32)">
+        <member name="M:Machina.Robot.PrecisionTo(System.Double)">
             <summary>
-            Set the default precision value new actions will be given. 
+            Set the default precision value new Actions will be given. 
             Precision is measured as the radius of the smooth interpolation
             between motion targets. This is refered to as "Zone", "Approximate
             Positioning" or "Blending Radius" in different platforms. 
             </summary>
-            <param name="radius">Smoothing radius in mm</param>
+            <param name="radius">Smoothing radius in mm.</param>
         </member>
         <member name="M:Machina.Robot.MotionMode(Machina.MotionType)">
             <summary>
-            Sets the motion type (linear, joint...) for future issued actions.
+            Sets the motion type (linear, joint...) for future issued Actions.
             </summary>
             <param name="motionType"></param>
         </member>
         <member name="M:Machina.Robot.MotionMode(System.String)">
             <summary>
-            Sets the motion type (linear, joint...) for future issued actions.
+            Sets the motion type (linear, joint...) for future issued Actions.
             </summary>
-            <param name="motionType">"linear", "joint", etc."</param>
+            <param name="motionType">"linear", "joint", etc.</param>
         </member>
         <member name="M:Machina.Robot.Coordinates">
             <summary>
@@ -3523,7 +3674,7 @@
             <summary>
             Issue a compound RELATIVE local Translation + Rotation request
             according to the current reference system.
-            Note that, if using local coordinates, order of actions will matter.  // TODO: wouldn't they matter too if the are in global coordinates?
+            Note that, if using local coordinates, order of Actions will matter.  // TODO: wouldn't they matter too if the are in global coordinates?
             </summary>
             <param name="direction"></param>
             <param name="rotation"></param>
@@ -3533,7 +3684,7 @@
             <summary>
             Issue a compound RELATIVE local Rotation + Translation request
             according to the current reference system.
-            Note that, if using local coordinates, order of actions will matter. // TODO: wouldn't they matter too if the are in global coordinates?
+            Note that, if using local coordinates, order of Actions will matter. // TODO: wouldn't they matter too if the are in global coordinates?
             </summary>
             <param name="rotation"></param>
             <param name="direction"></param>
@@ -3775,7 +3926,7 @@
         </member>
         <member name="M:Machina.Robot.DebugBuffer">
             <summary>
-            Dumps a list of the remaining buffered actions.
+            Dumps a list of the remaining buffered Actions.
             </summary>
         </member>
         <member name="M:Machina.Robot.DebugRobotCursors">
@@ -3841,7 +3992,7 @@
             <param name="name"></param>
             <param name="applyImmediately"></param>
         </member>
-        <member name="M:Machina.RobotCursor.Initialize(Machina.Vector,Machina.Rotation,Machina.Joints,System.Int32,System.Int32,Machina.MotionType,Machina.ReferenceCS)">
+        <member name="M:Machina.RobotCursor.Initialize(Machina.Vector,Machina.Rotation,Machina.Joints,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,Machina.MotionType,Machina.ReferenceCS)">
             <summary>
             Minimum information necessary to initialize a robot object.
             </summary>
@@ -3943,9 +4094,37 @@
             <param name="action"></param>
             <returns></returns>
         </member>
+        <member name="M:Machina.RobotCursor.ApplyAction(Machina.ActionAcceleration)">
+            <summary>
+            Apply Acceleration Action.
+            </summary>
+            <param name="action"></param>
+            <returns></returns>
+        </member>
         <member name="M:Machina.RobotCursor.ApplyAction(Machina.ActionSpeed)">
             <summary>
             Apply Speed Action.
+            </summary>
+            <param name="action"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.RobotCursor.ApplyAction(Machina.ActionRotationSpeed)">
+            <summary>
+            Apply RotationSpeed Action.
+            </summary>
+            <param name="action"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.RobotCursor.ApplyAction(Machina.ActionJointSpeed)">
+            <summary>
+            Apply JointSpeed Action.
+            </summary>
+            <param name="action"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.RobotCursor.ApplyAction(Machina.ActionJointAcceleration)">
+            <summary>
+            Apply JointAcceleration Action.
             </summary>
             <param name="action"></param>
             <returns></returns>
@@ -4105,6 +4284,28 @@
             Gets a Tool object representing no tool attached. 
             </summary>
         </member>
+        <member name="P:Machina.Tool.TCPPosition">
+            <summary>
+            Position of the Tool Center Point (TCP) relative to the Tool's base coordinate system. 
+            In other words, if the Tool gets attached to the robot flange in XYZ [0, 0, 0], where is the tooltip relative to this?
+            </summary>
+        </member>
+        <member name="P:Machina.Tool.TCPOrientation">
+            <summary>
+            Orientation of the Tool Center Point (TCP) relative to the Tool's base coordinate system. 
+            In other words, if the Tool gets attached to the robot flange in XYZ [0, 0, 0], what is the relative rotation?
+            </summary>
+        </member>
+        <member name="P:Machina.Tool.Weight">
+            <summary>
+            Weight of the tool in Kg.
+            </summary>
+        </member>
+        <member name="P:Machina.Tool.centerOfGravity">
+            <summary>
+            Position of the Tool's CoG relative to the flange.
+            </summary>
+        </member>
         <member name="M:Machina.Tool.#ctor(System.String,Machina.Point,Machina.Orientation)">
             <summary>
             Create a new Tool object by defining the Position and Orientation of the 
@@ -4167,6 +4368,23 @@
             <param name="max"></param>
             <param name="newMin"></param>
             <param name="newMax"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Util.Int32ArrayToByteArray(System.Int32[],System.Boolean)">
+            <summary>
+            Converts an array of signed int32 to a byte array. Useful for buffering. 
+            </summary>
+            <param name="intArray"></param>
+            <param name="littleEndian">Set endianness. Windows systems are little endian, while most network communication is bigendian.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Util.ByteArrayToInt32Array(System.Byte[],System.Int32,System.Boolean)">
+            <summary>
+            Converts an array of bytes to an array of signed int32. 
+            </summary>
+            <param name="bytes"></param>
+            <param name="byteCount">If 0, the whole byte array will be used.</param>
+            <param name="bytesAreLittleEndian">Is the byte array little endian? This will be used to define how to translate the buffer to this system's endianness.</param>
             <returns></returns>
         </member>
     </members>
