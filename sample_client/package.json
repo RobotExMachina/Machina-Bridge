@@ -1,0 +1,16 @@
+{
+  "name": "node_client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "wsclient.js",
+  "dependencies": {
+    "sillyname": "^0.1.0",
+    "ws": "^5.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

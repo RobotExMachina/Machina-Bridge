@@ -2,32 +2,70 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-
-using WebSocketSharp;
-using WebSocketSharp.Server;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 using Machina;
 
+using WebSocketSharp;
+using WebSocketSharp.Server;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
+
 namespace MachinaBridge
 {
-    class Program
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
     {
-        static Robot arm;
-        static List<Tool> tools = new List<Tool>();
-        static WebSocketServer wssv;
+        public static Robot bot;
+        public static List<Tool> tools = new List<Tool>();
+        public static WebSocketServer wssv;
+        public static string wssvURL = "ws://127.0.0.1:6999";
+        public static string wssvBehavior = "/Bridge";
 
-        static void Main(string[] args)
+        // Robot options (quick and dirty defaults
+        public static string _robotName;
+        public static string _robotBrand;
+        //static string _robotModel = "";
+        public static string _connectionManager;
+
+        ConsoleContent dc = new ConsoleContent();
+
+        public MainWindow()
         {
-            //var wssv = new WebSocketServer(6999);
-            //var wssv = new WebSocketServer("ws://localhost:6999");  // for some reason, this doesn't work... :(
-            wssv = new WebSocketServer("ws://127.0.0.1:6999");  // but this does...
+            InitializeComponent();
 
-#if DEBUG
-            wssv.Log.Level = LogLevel.Trace;
-#endif
+            InitializeWebSocketServer();
 
-            wssv.AddWebSocketService<BridgeBehavior>("/Bridge");
+            //Loaded += MainWindow_Loaded;
+
+            DataContext = dc;
+        }
+
+        private void InitializeWebSocketServer()
+        {
+            if (wssv != null && wssv.IsListening)
+            {
+                wssv.Stop();
+                wssv = null;
+            }
+
+            wssv = new WebSocketServer(wssvURL);
+            //#if DEBUG
+            //            wssv.Log.Level = LogLevel.Trace;
+            //#endif
+            wssv.AddWebSocketService<BridgeBehavior>(wssvBehavior);
             wssv.Start();
             if (wssv.IsListening)
             {
@@ -35,69 +73,32 @@ namespace MachinaBridge
                 foreach (var path in wssv.WebSocketServices.Paths) Console.WriteLine("- {0}", path);
             }
 
-            arm = Robot.Create("Bridged_Robot", RobotType.ABB);
+            lbl_ServerURL.Content = wssvURL + wssvBehavior;
+        }
 
-            arm.BufferEmpty += OnBufferEmpty;
-            arm.MotionCursorUpdated += OnMotionCursorUpdated;
-            arm.ActionCompleted += OnActionCompleted;
+        private bool InitializeRobot()
+        {
+            if (bot != null) DisposeRobot();
 
-            arm.ControlMode(ControlType.Stream);
+            bot = Robot.Create(_robotName, _robotBrand);
 
-            bool validInput = false;
-            bool machinaManagement = false;
-            while (!validInput)
+            bot.BufferEmpty += OnBufferEmpty;
+            bot.MotionCursorUpdated += OnMotionCursorUpdated;
+            bot.ActionCompleted += OnActionCompleted;
+
+            bot.ControlMode(ControlType.Stream);
+
+
+            if (_connectionManager == "MACHINA")
             {
-                Console.WriteLine("  --> Press M or U for 'Machina' or 'User' ConnectionManagement.");
-                ConsoleKeyInfo result = Console.ReadKey();
-
-                if (result.KeyChar == 'm' || result.KeyChar == 'M')
-                {
-                    machinaManagement = true;
-                    validInput = true;
-                }
-                else if (result.KeyChar == 'u' || result.KeyChar == 'U')
-                {
-                    machinaManagement = false;
-                    validInput = true;
-                }
-            }
-
-            if (machinaManagement)
-            {
-                arm.ConnectionManager(ConnectionType.Machina);
-                arm.Connect();
+                bot.ConnectionManager(ConnectionType.Machina);
+                return bot.Connect();
             }
             else
             {
-                validInput = false;
-                while (!validInput)
-                {
-                    Console.WriteLine("  --> Press L or N for 'Local' or 'Network' controller.");
-                    ConsoleKeyInfo result = Console.ReadKey();
-
-                    if (result.KeyChar == 'l' || result.KeyChar == 'L')
-                    {
-                        arm.Connect("127.0.0.1", 7000);
-                        validInput = true;
-                    }
-                    else if (result.KeyChar == 'n' || result.KeyChar == 'N')
-                    {
-                        arm.Connect("192.168.125.1", 7000);
-                        validInput = true;
-                    }
-                }
+                return bot.Connect(txtbox_IP.Text, Convert.ToInt32(txtbox_Port.Text));
             }
 
-            do
-            {
-                Console.WriteLine("  --> CONNECTED, please press ESCAPE to STOP Machina Bridge app");
-            }
-            while (Console.ReadKey().Key != ConsoleKey.Escape);
-
-            Console.WriteLine("Disconnecting...");
-
-            arm.Disconnect();
-            wssv.Stop();
         }
 
 
@@ -110,8 +111,8 @@ namespace MachinaBridge
         public static void OnMotionCursorUpdated(object sender, EventArgs e)
         {
             Robot r = sender as Robot;
-            Vector p = r.GetCurrentPosition();
-            Rotation rot = r.GetCurrentRotation();
+            Machina.Vector p = r.GetCurrentPosition();
+            Machina.Rotation rot = r.GetCurrentRotation();
             Joints j = r.GetCurrentAxes();
 
             if (p != null && rot != null)
@@ -129,98 +130,107 @@ namespace MachinaBridge
             wssv.WebSocketServices.Broadcast($"{{\"msg\":\"action-completed\",\"data\":[{e.RemainingActions}]}}");
         }
 
+        private void Disconnect()
+        {
+            DisposeRobot();
+            Thread.Sleep(1000);
+        }
 
+        private void StopWebSocketService()
+        {
+            wssv.Stop();
+        }
 
-
-
-
-
-
-
+        private void DisposeRobot()
+        {
+            if (bot != null)
+                bot.Disconnect();
+            bot = null;
+        }
 
 
         public static bool ExecuteInstruction(string[] args)
         {
             if (args[0].Equals("Move", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.Move(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]));
+                return bot.Move(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]));
             }
             else if (args[0].Equals("MoveTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.MoveTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]));
+                return bot.MoveTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]));
             }
             //else if (args[0].Equals("Transform", StringComparison.CurrentCultureIgnoreCase))
             //{
-            //    return arm.Transform(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
+            //    return bot.Transform(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
             //        Convert.ToDouble(args[4]), Convert.ToDouble(args[5]), Convert.ToDouble(args[6]),
             //        Convert.ToDouble(args[7]), Convert.ToDouble(args[8]), Convert.ToDouble(args[9]));
             //}
             else if (args[0].Equals("TransformTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.TransformTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
+                return bot.TransformTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
                     Convert.ToDouble(args[4]), Convert.ToDouble(args[5]), Convert.ToDouble(args[6]),
                     Convert.ToDouble(args[7]), Convert.ToDouble(args[8]), Convert.ToDouble(args[9]));
             }
             else if (args[0].Equals("Rotate", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.Rotate(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]), Convert.ToDouble(args[4]));
+                return bot.Rotate(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]), Convert.ToDouble(args[4]));
             }
             else if (args[0].Equals("RotateTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.RotateTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
+                return bot.RotateTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
                     Convert.ToDouble(args[4]), Convert.ToDouble(args[5]), Convert.ToDouble(args[6]));
             }
             else if (args[0].Equals("Axes", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.Axes(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
+                return bot.Axes(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
                     Convert.ToDouble(args[4]), Convert.ToDouble(args[5]), Convert.ToDouble(args[6]));
             }
             else if (args[0].Equals("AxesTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.AxesTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
+                return bot.AxesTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
                     Convert.ToDouble(args[4]), Convert.ToDouble(args[5]), Convert.ToDouble(args[6]));
             }
             else if (args[0].Equals("Speed", StringComparison.CurrentCultureIgnoreCase))
             {
-                arm.Speed(Convert.ToInt32(args[1]));
+                bot.Speed(Convert.ToInt32(args[1]));
                 return true;
             }
             else if (args[0].Equals("SpeedTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                arm.SpeedTo(Convert.ToInt32(args[1]));
+                bot.SpeedTo(Convert.ToInt32(args[1]));
                 return true;
             }
             else if (args[0].Equals("Precision", StringComparison.CurrentCultureIgnoreCase))
             {
-                arm.Precision(Convert.ToInt32(args[1]));
+                bot.Precision(Convert.ToInt32(args[1]));
                 return true;
             }
             else if (args[0].Equals("PrecisionTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                arm.PrecisionTo(Convert.ToInt32(args[1]));
+                bot.PrecisionTo(Convert.ToInt32(args[1]));
                 return true;
             }
             else if (args[0].Equals("MotionMode", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.MotionMode(args[1]);
+                return bot.MotionMode(args[1]);
             }
             else if (args[0].Equals("PushSettings", StringComparison.CurrentCultureIgnoreCase))
             {
-                arm.PushSettings();
+                bot.PushSettings();
                 return true;
             }
             else if (args[0].Equals("PopSettings", StringComparison.CurrentCultureIgnoreCase))
             {
-                arm.PopSettings();
+                bot.PopSettings();
                 return true;
             }
             else if (args[0].Equals("Wait", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.Wait(Convert.ToInt32(args[1]));
+                return bot.Wait(Convert.ToInt32(args[1]));
             }
             else if (args[0].Equals("Message", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.Message(args[1]);
+                return bot.Message(args[1]);
             }
 
             // For the time being, new Tool will not be
@@ -230,10 +240,10 @@ namespace MachinaBridge
             else if (args[0].Equals("new Tool", StringComparison.CurrentCultureIgnoreCase))
             {
                 Tool t = new Tool(args[1],
-                    new Point(Convert.ToDouble(args[2]), Convert.ToDouble(args[3]), Convert.ToDouble(args[4])),
-                    new Orientation(Convert.ToDouble(args[5]), Convert.ToDouble(args[6]), Convert.ToDouble(args[7]), Convert.ToDouble(args[8]), Convert.ToDouble(args[9]), Convert.ToDouble(args[10])),
+                    new Machina.Point(Convert.ToDouble(args[2]), Convert.ToDouble(args[3]), Convert.ToDouble(args[4])),
+                    new Machina.Orientation(Convert.ToDouble(args[5]), Convert.ToDouble(args[6]), Convert.ToDouble(args[7]), Convert.ToDouble(args[8]), Convert.ToDouble(args[9]), Convert.ToDouble(args[10])),
                     Convert.ToDouble(args[11]),
-                    new Point(Convert.ToDouble(args[12]), Convert.ToDouble(args[13]), Convert.ToDouble(args[14])));
+                    new Machina.Point(Convert.ToDouble(args[12]), Convert.ToDouble(args[13]), Convert.ToDouble(args[14])));
 
                 bool found = false;
                 for (int i = 0; i < tools.Count; i++)
@@ -274,11 +284,11 @@ namespace MachinaBridge
                     return false;
                 }
 
-                return arm.Attach(t);
+                return bot.Attach(t);
             }
             else if (args[0].Equals("Detach", StringComparison.CurrentCultureIgnoreCase))
             {
-                return arm.Detach();
+                return bot.Detach();
             }
 
             return false;
@@ -336,9 +346,13 @@ namespace MachinaBridge
             return s;
         }
 
+
+
+
+
+
+
     }
-
-
 
 
     public class BridgeBehavior : WebSocketBehavior
@@ -354,7 +368,12 @@ namespace MachinaBridge
         {
             //base.OnMessage(e);
             Console.WriteLine("  BRIDGE: received message: " + e.Data);
-            Program.ExecuteInstruction(Program.ParseMessage(e.Data));
+            if (MainWindow.bot == null) { 
+                MainWindow.wssv.WebSocketServices.Broadcast($"{{\"msg\":\"disconnected\",\"data\":[]}}");
+                return;
+            }
+
+            MainWindow.ExecuteInstruction(MainWindow.ParseMessage(e.Data));
         }
 
         protected override void OnError(ErrorEventArgs e)
@@ -376,4 +395,66 @@ namespace MachinaBridge
     }
 
 
+
+
+
+
+    // https://stackoverflow.com/a/14957478/1934487
+    public class ConsoleContent : INotifyPropertyChanged
+    {
+        string consoleInput = string.Empty;
+        ObservableCollection<string> consoleOutput = new ObservableCollection<string>() { "## MACHINA Console ##", "Enter any command to stream it to the robot..." };
+
+        public string ConsoleInput
+        {
+            get
+            {
+                return consoleInput;
+            }
+            set
+            {
+                consoleInput = value;
+                OnPropertyChanged("ConsoleInput");
+            }
+        }
+
+        public ObservableCollection<string> ConsoleOutput
+        {
+            get
+            {
+                return consoleOutput;
+            }
+            set
+            {
+                consoleOutput = value;
+                OnPropertyChanged("ConsoleOutput");
+            }
+        }
+
+        public void RunCommand()
+        {
+            ConsoleOutput.Add(ConsoleInput);
+            // do your stuff here.
+
+            if (MainWindow.bot == null)
+            {
+                //MainWindow.wssv.WebSocketServices.Broadcast($"{{\"msg\":\"disconnected\",\"data\":[]}}");
+                ConsoleOutput.Add("Disconnected from Robot...");
+            }
+            else
+            {
+                MainWindow.ExecuteInstruction(MainWindow.ParseMessage(ConsoleInput));
+            }
+
+            ConsoleInput = String.Empty;
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        void OnPropertyChanged(string propertyName)
+        {
+            if (null != PropertyChanged)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
 }
