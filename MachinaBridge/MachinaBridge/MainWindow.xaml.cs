@@ -194,23 +194,59 @@ namespace MachinaBridge
             }
             else if (args[0].Equals("Speed", StringComparison.CurrentCultureIgnoreCase))
             {
-                bot.Speed(Convert.ToInt32(args[1]));
-                return true;
+                return bot.Speed(Convert.ToDouble(args[1]));
             }
             else if (args[0].Equals("SpeedTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                bot.SpeedTo(Convert.ToInt32(args[1]));
-                return true;
+                return bot.SpeedTo(Convert.ToDouble(args[1]));
+            }
+            else if (args[0].Equals("Acceleration", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.Acceleration(Convert.ToDouble(args[1]));
+            }
+            else if (args[0].Equals("AccelerationTo", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.AccelerationTo(Convert.ToDouble(args[1]));
+            }
+            else if (args[0].Equals("RotationSpeed", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.RotationSpeed(Convert.ToDouble(args[1]));
+            }
+            else if (args[0].Equals("RotationSpeedTo", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.RotationSpeedTo(Convert.ToDouble(args[1]));
+            }
+            else if (args[0].Equals("JointSpeed", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.JointSpeed(Convert.ToDouble(args[1]));
+            }
+            else if (args[0].Equals("JointSpeedTo", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.JointSpeedTo(Convert.ToDouble(args[1]));
+            }
+            else if (args[0].Equals("JointAcceleration", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.JointAcceleration(Convert.ToDouble(args[1]));
+            }
+            else if (args[0].Equals("JointAccelerationTo", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.JointAccelerationTo(Convert.ToDouble(args[1]));
             }
             else if (args[0].Equals("Precision", StringComparison.CurrentCultureIgnoreCase))
             {
-                bot.Precision(Convert.ToInt32(args[1]));
-                return true;
+                return bot.Precision(Convert.ToInt32(args[1]));
             }
             else if (args[0].Equals("PrecisionTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                bot.PrecisionTo(Convert.ToInt32(args[1]));
-                return true;
+                return bot.PrecisionTo(Convert.ToInt32(args[1]));
+            }
+            else if (args[0].Equals("Precision", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.Precision(Convert.ToInt32(args[1]));
+            }
+            else if (args[0].Equals("PrecisionTo", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.PrecisionTo(Convert.ToInt32(args[1]));
             }
             else if (args[0].Equals("MotionMode", StringComparison.CurrentCultureIgnoreCase))
             {

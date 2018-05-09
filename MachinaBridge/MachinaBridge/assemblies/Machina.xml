@@ -23,6 +23,14 @@
             A base constructor to take care of common setup for all actionss
             </summary>
         </member>
+        <member name="M:Machina.Action.ToInstruction">
+            <summary>
+            Generates a string representing a "serialized" instruction representing the 
+            Machina-API command that would have generated this action. 
+            Useful for generating actions to send to the Bridge.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Machina.ActionSpeed">
             <summary>
             An Action to change the current speed setting.
