@@ -129,7 +129,7 @@ namespace MachinaBridge
 
         public static void OnActionCompleted(object sender, ActionCompletedArgs e)
         {
-            wssv.WebSocketServices.Broadcast($"{{\"msg\":\"action-completed\",\"data\":[{e.RemainingActions}]}}");
+            wssv.WebSocketServices.Broadcast($"{{\"msg\":\"action-completed\",\"data\":[{e.RemainingActions}],\"remaining\":{e.RemainingActions},\"last-action\":\"{(e.LastAction == null ? "" : e.LastAction.ToInstruction())}\"}}");
         }
 
         private void Disconnect()
@@ -234,19 +234,11 @@ namespace MachinaBridge
             }
             else if (args[0].Equals("Precision", StringComparison.CurrentCultureIgnoreCase))
             {
-                return bot.Precision(Convert.ToInt32(args[1]));
+                return bot.Precision(Convert.ToDouble(args[1]));
             }
             else if (args[0].Equals("PrecisionTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                return bot.PrecisionTo(Convert.ToInt32(args[1]));
-            }
-            else if (args[0].Equals("Precision", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return bot.Precision(Convert.ToInt32(args[1]));
-            }
-            else if (args[0].Equals("PrecisionTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return bot.PrecisionTo(Convert.ToInt32(args[1]));
+                return bot.PrecisionTo(Convert.ToDouble(args[1]));
             }
             else if (args[0].Equals("MotionMode", StringComparison.CurrentCultureIgnoreCase))
             {
