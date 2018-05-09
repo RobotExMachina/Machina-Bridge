@@ -28,6 +28,8 @@ namespace MachinaBridge
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static readonly string Version = "0.1.2";
+
         public static Robot bot;
         public static List<Tool> tools = new List<Tool>();
         public static WebSocketServer wssv;
@@ -237,7 +239,8 @@ namespace MachinaBridge
             //      Tool(string name, Point TCPPosition, Orientation TCPOrientation, double weightKg, Point centerOfGravity)
             // but an itemized version of it:
             //      Tool(name, x, y, z, x0, x1, x2, y0, y1, y2, weightkg, gx, gy, gz);
-            else if (args[0].Equals("new Tool", StringComparison.CurrentCultureIgnoreCase))
+            else if (args[0].Equals("new Tool", StringComparison.CurrentCultureIgnoreCase) || 
+                     args[0].Equals("Tool.Create", StringComparison.CurrentCultureIgnoreCase))
             {
                 Tool t = new Tool(args[1],
                     new Machina.Point(Convert.ToDouble(args[2]), Convert.ToDouble(args[3]), Convert.ToDouble(args[4])),
@@ -289,6 +292,14 @@ namespace MachinaBridge
             else if (args[0].Equals("Detach", StringComparison.CurrentCultureIgnoreCase))
             {
                 return bot.Detach();
+            }
+            else if (args[0].Equals("WriteDigital", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.WriteDigital(Convert.ToInt32(args[1]), Convert.ToBoolean(args[2]));
+            }
+            else if (args[0].Equals("WriteAnalog", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return bot.WriteAnalog(Convert.ToInt32(args[1]), Convert.ToDouble(args[2]));
             }
 
             return false;
