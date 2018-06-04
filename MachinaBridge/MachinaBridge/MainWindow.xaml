@@ -27,7 +27,7 @@
         </ComboBox>
         <Label x:Name="lbl_IP" Content="IP" HorizontalAlignment="Left" Height="26" Margin="10,412,0,0" VerticalAlignment="Top" Width="77" FontFamily="Montserrat Ultra Light" Foreground="White"/>
         <Label x:Name="lnl_Port" Content="PORT" HorizontalAlignment="Left" Height="26" Margin="10,444,0,0" VerticalAlignment="Top" Width="77" FontFamily="Montserrat Ultra Light" Foreground="White"/>
-        <TextBox x:Name="txtbox_IP" HorizontalAlignment="Left" Height="22" Margin="87,416,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="251" FontFamily="Montserrat Ultra Light" TextAlignment="Right" FontSize="10"/>
+        <TextBox x:Name="txtbox_IP" HorizontalAlignment="Left" Height="22" Margin="87,416,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="251" FontFamily="Montserrat Ultra Light" TextAlignment="Right" FontSize="10" TextChanged="txtbox_IP_TextChanged"/>
         <TextBox x:Name="txtbox_Port" HorizontalAlignment="Left" Height="22" Margin="87,450,0,0" TextWrapping="Wrap" Text="7000" VerticalAlignment="Top" Width="251" FontFamily="Montserrat Ultra Light" TextAlignment="Right" FontSize="10"/>
         <Button x:Name="btn_Connect" Content="CONNECT" HorizontalAlignment="Left" Height="24" Margin="16,494,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily="Montserrat Ultra Light" FontWeight="Bold" Click="btn_Connect_Click"/>
         <Button x:Name="btn_ResetBridge" Content="RESET BRIDGE" HorizontalAlignment="Left" Height="24" Margin="16,727,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily="Montserrat Ultra Light" FontWeight="Bold"/>

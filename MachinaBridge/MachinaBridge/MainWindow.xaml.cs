@@ -28,7 +28,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static readonly string Version = "0.1.2";
+        public static readonly string Version = "0.6.3";
 
         public static Robot bot;
         public static List<Tool> tools = new List<Tool>();
@@ -323,11 +323,49 @@ namespace MachinaBridge
             }
             else if (args[0].Equals("WriteDigital", StringComparison.CurrentCultureIgnoreCase))
             {
-                return bot.WriteDigital(Convert.ToInt32(args[1]), Convert.ToBoolean(args[2]));
+                int count = args.Length;
+                int pin = 0;
+                bool digitalPin = Int32.TryParse(args[1], out pin);
+
+                if (digitalPin)
+                {
+                    switch (count)
+                    {
+                        case 3: return bot.WriteDigital(pin, Convert.ToBoolean(args[2]));
+                        case 4: return bot.WriteDigital(pin, Convert.ToBoolean(args[2]), Convert.ToBoolean(args[3]));
+                    }
+                }
+                else
+                {
+                    switch (count)
+                    {
+                        case 3: return bot.WriteDigital(args[1], Convert.ToBoolean(args[2]));
+                        case 4: return bot.WriteDigital(args[1], Convert.ToBoolean(args[2]), Convert.ToBoolean(args[3]));
+                    }
+                }
             }
             else if (args[0].Equals("WriteAnalog", StringComparison.CurrentCultureIgnoreCase))
             {
-                return bot.WriteAnalog(Convert.ToInt32(args[1]), Convert.ToDouble(args[2]));
+                int count = args.Length;
+                int pin = 0;
+                bool digitalPin = Int32.TryParse(args[1], out pin);
+
+                if (digitalPin)
+                {
+                    switch (count)
+                    {
+                        case 3: return bot.WriteAnalog(pin, Convert.ToDouble(args[2]));
+                        case 4: return bot.WriteAnalog(pin, Convert.ToDouble(args[2]), Convert.ToBoolean(args[3]));
+                    }
+                }
+                else
+                {
+                    switch (count)
+                    {
+                        case 3: return bot.WriteAnalog(args[1], Convert.ToDouble(args[2]));
+                        case 4: return bot.WriteAnalog(args[1], Convert.ToDouble(args[2]), Convert.ToBoolean(args[3]));
+                    }
+                }
             }
 
             return false;
@@ -385,12 +423,10 @@ namespace MachinaBridge
             return s;
         }
 
+        private void txtbox_IP_TextChanged(object sender, TextChangedEventArgs e)
+        {
 
-
-
-
-
-
+        }
     }
 
 
