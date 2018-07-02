@@ -270,11 +270,11 @@ namespace MachinaBridge
             else if (args[0].Equals("new Tool", StringComparison.CurrentCultureIgnoreCase) || 
                      args[0].Equals("Tool.Create", StringComparison.CurrentCultureIgnoreCase))
             {
-                Tool t = new Tool(args[1],
-                    new Machina.Point(Convert.ToDouble(args[2]), Convert.ToDouble(args[3]), Convert.ToDouble(args[4])),
-                    new Machina.Orientation(Convert.ToDouble(args[5]), Convert.ToDouble(args[6]), Convert.ToDouble(args[7]), Convert.ToDouble(args[8]), Convert.ToDouble(args[9]), Convert.ToDouble(args[10])),
+                Tool t = Tool.Create(args[1],
+                    Convert.ToDouble(args[2]), Convert.ToDouble(args[3]), Convert.ToDouble(args[4]),
+                    Convert.ToDouble(args[5]), Convert.ToDouble(args[6]), Convert.ToDouble(args[7]), Convert.ToDouble(args[8]), Convert.ToDouble(args[9]), Convert.ToDouble(args[10]),
                     Convert.ToDouble(args[11]),
-                    new Machina.Point(Convert.ToDouble(args[12]), Convert.ToDouble(args[13]), Convert.ToDouble(args[14])));
+                    Convert.ToDouble(args[12]), Convert.ToDouble(args[13]), Convert.ToDouble(args[14]));
 
                 bool found = false;
                 for (int i = 0; i < tools.Count; i++)
