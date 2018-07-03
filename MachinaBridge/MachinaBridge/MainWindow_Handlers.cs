@@ -19,11 +19,40 @@ namespace MachinaBridge
 {
     public partial class MainWindow : Window
     {
+        int _lineId = -1;
+
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("MAIN WINDOW LOADED");
+            InputBlock.PreviewKeyDown += InputBlock_PreviewKeyDown;
             InputBlock.KeyDown += InputBlock_KeyDown;
             InputBlock.Focus();
+        }
+
+        /// <summary>
+        /// Arrow keys are not handled by KeyDown, must use PreviewKeyDown instead.
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void InputBlock_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up)
+            {
+                Console.WriteLine("UP " + _lineId);
+                _lineId++;
+                if (_lineId > dc.ConsoleOutput.Count - 1)
+                    _lineId = dc.ConsoleOutput.Count - 1;
+                InputBlock.Text = dc.ConsoleOutput[dc.ConsoleOutput.Count - 1 - _lineId];
+            }
+            else if (e.Key == Key.Down)
+            {
+                Console.WriteLine("DOWN " + _lineId);
+                _lineId--;
+                if (_lineId < 0)
+                    _lineId = 0;
+                InputBlock.Text = dc.ConsoleOutput[dc.ConsoleOutput.Count - 1 - _lineId];
+            }
         }
 
         private void InputBlock_KeyDown(object sender, KeyEventArgs e)
@@ -35,7 +64,9 @@ namespace MachinaBridge
                 dc.RunCommand();
                 InputBlock.Focus();
                 Scroller.ScrollToBottom();
+                _lineId = -1;
             }
+            
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
