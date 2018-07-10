@@ -31,7 +31,6 @@ namespace MachinaBridge
 
         /// <summary>
         /// Arrow keys are not handled by KeyDown, must use PreviewKeyDown instead.
-        /// 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -63,10 +62,9 @@ namespace MachinaBridge
                 dc.ConsoleInput = InputBlock.Text;
                 dc.RunCommand();
                 InputBlock.Focus();
-                Scroller.ScrollToBottom();
+                //Scroller.ScrollToBottom();  // moved to ConsoleContent.Writeline
                 _lineId = -1;
             }
-            
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

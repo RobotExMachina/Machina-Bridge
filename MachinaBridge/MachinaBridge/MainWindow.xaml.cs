@@ -42,7 +42,7 @@ namespace MachinaBridge
         //static string _robotModel = "";
         public static string _connectionManager;
 
-        ConsoleContent dc = new ConsoleContent();
+        ConsoleContent dc;
 
         public MainWindow()
         {
@@ -51,6 +51,8 @@ namespace MachinaBridge
             InitializeWebSocketServer();
 
             //Loaded += MainWindow_Loaded;
+
+            dc = new ConsoleContent(this);
 
             DataContext = dc;
         }
@@ -367,6 +369,16 @@ namespace MachinaBridge
                     }
                 }
             }
+            else if (args[0].Equals("ExternalAxes", StringComparison.CurrentCultureIgnoreCase)) {
+                //...
+
+            }
+            else if (args[0].Equals("ExternalAxesTo", StringComparison.CurrentCultureIgnoreCase))
+            {
+                //...
+
+            }
+
 
             return false;
         }
@@ -479,6 +491,7 @@ namespace MachinaBridge
     // https://stackoverflow.com/a/14957478/1934487
     public class ConsoleContent : INotifyPropertyChanged
     {
+        MainWindow _parent;
         string consoleInput = string.Empty;
         ObservableCollection<string> consoleOutput = new ObservableCollection<string>() { "## MACHINA Console ##", "Enter any command to stream it to the robot..." };
 
@@ -508,15 +521,27 @@ namespace MachinaBridge
             }
         }
 
+        public ConsoleContent(MainWindow parent)
+        {
+            this._parent = parent;
+        }
+
+
+        public void WriteLine(string line)
+        {
+            ConsoleOutput.Add(line);
+            _parent.Scroller.ScrollToBottom();
+        }
+
+
         public void RunCommand()
         {
-            ConsoleOutput.Add(ConsoleInput);
-            // do your stuff here.
+            this.WriteLine(ConsoleInput);
 
             if (MainWindow.bot == null)
             {
                 //MainWindow.wssv.WebSocketServices.Broadcast($"{{\"msg\":\"disconnected\",\"data\":[]}}");
-                ConsoleOutput.Add("Disconnected from Robot...");
+                this.WriteLine("Not connected to any Robot...");
             }
             else
             {
