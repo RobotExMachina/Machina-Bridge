@@ -370,13 +370,39 @@ namespace MachinaBridge
                 }
             }
             else if (args[0].Equals("ExternalAxes", StringComparison.CurrentCultureIgnoreCase)) {
-                //...
+                int axesCount = args.Length - 1;
+                double?[] vals = new double?[] { null, null, null, null, null, null };
+                for (int i = 0; i < axesCount; i++)
+                {
+                    try
+                    {
+                        vals[i] = Convert.ToDouble(args[i + 1]);
+                    }
+                    catch
+                    {
+                        // keep as null
+                    }
+                }
 
+                return bot.ExternalAxes(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
             }
             else if (args[0].Equals("ExternalAxesTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                //...
+                int axesCount = args.Length - 1;
+                double?[] vals = new double?[] { null, null, null, null, null, null };
+                for (int i = 0; i < axesCount; i++)
+                {
+                    try
+                    {
+                        vals[i] = Convert.ToDouble(args[i + 1]);
+                    }
+                    catch
+                    {
+                        // keep as null
+                    }
+                }
 
+                return bot.ExternalAxesTo(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
             }
 
 
