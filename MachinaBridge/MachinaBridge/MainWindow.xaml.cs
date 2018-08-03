@@ -118,13 +118,13 @@ namespace MachinaBridge
             Joints j = r.GetCurrentAxes();
             ExternalAxes extax = r.GetCurrentExternalAxes();
 
-            string stateMsg = string.Format("{{\"msg\":\"execution-update\",\"pos\":{0},\"ori\":{1},\"axes\":{2},\"conf\":{3}\"extax\":{4}}}",
+            string stateMsg = string.Format("{{\"msg\":\"execution-update\",\"pos\":{0},\"ori\":{1},\"axes\":{2},\"conf\":{3},\"extax\":{4}}}",
                 //p == null ? "null" : p.ToArrayString(),
                 //rot == null ? "null" : rot.Q.ToArrayString(),
                 //j == null ? "null" : j.ToArrayString(),
                 //extax == null ? "null" : extax.ToArrayString()
 
-                // Let's be 6.0 cool ;)
+                // Let's be 6.0x cooler ;)
                 p?.ToArrayString() ?? "null",
                 rot?.Q.ToArrayString() ?? "null",
                 j?.ToArrayString() ?? "null",

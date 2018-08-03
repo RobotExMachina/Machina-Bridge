@@ -1035,6 +1035,11 @@
             Defines what state is being represented by a cursor.
             </summary>
         </member>
+        <member name="T:Machina.ExternalAxisType">
+            <summary>
+            Defines the types of External Axes
+            </summary>
+        </member>
         <member name="M:Machina.IO.ReadTextResource(System.String)">
             <summary>
             Reads a text resource file and returns it as a string.
@@ -2956,6 +2961,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Machina.Control.GetCurrentExternalAxes">
+            <summary>
+            Returns a double?[] array representing the values for the external axes.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Machina.Control.GetCurrentTool">
             <summary>
             Returns a Tool object representing the currently attached tool, null if none.
@@ -3112,17 +3123,22 @@
             <param name="initiate"></param>
             <returns></returns>
         </member>
-        <member name="M:Machina.Control.IssueExternalAxesRequest(System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double},System.Boolean)">
+        <member name="M:Machina.Control.IssueExternalAxisRequest(System.Int32,System.Double,System.Boolean)">
             <summary>
-            Issue a request to modify the external axes of this robot.
+            Issue a request to modify a external axis in this robot.
+            Note axisNumber is one-based, i.e. axisNumber 1 is _externalAxes[0]
             </summary>
-            <param name="a1"></param>
-            <param name="a2"></param>
-            <param name="a3"></param>
-            <param name="a4"></param>
-            <param name="a5"></param>
-            <param name="a6"></param>
+            <param name="axisNumber"></param>
+            <param name="value"></param>
             <param name="relative"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Control.IssueCustomCodeRequest(System.String,System.Boolean)">
+            <summary>
+            Issue a request to add custom code to a compiled program.
+            </summary>
+            <param name="statement"></param>
+            <param name="isDeclaration"></param>
             <returns></returns>
         </member>
         <member name="M:Machina.Control.DropCommunication">
@@ -3175,7 +3191,7 @@
             Character used for comments by the compiler
             </summary>
         </member>
-        <member name="M:Machina.Compiler.#ctor(System.String)">
+        <member name="M:Machina.Compiler.#ctor(System.Char)">
             <summary>
             A constructor that takes several parameters particular to each compiler type
             </summary>
@@ -3876,34 +3892,33 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Machina.Robot.ExternalAxes(System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double})">
+        <member name="M:Machina.Robot.ExternalAxis(System.Int32,System.Double)">
             <summary>
-            Increase the values of the robot's external axes. 
+            Increase the value of one of the robot's external axis. 
             Values expressed in degrees or milimeters, depending on the nature of the external axis.
-            Use null for inactive axes.
             Note that the effect of this change of external axis will go in effect on the next motion Action.
             </summary>
-            <param name="ext1"></param>
-            <param name="ext2"></param>
-            <param name="ext3"></param>
-            <param name="ext4"></param>
-            <param name="ext5"></param>
-            <param name="ext6"></param>
-            <returns></returns>
+            <param name="axisNumber">Axis number from 1 to 6.</param>
+            <param name="increment">Increment value in mm or degrees.</param>
         </member>
-        <member name="M:Machina.Robot.ExternalAxesTo(System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Double})">
+        <member name="M:Machina.Robot.ExternalAxisTo(System.Int32,System.Double)">
             <summary>
-            Set the values of the robot's external axes.
+            Set the value of one of the robot's external axis. 
             Values expressed in degrees or milimeters, depending on the nature of the external axis.
-            Use null for inactive axes.
             Note that the effect of this change of external axis will go in effect on the next motion Action.
             </summary>
-            <param name="ext1"></param>
-            <param name="ext2"></param>
-            <param name="ext3"></param>
-            <param name="ext4"></param>
-            <param name="ext5"></param>
-            <param name="ext6"></param>
+            <param name="axisNumber">Axis number from 1 to 6.</param>
+            <param name="value">Axis value in mm or degrees.</param>
+        </member>
+        <member name="M:Machina.Robot.CustomCode(System.String,System.Boolean)">
+            <summary>
+            Insert a line of custom code directly into a compiled program. 
+            This is useful for obscure instructions that are not covered by Machina's API. 
+            Note that this Action cannot be checked for validity by Machina, and you are responsible for correct syntax.
+            This Action is non-streamable. 
+            </summary>
+            <param name="statement">Code in the machine's native language.</param>
+            <param name="isDeclaration">Is this a declaration, like a variable or a workobject? If so, this statement will be placed at the beginning of the program.</param>
             <returns></returns>
         </member>
         <member name="M:Machina.Robot.GetCurrentPosition">
@@ -3921,6 +3936,12 @@
         <member name="M:Machina.Robot.GetCurrentAxes">
             <summary>
             Returns a Joint object representing the rotations in the robot axes.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.GetCurrentExternalAxes">
+            <summary>
+            Retuns an ExternalAxes object representing the values of the external axes. If a value is null, that axis is not valid.
             </summary>
             <returns></returns>
         </member>
@@ -4317,9 +4338,9 @@
             <param name="action"></param>
             <returns></returns>
         </member>
-        <member name="M:Machina.RobotCursor.ApplyAction(Machina.ActionExternalAxes)">
+        <member name="M:Machina.RobotCursor.ApplyAction(Machina.ActionCustomCode)">
             <summary>
-            Apply an Action to set/increase external axes values for this robot.
+            This action doesn't change the state of the cursor... 
             </summary>
             <param name="action"></param>
             <returns></returns>
