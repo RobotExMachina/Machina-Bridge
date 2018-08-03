@@ -13,13 +13,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 using Machina;
 
 using WebSocketSharp;
 using WebSocketSharp.Server;
-using System.ComponentModel;
-using System.Collections.ObjectModel;
 
 namespace MachinaBridge
 {
@@ -28,7 +28,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static readonly string Version = "0.6.3";
+        public static readonly string Version = "0.6.4";
 
         public static Robot bot;
         public static List<Tool> tools = new List<Tool>();
@@ -36,10 +36,9 @@ namespace MachinaBridge
         public static string wssvURL = "ws://127.0.0.1:6999";
         public static string wssvBehavior = "/Bridge";
 
-        // Robot options (quick and dirty defaults
+        // Robot options (quick and dirty defaults)
         public static string _robotName;
         public static string _robotBrand;
-        //static string _robotModel = "";
         public static string _connectionManager;
 
         ConsoleContent dc;
@@ -92,7 +91,6 @@ namespace MachinaBridge
 
             bot.ControlMode(ControlType.Stream);
 
-
             if (_connectionManager == "MACHINA")
             {
                 bot.ConnectionManager(ConnectionType.Machina);
@@ -109,7 +107,7 @@ namespace MachinaBridge
         public static void OnBufferEmpty(object sender, EventArgs e)
         {
             Console.WriteLine("SENDING BUFFER-EMPTY");
-            wssv.WebSocketServices.Broadcast($"{{\"msg\":\"buffer-empty\",\"data\":[]}}");
+            wssv.WebSocketServices.Broadcast($"{{\"msg\":\"buffer-empty\"}}");
         }
 
         public static void OnMotionCursorUpdated(object sender, EventArgs e)
@@ -118,20 +116,28 @@ namespace MachinaBridge
             Machina.Vector p = r.GetCurrentPosition();
             Machina.Rotation rot = r.GetCurrentRotation();
             Joints j = r.GetCurrentAxes();
+            ExternalAxes extax = r.GetCurrentExternalAxes();
 
-            if (p != null && rot != null)
-            {
-                wssv.WebSocketServices.Broadcast($"{{\"msg\":\"pose\",\"data\":[{p.X},{p.Y},{p.Z},{rot.Q.W},{rot.Q.X},{rot.Q.Y},{rot.Q.Z}]}}");
-            }
-            else if (j != null)
-            {
-                wssv.WebSocketServices.Broadcast($"{{\"msg\":\"joints\",\"data\":[{j.J1},{j.J2},{j.J3},{j.J4},{j.J5},{j.J6}]}}");
-            }
+            string stateMsg = string.Format("{{\"msg\":\"execution-update\",\"pos\":{0},\"ori\":{1},\"axes\":{2},\"conf\":{3}\"extax\":{4}}}",
+                //p == null ? "null" : p.ToArrayString(),
+                //rot == null ? "null" : rot.Q.ToArrayString(),
+                //j == null ? "null" : j.ToArrayString(),
+                //extax == null ? "null" : extax.ToArrayString()
+
+                // Let's be 6.0 cool ;)
+                p?.ToArrayString() ?? "null",
+                rot?.Q.ToArrayString() ?? "null",
+                j?.ToArrayString() ?? "null",
+                "null",                                     // placeholder for configuration data
+                extax?.ToArrayString() ?? "null"
+            );
+
+            wssv.WebSocketServices.Broadcast(stateMsg);
         }
 
         public static void OnActionCompleted(object sender, ActionCompletedArgs e)
         {
-            wssv.WebSocketServices.Broadcast($"{{\"msg\":\"action-completed\",\"data\":[{e.RemainingActions}],\"remaining\":{e.RemainingActions},\"last-action\":\"{(e.LastAction == null ? "" : e.LastAction.ToInstruction())}\"}}");
+            wssv.WebSocketServices.Broadcast($"{{\"msg\":\"action-completed\",\"rem\":{e.RemainingActions},\"last\":\"{(e.LastAction == null ? "" : e.LastAction.ToInstruction())}\"}}");
         }
 
         private void Disconnect()
@@ -369,42 +375,81 @@ namespace MachinaBridge
                     }
                 }
             }
-            else if (args[0].Equals("ExternalAxes", StringComparison.CurrentCultureIgnoreCase)) {
-                int axesCount = args.Length - 1;
-                double?[] vals = new double?[] { null, null, null, null, null, null };
-                for (int i = 0; i < axesCount; i++)
-                {
-                    try
-                    {
-                        vals[i] = Convert.ToDouble(args[i + 1]);
-                    }
-                    catch
-                    {
-                        // keep as null
-                    }
+            //else if (args[0].Equals("ExternalAxes", StringComparison.CurrentCultureIgnoreCase)) {
+            //    int axesCount = args.Length - 1;
+            //    double?[] vals = new double?[] { null, null, null, null, null, null };
+            //    for (int i = 0; i < axesCount; i++)
+            //    {
+            //        try
+            //        {
+            //            vals[i] = Convert.ToDouble(args[i + 1]);
+            //        }
+            //        catch
+            //        {
+            //            // keep as null
+            //        }
+            //    }
+
+            //    return bot.ExternalAxes(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+            //}
+            //else if (args[0].Equals("ExternalAxesTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    int axesCount = args.Length - 1;
+            //    double?[] vals = new double?[] { null, null, null, null, null, null };
+            //    for (int i = 0; i < axesCount; i++)
+            //    {
+            //        try
+            //        {
+            //            vals[i] = Convert.ToDouble(args[i + 1]);
+            //        }
+            //        catch
+            //        {
+            //            // keep as null
+            //        }
+            //    }
+
+            //    return bot.ExternalAxesTo(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+            //}
+            else if (args[0].Equals("ExternalAxis", StringComparison.CurrentCultureIgnoreCase))
+            {
+                int axisNumber;
+                double increment;
+                if (!Int32.TryParse(args[1], out axisNumber) || axisNumber == 0) {
+                    Console.WriteLine($"ERROR: Invalid axis number");
+                    return false;
                 }
 
-                return bot.ExternalAxes(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+                if (!Double.TryParse(args[2], out increment))
+                {
+                    Console.WriteLine($"ERROR: Invalid increment value");
+                    return false;
+                }
+
+                return bot.ExternalAxis(axisNumber, increment);
             }
             else if (args[0].Equals("ExternalAxesTo", StringComparison.CurrentCultureIgnoreCase))
             {
-                int axesCount = args.Length - 1;
-                double?[] vals = new double?[] { null, null, null, null, null, null };
-                for (int i = 0; i < axesCount; i++)
+                int axisNumber;
+                double value;
+                if (!Int32.TryParse(args[1], out axisNumber) || axisNumber == 0)
                 {
-                    try
-                    {
-                        vals[i] = Convert.ToDouble(args[i + 1]);
-                    }
-                    catch
-                    {
-                        // keep as null
-                    }
+                    Console.WriteLine($"ERROR: Invalid axis number");
+                    return false;
                 }
 
-                return bot.ExternalAxesTo(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
-            }
+                if (!Double.TryParse(args[2], out value))
+                {
+                    Console.WriteLine($"ERROR: Invalid value");
+                    return false;
+                }
 
+                return bot.ExternalAxisTo(axisNumber, value);
+            }
+            else if (args[0].Equals("CustomCode", StringComparison.CurrentCultureIgnoreCase))
+            {
+                Console.WriteLine($"WARNING: CustomCode is not a streamable Action, only available for offline code compilation");
+                return false;
+            }
 
             return false;
         }
