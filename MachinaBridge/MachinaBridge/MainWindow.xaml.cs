@@ -106,7 +106,6 @@ namespace MachinaBridge
 
         public static void OnBufferEmpty(object sender, EventArgs e)
         {
-            Console.WriteLine("SENDING BUFFER-EMPTY");
             wssv.WebSocketServices.Broadcast($"{{\"msg\":\"buffer-empty\"}}");
         }
 
@@ -118,7 +117,7 @@ namespace MachinaBridge
             Joints j = r.GetCurrentAxes();
             ExternalAxes extax = r.GetCurrentExternalAxes();
 
-            string stateMsg = string.Format("{{\"msg\":\"execution-update\",\"pos\":{0},\"ori\":{1},\"axes\":{2},\"conf\":{3},\"extax\":{4}}}",
+            string stateMsg = string.Format("{{\"msg\":\"execution-update\",\"pos\":{0},\"ori\":{1},\"conf\":{2},\"axes\":{3},\"extax\":{4}}}",
                 //p == null ? "null" : p.ToArrayString(),
                 //rot == null ? "null" : rot.Q.ToArrayString(),
                 //j == null ? "null" : j.ToArrayString(),
@@ -127,8 +126,8 @@ namespace MachinaBridge
                 // Let's be 6.0x cooler ;)
                 p?.ToArrayString() ?? "null",
                 rot?.Q.ToArrayString() ?? "null",
+                "null",                                     // placeholder for robot configuration data
                 j?.ToArrayString() ?? "null",
-                "null",                                     // placeholder for configuration data
                 extax?.ToArrayString() ?? "null"
             );
 
@@ -375,41 +374,6 @@ namespace MachinaBridge
                     }
                 }
             }
-            //else if (args[0].Equals("ExternalAxes", StringComparison.CurrentCultureIgnoreCase)) {
-            //    int axesCount = args.Length - 1;
-            //    double?[] vals = new double?[] { null, null, null, null, null, null };
-            //    for (int i = 0; i < axesCount; i++)
-            //    {
-            //        try
-            //        {
-            //            vals[i] = Convert.ToDouble(args[i + 1]);
-            //        }
-            //        catch
-            //        {
-            //            // keep as null
-            //        }
-            //    }
-
-            //    return bot.ExternalAxes(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
-            //}
-            //else if (args[0].Equals("ExternalAxesTo", StringComparison.CurrentCultureIgnoreCase))
-            //{
-            //    int axesCount = args.Length - 1;
-            //    double?[] vals = new double?[] { null, null, null, null, null, null };
-            //    for (int i = 0; i < axesCount; i++)
-            //    {
-            //        try
-            //        {
-            //            vals[i] = Convert.ToDouble(args[i + 1]);
-            //        }
-            //        catch
-            //        {
-            //            // keep as null
-            //        }
-            //    }
-
-            //    return bot.ExternalAxesTo(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
-            //}
             else if (args[0].Equals("ExternalAxis", StringComparison.CurrentCultureIgnoreCase))
             {
                 int axisNumber;
@@ -457,7 +421,7 @@ namespace MachinaBridge
         public static string[] ParseMessage(string msg)
         {
             // MEGA quick and idrty
-            // ssuming a msg int he form of "MoveTo(300, 400, 500);" with optional spaces here and there...  
+            // assuming a msg int he form of "MoveTo(300, 400, 500);" with optional spaces here and there...  
             string[] split1 = msg.Split(new char[] { '(' });
             string[] split2 = split1[1].Split(new char[] { ')' });
             string[] args = split2[0].Split(new char[] { ',' });
@@ -546,6 +510,8 @@ namespace MachinaBridge
         {
             //base.OnClose(e);
             Console.WriteLine($"  BRIDGE: closed bridge: {e.Code} {e.Reason}");
+
+            MainWindow.wssv.WebSocketServices.Broadcast($"{{\"msg\":\"client-disconnected\",\"user\":\"clientname\"}}");
         }
 
         //internal void OnBufferEmpty(object sender, EventArgs e)
