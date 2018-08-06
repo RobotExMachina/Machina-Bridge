@@ -85,9 +85,9 @@ namespace MachinaBridge
 
             bot = Robot.Create(_robotName, _robotBrand);
 
-            bot.BufferEmpty += OnBufferEmpty;
-            bot.MotionCursorUpdated += OnMotionCursorUpdated;
-            bot.ActionCompleted += OnActionCompleted;
+            bot.BufferEmpty += BroadCastEvent;
+            bot.MotionCursorUpdated += BroadCastEvent;
+            bot.ActionCompleted += BroadCastEvent;
 
             bot.ControlMode(ControlType.Stream);
 
@@ -103,40 +103,10 @@ namespace MachinaBridge
 
         }
 
-
-        public static void OnBufferEmpty(object sender, EventArgs e)
+        
+        public static void BroadCastEvent(object sender, MachinaEventArgs e)
         {
-            wssv.WebSocketServices.Broadcast($"{{\"msg\":\"buffer-empty\"}}");
-        }
-
-        public static void OnMotionCursorUpdated(object sender, EventArgs e)
-        {
-            Robot r = sender as Robot;
-            Machina.Vector p = r.GetCurrentPosition();
-            Machina.Rotation rot = r.GetCurrentRotation();
-            Joints j = r.GetCurrentAxes();
-            ExternalAxes extax = r.GetCurrentExternalAxes();
-
-            string stateMsg = string.Format("{{\"msg\":\"execution-update\",\"pos\":{0},\"ori\":{1},\"conf\":{2},\"axes\":{3},\"extax\":{4}}}",
-                //p == null ? "null" : p.ToArrayString(),
-                //rot == null ? "null" : rot.Q.ToArrayString(),
-                //j == null ? "null" : j.ToArrayString(),
-                //extax == null ? "null" : extax.ToArrayString()
-
-                // Let's be 6.0x cooler ;)
-                p?.ToArrayString() ?? "null",
-                rot?.Q.ToArrayString() ?? "null",
-                "null",                                     // placeholder for robot configuration data
-                j?.ToArrayString() ?? "null",
-                extax?.ToArrayString() ?? "null"
-            );
-
-            wssv.WebSocketServices.Broadcast(stateMsg);
-        }
-
-        public static void OnActionCompleted(object sender, ActionCompletedArgs e)
-        {
-            wssv.WebSocketServices.Broadcast($"{{\"msg\":\"action-completed\",\"rem\":{e.RemainingActions},\"last\":\"{(e.LastAction == null ? "" : e.LastAction.ToInstruction())}\"}}");
+            wssv.WebSocketServices.Broadcast(e.ToJSONString());
         }
 
         private void Disconnect()
