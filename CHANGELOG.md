@@ -23,12 +23,16 @@
 # TODO:
 
 
+---
+# v0.7.0
+- Serialization of Machina Events into JSON objects is now handled by core.
+
 
 ---
 # v0.6.4
 - [x] Start a `CHANGELOG`
 - [x] Streamline response messages
 - [x] Add `ExternalAxis` Action
-- [x] Add `CustomCode` Action  
+- [x] Add `CustomCode` Action
 
 
