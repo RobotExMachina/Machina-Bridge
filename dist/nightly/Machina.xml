@@ -149,7 +149,7 @@
             like in Execute mode. 
             </summary>
         </member>
-        <member name="M:Machina.ActionBuffer.#ctor">
+        <member name="M:Machina.ActionBuffer.#ctor(Machina.RobotCursor)">
             <summary>
             Main constructor.
             </summary>
@@ -215,7 +215,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Machina.ActionBuffer.ActionsPending">
+        <member name="M:Machina.ActionBuffer.ActionsPendingCount">
             <summary>
             How many Actions are pending in the buffer?
             </summary>
@@ -1603,6 +1603,12 @@
             <param name="radians"></param>
             <returns></returns>
         </member>
+        <member name="M:Machina.Rotation.ToOrientation">
+            <summary>
+            Returns an Orientation representation of this Rotation. 
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Machina.Joints">
             <summary>
             Represents the 6 angular rotations of the axes in a 6-axis manipulator, in degrees.
@@ -2873,8 +2879,8 @@
         </member>
         <member name="F:Machina.Control.stateCursor">
             <summary>
-            An mutable alias for the cursor that will be used to return the current state for the robot,
-            aka which cursor to use for sync GetJoints(), GetPose()-kind of functions...
+            A mutable alias for the cursor that will be used to return the current state for the robot,
+            a.k.a. which cursor to use for sync GetJoints(), GetPose()-kind of functions...
             Mainly the virtualCursor for Offline modes, motionCursor for Stream, etc.
             </summary>
         </member>
@@ -2882,7 +2888,7 @@
             <summary>
             A shared instance of a Thread to manage sending and executing actions
             in the controller, which typically takes a lot of resources
-            and halts program execution
+            and halts program execution.
             </summary>
         </member>
         <member name="M:Machina.Control.#ctor(Machina.Robot)">
@@ -3977,6 +3983,26 @@
             </summary>
             <returns>The Tool object currently attached to this Robot, null if none.</returns>
         </member>
+        <member name="M:Machina.Robot.DebugDump">
+            <summary>
+            Dumps a bunch of information to the console about the controller, the main task, etc.
+            </summary>
+        </member>
+        <member name="M:Machina.Robot.DebugBuffers">
+            <summary>
+            Dumps a list of the remaining buffered Actions.
+            </summary>
+        </member>
+        <member name="M:Machina.Robot.DebugRobotCursors">
+            <summary>
+            Dumps the state of the internal RobotPointers
+            </summary>
+        </member>
+        <member name="M:Machina.Robot.DebugSettingsBuffer">
+            <summary>
+            Dumps current Settings values
+            </summary>
+        </member>
         <member name="E:Machina.Robot.BufferEmpty">
             <summary>
             Will be raised when Machina has finished streaming all pending Actions to the controller.
@@ -3995,25 +4021,19 @@
             Raised whenever an action has been completed by the device. 
             </summary>
         </member>
-        <member name="M:Machina.Robot.DebugDump">
+        <member name="M:Machina.MachinaEventArgs.ToJSONString">
             <summary>
-            Dumps a bunch of information to the console about the controller, the main task, etc.
+            The arguments on this event must be serializable to a JSON object
             </summary>
+            <returns></returns>
         </member>
-        <member name="M:Machina.Robot.DebugBuffer">
+        <member name="M:Machina.ActionCompletedArgs.#ctor(Machina.Action,System.Int32,System.Int32)">
             <summary>
-            Dumps a list of the remaining buffered Actions.
+            Arguments for onActionCompleted
             </summary>
-        </member>
-        <member name="M:Machina.Robot.DebugRobotCursors">
-            <summary>
-            Dumps the state of the internal RobotPointers
-            </summary>
-        </member>
-        <member name="M:Machina.Robot.DebugSettingsBuffer">
-            <summary>
-            Dumps current Settings values
-            </summary>
+            <param name="last">The last Action recently executed by the Robot.</param>
+            <param name="pendingWrite">How many Actions are left to be executed by the Robot?</param>
+            <param name="pendingBuffer">How many Actions are currently loaded in the Robot's buffer to be executed?</param>
         </member>
         <member name="T:Machina.RobotCursor">
             <summary>
@@ -4124,7 +4144,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Machina.RobotCursor.ActionsPending">
+        <member name="M:Machina.RobotCursor.ActionsPendingCount">
             <summary>
             Returns the number of actions pending in this cursor's buffer.
             </summary>
