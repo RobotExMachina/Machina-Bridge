@@ -368,7 +368,7 @@ namespace MachinaBridge
 
                 return bot.ExternalAxis(axisNumber, increment);
             }
-            else if (args[0].Equals("ExternalAxesTo", StringComparison.CurrentCultureIgnoreCase))
+            else if (args[0].Equals("ExternalAxisTo", StringComparison.CurrentCultureIgnoreCase))
             {
                 int axisNumber;
                 double value;
