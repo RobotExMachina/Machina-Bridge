@@ -88,6 +88,7 @@ namespace MachinaBridge
             bot.BufferEmpty += BroadCastEvent;
             bot.MotionCursorUpdated += BroadCastEvent;
             bot.ActionCompleted += BroadCastEvent;
+            //bot.ToolCreated += BroadCastEvent;
 
             bot.ControlMode(ControlType.Stream);
 
@@ -270,6 +271,12 @@ namespace MachinaBridge
                     Console.WriteLine($"Adding Tool {t.name} to Machina...");
                     tools.Add(t);
                 }
+
+                // Interns need a message whenever they create a tool! Quick and dirty fix:
+                string res = string.Format("{{\"event\":\"tool-created\",\"tool\":\"{0}\"}}",
+                    Util.EscapeDoubleQuotes(t.ToInstruction())
+                );
+                wssv.WebSocketServices.Broadcast(res);
 
                 return true;
             }

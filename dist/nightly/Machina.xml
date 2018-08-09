@@ -4035,6 +4035,11 @@
             <param name="pendingWrite">How many Actions are left to be executed by the Robot?</param>
             <param name="pendingBuffer">How many Actions are currently loaded in the Robot's buffer to be executed?</param>
         </member>
+        <member name="T:Machina.ToolCreatedArgs">
+            <summary>
+            A quick tool-created event because the interns need it for their awesome project! :)
+            </summary>
+        </member>
         <member name="T:Machina.RobotCursor">
             <summary>
             Represents an abstraction of the state of a robotic device. 
@@ -4549,6 +4554,13 @@
             Returns a string with safe ASCII characters to be used as a robot program name. 
             </summary>
             <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Util.EscapeDoubleQuotes(System.String)">
+            <summary>
+            Finds double quotes on a string and scapes them adding a backlash in front.
+            </summary>
+            <param name="str"></param>
             <returns></returns>
         </member>
     </members>
