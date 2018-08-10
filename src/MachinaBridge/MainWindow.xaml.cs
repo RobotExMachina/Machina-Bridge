@@ -28,7 +28,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static readonly string Version = "0.6.4";
+        public static readonly string Version = "0.7.0";
 
         public static Robot bot;
         public static List<Tool> tools = new List<Tool>();
@@ -468,9 +468,9 @@ namespace MachinaBridge
         protected override void OnMessage(MessageEventArgs e)
         {
             //base.OnMessage(e);
-            Console.WriteLine("  BRIDGE: received message: " + e.Data);
+            //Console.WriteLine("  BRIDGE: received message: " + e.Data);
             if (MainWindow.bot == null) { 
-                MainWindow.wssv.WebSocketServices.Broadcast($"{{\"msg\":\"disconnected\",\"data\":[]}}");
+                MainWindow.wssv.WebSocketServices.Broadcast($"{{\"event\":\"controller-disconnected\"}}");
                 return;
             }
 
@@ -488,13 +488,9 @@ namespace MachinaBridge
             //base.OnClose(e);
             Console.WriteLine($"  BRIDGE: closed bridge: {e.Code} {e.Reason}");
 
-            MainWindow.wssv.WebSocketServices.Broadcast($"{{\"msg\":\"client-disconnected\",\"user\":\"clientname\"}}");
+            MainWindow.wssv.WebSocketServices.Broadcast($"{{\"event\":\"client-disconnected\",\"user\":\"clientname\"}}");
         }
 
-        //internal void OnBufferEmpty(object sender, EventArgs e)
-        //{
-        //    Sessions.Broadcast("bufferEmpty");
-        //}
     }
 
 

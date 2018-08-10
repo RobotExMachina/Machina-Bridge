@@ -237,6 +237,12 @@
             Writes a description of each pending Action to the Console.
             </summary>
         </member>
+        <member name="T:Machina.CompilerMACHINA">
+            <summary>
+            A simple compiler that returns a program in native Machina language, 
+            i.e. serializing each Action into its own Instruction form.
+            </summary>
+        </member>
         <member name="T:Machina.CompilerZMORPH">
             <summary>
             A compiler for ZMorph 3D printers. 

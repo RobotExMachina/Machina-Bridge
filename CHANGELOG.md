@@ -26,6 +26,7 @@
 ---
 # v0.7.0
 - Serialization of Machina Events into JSON objects is now handled by core.
+- Update core and interface with GH.
 
 
 ---
