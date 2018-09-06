@@ -40,19 +40,28 @@
         <Label x:Name="lbl_Brand_Copy" Content="NAME" HorizontalAlignment="Left" Height="52" Margin="10,97,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White"/>
         <TextBox x:Name="txtbox_Name" HorizontalAlignment="Left" Height="30" Margin="16,119,0,0" TextWrapping="Wrap" Text="ROBOTEXMACHINA" VerticalAlignment="Top" Width="322" FontFamily="Montserrat Ultra Light" FontSize="10" SelectionChanged="txtbox_Name_SelectionChanged"/>
 
-        <ScrollViewer Name="Scroller" Margin="996,68,10,18" Background="Black">
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding ConsoleOutput, Mode=OneWay}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Path=.}" Foreground="White" FontFamily="Consolas"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <TextBox Text="{Binding ConsoleInput, Mode=TwoWay}" Background="Black" Foreground="White" FontFamily="Consolas" Name="InputBlock" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" />
-            </StackPanel>
-        </ScrollViewer>
+        <Grid Margin="996,68,10,18" Background="Black">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="8*" />
+                <RowDefinition Height="3" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
+            <ScrollViewer Name="Scroller" VerticalScrollBarVisibility="Auto">
+                <StackPanel >
+                    <ItemsControl ItemsSource="{Binding ConsoleOutput, Mode=OneWay}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=.}" Foreground="White" FontFamily="Consolas"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+            <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch" Background="#FFA0A0A0" />
+            <TextBox Grid.Row="2" Text="{Binding ConsoleInput, Mode=TwoWay}" Background="Black" Foreground="White" FontFamily="Consolas" Name="InputBlock" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" />
+        </Grid>
+        
+        
+        
     </Grid>
-
-
 </Window>

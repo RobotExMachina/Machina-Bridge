@@ -20,14 +20,18 @@ namespace MachinaBridge
     public partial class MainWindow : Window
     {
         int _lineId = -1;
+        bool wasInputBlockClicked = false;
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             //Console.WriteLine("MAIN WINDOW LOADED");
             InputBlock.PreviewKeyDown += InputBlock_PreviewKeyDown;
             InputBlock.KeyDown += InputBlock_KeyDown;
-            InputBlock.Focus();
+            InputBlock.PreviewMouseDown += InputBlock_PreviewMouseDown;
+            //InputBlock.Focus();  // want the user to click on the InputBlock to delete text
         }
+
+
 
         /// <summary>
         /// Arrow keys are not handled by KeyDown, must use PreviewKeyDown instead.
@@ -59,11 +63,27 @@ namespace MachinaBridge
             //Console.WriteLine("key " + e.Key.ToString());
             if (e.Key == Key.Enter)
             {
+                if (InputBlock.Text.Length == 0) return;
+
                 dc.ConsoleInput = InputBlock.Text;
                 dc.RunCommand();
                 InputBlock.Focus();
                 //Scroller.ScrollToBottom();  // moved to ConsoleContent.Writeline
                 _lineId = -1;
+            }
+        }
+
+        /// <summary>
+        /// Quick and dirty clear the ConsoleInput on first click.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void InputBlock_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!wasInputBlockClicked)
+            {
+                this.dc.ConsoleInput = "";
+                wasInputBlockClicked = true;
             }
         }
 

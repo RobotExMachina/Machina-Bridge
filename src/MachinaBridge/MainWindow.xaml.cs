@@ -682,8 +682,17 @@ namespace MachinaBridge
     public class ConsoleContent : INotifyPropertyChanged
     {
         MainWindow _parent;
-        string consoleInput = string.Empty;
-        ObservableCollection<string> consoleOutput = new ObservableCollection<string>() { "## MACHINA Console ##", "Enter any command to stream it to the robot..." };
+        string consoleInput = "Enter any command to stream it to the robot...";
+        ObservableCollection<string> consoleOutput = new ObservableCollection<string>() { "## MACHINA Console ##" };
+
+        /// <summary>
+        /// Changes the content of the ConsoleInput without triggering OnPropertyChanged.
+        /// </summary>
+        /// <param name="newMessage"></param>
+        public void OverrideConsoleInput(string newMessage)
+        {
+            consoleInput = newMessage;
+        }
 
         public string ConsoleInput
         {
