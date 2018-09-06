@@ -23,7 +23,7 @@ namespace MachinaBridge
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("MAIN WINDOW LOADED");
+            //Console.WriteLine("MAIN WINDOW LOADED");
             InputBlock.PreviewKeyDown += InputBlock_PreviewKeyDown;
             InputBlock.KeyDown += InputBlock_KeyDown;
             InputBlock.Focus();
@@ -38,7 +38,7 @@ namespace MachinaBridge
         {
             if (e.Key == Key.Up)
             {
-                Console.WriteLine("UP " + _lineId);
+                //Console.WriteLine("UP " + _lineId);
                 _lineId++;
                 if (_lineId > dc.ConsoleOutput.Count - 1)
                     _lineId = dc.ConsoleOutput.Count - 1;
@@ -46,7 +46,7 @@ namespace MachinaBridge
             }
             else if (e.Key == Key.Down)
             {
-                Console.WriteLine("DOWN " + _lineId);
+                //Console.WriteLine("DOWN " + _lineId);
                 _lineId--;
                 if (_lineId < 0)
                     _lineId = 0;
@@ -56,7 +56,7 @@ namespace MachinaBridge
 
         private void InputBlock_KeyDown(object sender, KeyEventArgs e)
         {
-            Console.WriteLine("key " + e.Key.ToString());
+            //Console.WriteLine("key " + e.Key.ToString());
             if (e.Key == Key.Enter)
             {
                 dc.ConsoleInput = InputBlock.Text;
@@ -99,10 +99,10 @@ namespace MachinaBridge
         {
             if (combo_Brand == null) return;
 
-            Console.WriteLine("BRAND CHANGED");
+            //Console.WriteLine("BRAND CHANGED");
             var comboitem = combo_Brand.SelectedItem as ComboBoxItem;
             _robotBrand = comboitem.Content.ToString();
-            Console.WriteLine(_robotBrand);
+            //Console.WriteLine(_robotBrand);
 
             if (combo_Manager == null) return;
 
@@ -142,10 +142,10 @@ namespace MachinaBridge
         {
             if (combo_Manager == null) return;
 
-            Console.WriteLine("MANAGER CHANGED");
+            //Console.WriteLine("MANAGER CHANGED");
             var comboitem = combo_Manager.SelectedItem as ComboBoxItem;
             _connectionManager = comboitem.Content.ToString();
-            Console.WriteLine(_connectionManager);
+            //Console.WriteLine(_connectionManager);
 
             bool enable = _connectionManager.Equals("user", StringComparison.CurrentCultureIgnoreCase);
             EnableElement(txtbox_IP, enable);

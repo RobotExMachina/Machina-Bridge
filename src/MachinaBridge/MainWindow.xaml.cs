@@ -54,6 +54,8 @@ namespace MachinaBridge
             dc = new ConsoleContent(this);
 
             DataContext = dc;
+
+            Machina.Logger.WriteLine += Console.WriteLine;
         }
 
         private void InitializeWebSocketServer()
@@ -132,7 +134,7 @@ namespace MachinaBridge
         public static bool ExecuteInstruction(string instruction)
         {
             string[] args = ParseMessage(instruction);
-            if (args.Length == 0)
+            if (args == null || args.Length == 0)
             {
                 return false;
             }
@@ -555,31 +557,39 @@ namespace MachinaBridge
 
             // If here, instruction is not available
             // If here, something went wrong...
-            Machina.Logger.Error($"I don't understand \"{instruction}\"");
+            Machina.Logger.Error($"I don't understand \"{instruction}\"...");
             return false;
         }
 
         public static string[] ParseMessage(string msg)
         {
-            // MEGA quick and idrty
-            // assuming a msg int he form of "MoveTo(300, 400, 500);" with optional spaces here and there...  
-            string[] split1 = msg.Split(new char[] { '(' });
-            string[] split2 = split1[1].Split(new char[] { ')' });
-            string[] args = split2[0].Split(new char[] { ',' });
-            for (int i = 0; i < args.Length; i++)
+            try
             {
-                args[i] = RemoveDoubleQuotes(RemoveSideSpaces(args[i]));
-            }
-            string inst = RemoveSideSpaces(split1[0]);
+                // MEGA quick and idrty
+                // assuming a msg int he form of "MoveTo(300, 400, 500);" with optional spaces here and there...  
+                string[] split1 = msg.Split(new char[] { '(' });
+                string[] split2 = split1[1].Split(new char[] { ')' });
+                string[] args = split2[0].Split(new char[] { ',' });
+                for (int i = 0; i < args.Length; i++)
+                {
+                    args[i] = RemoveDoubleQuotes(RemoveSideSpaces(args[i]));
+                }
+                string inst = RemoveSideSpaces(split1[0]);
 
-            string[] ret = new string[args.Length + 1];
-            ret[0] = inst;
-            for (int i = 0; i < args.Length; i++)
+                string[] ret = new string[args.Length + 1];
+                ret[0] = inst;
+                for (int i = 0; i < args.Length; i++)
+                {
+                    ret[i + 1] = args[i];
+                }
+
+                return ret;
+            }
+            catch
             {
-                ret[i + 1] = args[i];
+                Machina.Logger.Error($"I don't understand \"{msg}\"...");
+                return null;
             }
-
-            return ret;
         }
 
         public static string RemoveWhiteSpaces(string str)
