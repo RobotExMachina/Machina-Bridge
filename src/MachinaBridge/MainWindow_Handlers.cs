@@ -29,6 +29,8 @@ namespace MachinaBridge
             InputBlock.KeyDown += InputBlock_KeyDown;
             InputBlock.PreviewMouseDown += InputBlock_PreviewMouseDown;
             //InputBlock.Focus();  // want the user to click on the InputBlock to delete text
+
+            InputBlock.Text = "Enter any command to stream it to the robot...";
         }
 
 
@@ -42,19 +44,11 @@ namespace MachinaBridge
         {
             if (e.Key == Key.Up)
             {
-                //Console.WriteLine("UP " + _lineId);
-                _lineId++;
-                if (_lineId > dc.ConsoleOutput.Count - 1)
-                    _lineId = dc.ConsoleOutput.Count - 1;
-                InputBlock.Text = dc.ConsoleOutput[dc.ConsoleOutput.Count - 1 - _lineId];
+                this.dc.ConsoleInputBack();
             }
             else if (e.Key == Key.Down)
             {
-                //Console.WriteLine("DOWN " + _lineId);
-                _lineId--;
-                if (_lineId < 0)
-                    _lineId = 0;
-                InputBlock.Text = dc.ConsoleOutput[dc.ConsoleOutput.Count - 1 - _lineId];
+                this.dc.ConsoleInputForward();
             }
         }
 
@@ -82,7 +76,7 @@ namespace MachinaBridge
         {
             if (!wasInputBlockClicked)
             {
-                this.dc.ConsoleInput = "";
+                InputBlock.Text = "";
                 wasInputBlockClicked = true;
             }
         }

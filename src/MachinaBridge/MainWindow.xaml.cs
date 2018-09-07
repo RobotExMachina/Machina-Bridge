@@ -682,30 +682,58 @@ namespace MachinaBridge
     public class ConsoleContent : INotifyPropertyChanged
     {
         MainWindow _parent;
-        string consoleInput = "Enter any command to stream it to the robot...";
+        
+        private List<string> _consoleInputBuffer = new List<string>();
+        private int _bufferPointer = -1;
+        private string _unfinished;  // stores an unfinished instruction while navigating the buffer
+        
         ObservableCollection<string> consoleOutput = new ObservableCollection<string>() { "## MACHINA Console ##" };
-
-        /// <summary>
-        /// Changes the content of the ConsoleInput without triggering OnPropertyChanged.
-        /// </summary>
-        /// <param name="newMessage"></param>
-        public void OverrideConsoleInput(string newMessage)
-        {
-            consoleInput = newMessage;
-        }
 
         public string ConsoleInput
         {
             get
             {
-                return consoleInput;
+                return _consoleInputBuffer.Last();
             }
             set
             {
-                consoleInput = value;
+                _consoleInputBuffer.Add(value);
+                _bufferPointer = -1;
+                _unfinished = "";
                 OnPropertyChanged("ConsoleInput");
             }
         }
+
+        public bool ConsoleInputBack()
+        {
+            // If traversing the buffer for first time, store unfinished string
+            if (_bufferPointer == -1)
+            {
+                _unfinished = _parent.InputBlock.Text;
+            }
+            _bufferPointer++;
+            if (_bufferPointer > _consoleInputBuffer.Count - 1)
+                _bufferPointer = _consoleInputBuffer.Count - 1;
+            _parent.InputBlock.Text = _consoleInputBuffer[_consoleInputBuffer.Count - 1 - _bufferPointer];
+            return true;
+        }
+
+        public bool ConsoleInputForward()
+        {
+            _bufferPointer--;
+            if (_bufferPointer < 0)
+            {
+                // Go back to unfinished line if applicable
+                _bufferPointer = -1;
+                _parent.InputBlock.Text = _unfinished;
+            }
+            else
+            {
+                _parent.InputBlock.Text = _consoleInputBuffer[_consoleInputBuffer.Count - 1 - _bufferPointer];
+            }
+            return true;
+        }
+
 
         public ObservableCollection<string> ConsoleOutput
         {
@@ -723,6 +751,7 @@ namespace MachinaBridge
         public ConsoleContent(MainWindow parent)
         {
             this._parent = parent;
+            _consoleInputBuffer.Add("");
         }
 
 
@@ -740,14 +769,14 @@ namespace MachinaBridge
             if (MainWindow.bot == null)
             {
                 //MainWindow.wssv.WebSocketServices.Broadcast($"{{\"msg\":\"disconnected\",\"data\":[]}}");
-                this.WriteLine("Not connected to any Robot...");
+                Machina.Logger.Error("Not connected to any Robot...");
             }
             else
             {
                 MainWindow.ExecuteInstruction(ConsoleInput);
             }
 
-            ConsoleInput = String.Empty;
+            this._parent.InputBlock.Text = String.Empty;
         }
 
 
