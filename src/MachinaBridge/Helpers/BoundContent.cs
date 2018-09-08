@@ -125,14 +125,14 @@ namespace MachinaBridge
             ConsoleOutput.Add(new LoggerArgs(null, Machina.LogLevel.INFO, $"Issuing \"{ConsoleInput}\""));
             _parent.ConsoleScroller.ScrollToBottom();
 
-            if (MainWindow.bot == null)
+            if (_parent.bot == null)
             {
                 //MainWindow.wssv.WebSocketServices.Broadcast($"{{\"msg\":\"disconnected\",\"data\":[]}}");
                 Machina.Logger.Error("Not connected to any Robot...");
             }
             else
             {
-                MainWindow.ExecuteInstruction(ConsoleInput);
+                _parent.ExecuteInstruction(ConsoleInput);
             }
 
             this._parent.InputBlock.Text = String.Empty;
@@ -147,8 +147,8 @@ namespace MachinaBridge
         //  ╚██████╔╝╚██████╔╝███████╗╚██████╔╝███████╗
         //   ╚══▀▀═╝  ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝
         //                                             
-        private List<ActionWrapper> _actionsQueue = new List<ActionWrapper>();
         ObservableCollection<ActionWrapper> actionsQueue = new ObservableCollection<ActionWrapper>();
+        private int _lastReleasedIndex = 0;
 
         public ObservableCollection<ActionWrapper> ActionsQueue
         {
@@ -163,6 +163,38 @@ namespace MachinaBridge
             }
         }
 
+        public int FlagActionAs(MAction action, ExecutionState state)
+        {
+            bool found = false;
+            for (int i = _lastReleasedIndex; i < actionsQueue.Count; i++)
+            {
+                if (actionsQueue[i].Id == action.Id)
+                {
+                    actionsQueue[i].State = state;
+                    found = true;
+                    _lastReleasedIndex = i;
+                    return i;
+                }
+            }
+
+            // If something went wrong with indexing, give it another round just in case
+            if (!found)
+            {
+                Logger.Debug($"Second round on FlagActionAs {state} for {action}");
+                for (int i = 0; i < actionsQueue.Count; i++)
+                {
+                    if (actionsQueue[i].Id == action.Id)
+                    {
+                        actionsQueue[i].State = state;
+                        found = true;
+                        _lastReleasedIndex = i;
+                        return i;
+                    }
+                }
+            }
+
+            return -1;
+        }
 
 
 
@@ -179,14 +211,27 @@ namespace MachinaBridge
 
 
 
-    public class ActionWrapper
+    public class ActionWrapper : INotifyPropertyChanged
     {
         private MAction _action;
 
         public string QueueName => ToQueueString();
-        public ExecutionState State => 
-            ExecutionState.Issued;
+        public ExecutionState State
+        {
+            get
+            {
+                return _state;
+            }
+            set
+            {
+                _state = value;
+                OnPropertyChanged("State");
+                OnPropertyChanged("QueueName");
+            }
+        }
         public int Id => this._action.Id;
+
+        private ExecutionState _state = ExecutionState.Issued;
 
         public ActionWrapper(MAction action)
         {
@@ -195,8 +240,35 @@ namespace MachinaBridge
 
         private string ToQueueString()
         {
-            return $"[ ] #{Id} {this._action.ToInstruction()}";
+            return $"[{StateChar()}] #{Id} {this._action.ToInstruction()}";
         }
+
+        private char StateChar()
+        {
+            switch(State)
+            {
+                case ExecutionState.Released:
+                    return '.';
+
+                case ExecutionState.Executing:
+                    return '>';
+
+                case ExecutionState.Executed:
+                    return 'x';
+
+                default:
+                    return ' ';
+            }
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        void OnPropertyChanged(string propertyName)
+        {
+            if (null != PropertyChanged)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
     }
 }
 

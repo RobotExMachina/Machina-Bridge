@@ -30,16 +30,16 @@ namespace MachinaBridge
     {
         public static readonly string Version = "0.8.1.";
 
-        public static Robot bot;
-        public static List<Tool> tools = new List<Tool>();
-        public static WebSocketServer wssv;
-        public static string wssvURL = "ws://127.0.0.1:6997";
-        public static string wssvBehavior = "/Bridge";
+        public  Robot bot;
+        public  List<Tool> tools = new List<Tool>();
+        public  WebSocketServer wssv;
+        public  string wssvURL = "ws://127.0.0.1:6999";
+        public  string wssvBehavior = "/Bridge";
 
         // Robot options (quick and dirty defaults)
-        public static string _robotName;
-        public static string _robotBrand;
-        public static string _connectionManager;
+        public  string _robotName;
+        public  string _robotBrand;
+        public  string _connectionManager;
 
         // https://stackoverflow.com/a/18331866/1934487
         SynchronizationContext uiContext;
@@ -60,15 +60,8 @@ namespace MachinaBridge
 
             _maxLogLevel = Machina.LogLevel.DEBUG;
             Machina.Logger.CustomLogging += Logger_CustomLogging;
-            
-
         }
-
-        private void Bot_ActionIssued(object sender, ActionIssuedArgs args)
-        {
-            this.dc.ActionsQueue.Add(new ActionWrapper(args.LastAction));
-        }
-
+        
         private void Logger_CustomLogging(LoggerArgs e)
         {
             if (e.Level <= _maxLogLevel)
@@ -94,12 +87,13 @@ namespace MachinaBridge
             //#if DEBUG
             //            wssv.Log.Level = LogLevel.Trace;
             //#endif
-            wssv.AddWebSocketService<BridgeBehavior>(wssvBehavior);
+            //wssv.AddWebSocketService<BridgeBehavior>(wssvBehavior);
+            wssv.AddWebSocketService(wssvBehavior, () => new BridgeBehavior(bot, this));
             wssv.Start();
             if (wssv.IsListening)
             {
-                Console.WriteLine("Listening on port {0}, and providing WebSocket services:", wssv.Port);
-                foreach (var path in wssv.WebSocketServices.Paths) Console.WriteLine("- {0}", path);
+                Machina.Logger.Verbose($"Listening on port {wssv.Port}, and providing WebSocket services:");
+                foreach (var path in wssv.WebSocketServices.Paths) Machina.Logger.Verbose($"- {path}");
             }
 
             lbl_ServerURL.Content = wssvURL + wssvBehavior;
@@ -117,6 +111,8 @@ namespace MachinaBridge
             bot.MotionUpdate += BroadCastEvent;
 
             bot.ActionIssued += Bot_ActionIssued;
+            bot.ActionReleased += Bot_ActionReleased;
+            bot.ActionExecuted += Bot_ActionExecuted;
 
             bot.ControlMode(ControlType.Stream);
 
@@ -132,8 +128,30 @@ namespace MachinaBridge
 
         }
 
+        private void Bot_ActionExecuted(object sender, ActionExecutedArgs args)
+        {
+            this.dc.FlagActionAs(args.LastAction, ExecutionState.Executed);
+        }
+
+        private void Bot_ActionReleased(object sender, ActionReleasedArgs args)
+        {
+            int index = this.dc.FlagActionAs(args.LastAction, ExecutionState.Released);
+            //if (index > -1)
+            //{
+            //    uiContext.Post(x =>
+            //    {
+            //        this.dc.ActionsQueue[index] = this.dc.ActionsQueue[index];  // tick the observable object
+            //    }, null);
+            //}
+        }
+
+        private void Bot_ActionIssued(object sender, ActionIssuedArgs args)
+        {
+            this.dc.ActionsQueue.Add(new ActionWrapper(args.LastAction));
+        }
         
-        public static void BroadCastEvent(object sender, MachinaEventArgs e)
+
+        public void BroadCastEvent(object sender, MachinaEventArgs e)
         {
             wssv.WebSocketServices.Broadcast(e.ToJSONString());
         }
@@ -157,7 +175,17 @@ namespace MachinaBridge
         }
 
 
-        public static bool ExecuteInstruction(string instruction)
+        public bool ExecuteInstructionOnContext(string instruction)
+        {
+            uiContext.Post(x =>
+            {
+                ExecuteInstruction(instruction);
+            }, null);
+            return false;
+        }
+
+
+        public bool ExecuteInstruction(string instruction)
         {
             string[] args = ParseMessage(instruction);
             if (args == null || args.Length == 0)
@@ -659,6 +687,14 @@ namespace MachinaBridge
 
     public class BridgeBehavior : WebSocketBehavior
     {
+        private Robot _robot;
+        private MainWindow _parent;
+
+        public BridgeBehavior(Robot robot, MainWindow parent)
+        {
+            this._robot = robot;
+            this._parent = parent;
+        }
 
         protected override void OnOpen()
         {
@@ -670,12 +706,12 @@ namespace MachinaBridge
         {
             //base.OnMessage(e);
             //Console.WriteLine("  BRIDGE: received message: " + e.Data);
-            if (MainWindow.bot == null) { 
-                MainWindow.wssv.WebSocketServices.Broadcast($"{{\"event\":\"controller-disconnected\"}}");
+            if (_robot == null) { 
+                _parent.wssv.WebSocketServices.Broadcast($"{{\"event\":\"controller-disconnected\"}}");
                 return;
             }
 
-            MainWindow.ExecuteInstruction(e.Data);
+            _parent.ExecuteInstructionOnContext(e.Data);
         }
 
         protected override void OnError(ErrorEventArgs e)
@@ -689,7 +725,7 @@ namespace MachinaBridge
             //base.OnClose(e);
             Console.WriteLine($"  BRIDGE: closed bridge: {e.Code} {e.Reason}");
 
-            MainWindow.wssv.WebSocketServices.Broadcast($"{{\"event\":\"client-disconnected\",\"user\":\"clientname\"}}");
+            _parent.wssv.WebSocketServices.Broadcast($"{{\"event\":\"client-disconnected\",\"user\":\"clientname\"}}");
         }
 
     }

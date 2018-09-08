@@ -68,7 +68,13 @@
                                     <DataTrigger.Value>
                                         <machina:ExecutionState>Released</machina:ExecutionState>
                                     </DataTrigger.Value>
-                                    <Setter TargetName="QueueStackLine" Property="Background" Value="Yellow"/>
+                                    <Setter TargetName="QueueStackLine" Property="Background" Value="Orange"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}">
+                                    <DataTrigger.Value>
+                                        <machina:ExecutionState>Executing</machina:ExecutionState>
+                                    </DataTrigger.Value>
+                                    <Setter TargetName="QueueStackLine" Property="Background" Value="Black"/>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Path=State}">
                                     <DataTrigger.Value>
@@ -102,7 +108,7 @@
                 <RowDefinition Height="3" />
                 <RowDefinition Height="2*" />
             </Grid.RowDefinitions>
-            <ScrollViewer Name="ConsoleScroller" VerticalScrollBarVisibility="Auto" FontSize="10">
+            <ScrollViewer Name="ConsoleScroller" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontSize="10">
                 <StackPanel >
                     <ItemsControl ItemsSource="{Binding ConsoleOutput, Mode=OneWay}">
                         <ItemsControl.ItemTemplate>
