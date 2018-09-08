@@ -61,7 +61,7 @@
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
-                                
+                                <!-- https://docs.microsoft.com/en-us/dotnet/framework/wpf/data/data-templating-overview#use-datatriggers-to-apply-property-values-->
                                 <DataTemplate.Triggers>
                                     <DataTrigger Binding="{Binding Path=Level}">
                                         <DataTrigger.Value>

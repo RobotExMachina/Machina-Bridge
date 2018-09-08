@@ -68,7 +68,7 @@ namespace MachinaBridge
             // https://stackoverflow.com/a/18331866/1934487
             uiContext.Post(x =>
             {
-                dc.ConsoleOutput.Add($"{e.Level}: {e.Message}");
+                dc.ConsoleOutput.Add(e);
             }, null);
         }
 
@@ -691,7 +691,6 @@ namespace MachinaBridge
 
 
 
-
     // https://stackoverflow.com/a/14957478/1934487
     public class ConsoleContent : INotifyPropertyChanged
     {
@@ -700,8 +699,8 @@ namespace MachinaBridge
         private List<string> _consoleInputBuffer = new List<string>();
         private int _bufferPointer = -1;
         private string _unfinished;  // stores an unfinished instruction while navigating the buffer
-        
-        ObservableCollection<string> consoleOutput = new ObservableCollection<string>() { "## MACHINA Console ##" };
+
+        ObservableCollection<LoggerArgs> consoleOutput = new ObservableCollection<LoggerArgs>() { new LoggerArgs(null, Machina.LogLevel.INFO, "## MACHINA Console ##") };
 
         public string ConsoleInput
         {
@@ -749,7 +748,7 @@ namespace MachinaBridge
         }
 
 
-        public ObservableCollection<string> ConsoleOutput
+        public ObservableCollection<LoggerArgs> ConsoleOutput
         {
             get
             {
@@ -771,7 +770,7 @@ namespace MachinaBridge
 
         public void WriteLine(string line)
         {
-            ConsoleOutput.Add(line);
+            ConsoleOutput.Add(new LoggerArgs(null, Machina.LogLevel.INFO, line));
             _parent.Scroller.ScrollToBottom();
         }
 
