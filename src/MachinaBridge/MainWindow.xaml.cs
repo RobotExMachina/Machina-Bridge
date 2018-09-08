@@ -52,24 +52,27 @@ namespace MachinaBridge
 
             InitializeWebSocketServer();
 
-            //Loaded += MainWindow_Loaded;
-
             dc = new ConsoleContent(this);
 
             DataContext = dc;
 
             uiContext = SynchronizationContext.Current;
 
+            _maxLogLevel = Machina.LogLevel.DEBUG;
             Machina.Logger.CustomLogging += Logger_CustomLogging;
         }
 
         private void Logger_CustomLogging(LoggerArgs e)
         {
-            // https://stackoverflow.com/a/18331866/1934487
-            uiContext.Post(x =>
+            if (e.Level <= _maxLogLevel)
             {
-                dc.ConsoleOutput.Add(e);
-            }, null);
+                // https://stackoverflow.com/a/18331866/1934487
+                uiContext.Post(x =>
+                {
+                    dc.ConsoleOutput.Add(e);
+                    Scroller.ScrollToBottom();
+                }, null);
+            }
         }
 
         private void InitializeWebSocketServer()
@@ -641,15 +644,7 @@ namespace MachinaBridge
             Machina.Logger.Error(ex.ToString());
         }
 
-        private void combo_LogLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
 
-        }
-
-        private void btn_ConsoleClear_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 
 
@@ -770,17 +765,25 @@ namespace MachinaBridge
             _consoleInputBuffer.Add("");
         }
 
-
-        public void WriteLine(string line)
+        public void ClearConsoleOutput()
         {
-            ConsoleOutput.Add(new LoggerArgs(null, Machina.LogLevel.INFO, line));
-            _parent.Scroller.ScrollToBottom();
+            consoleOutput.Clear();
+            OnPropertyChanged("ConsoleOutput");
         }
+
+
+        //public void WriteLine(string line)
+        //{
+        //    ConsoleOutput.Add(new LoggerArgs(null, Machina.LogLevel.INFO, line));
+        //    _parent.Scroller.ScrollToBottom();
+        //}
 
 
         public void RunCommand()
         {
-            this.WriteLine(ConsoleInput);
+            //this.WriteLine(ConsoleInput);
+            ConsoleOutput.Add(new LoggerArgs(null, Machina.LogLevel.INFO, $"Issuing \"{ConsoleInput}\""));
+            _parent.Scroller.ScrollToBottom();
 
             if (MainWindow.bot == null)
             {

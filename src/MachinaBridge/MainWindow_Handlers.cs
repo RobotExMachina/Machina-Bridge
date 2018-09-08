@@ -19,7 +19,8 @@ namespace MachinaBridge
 {
     public partial class MainWindow : Window
     {
-        bool wasInputBlockClicked = false;
+        private bool wasInputBlockClicked = false;
+        private Machina.LogLevel _maxLogLevel;
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -195,7 +196,18 @@ namespace MachinaBridge
             }
         }
 
+        private void combo_LogLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox box = sender as ComboBox;
+            ComboBoxItem item = box.SelectedItem as ComboBoxItem;
+            _maxLogLevel = (Machina.LogLevel) Convert.ToInt32(item.Tag);
 
+        }
+
+        private void btn_ConsoleClear_Click(object sender, RoutedEventArgs e)
+        {
+            dc.ClearConsoleOutput();
+        }
 
 
 
