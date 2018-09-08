@@ -19,16 +19,16 @@ namespace MachinaBridge
 {
     public partial class MainWindow : Window
     {
-        int _lineId = -1;
         bool wasInputBlockClicked = false;
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //Console.WriteLine("MAIN WINDOW LOADED");
             InputBlock.PreviewKeyDown += InputBlock_PreviewKeyDown;
             InputBlock.KeyDown += InputBlock_KeyDown;
             InputBlock.PreviewMouseDown += InputBlock_PreviewMouseDown;
             //InputBlock.Focus();  // want the user to click on the InputBlock to delete text
+
+            combo_LogLevel.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Resources/#IBM Plex Mono Bold");
 
             InputBlock.Text = "Enter any command to stream it to the robot...";
         }
@@ -54,7 +54,6 @@ namespace MachinaBridge
 
         private void InputBlock_KeyDown(object sender, KeyEventArgs e)
         {
-            //Console.WriteLine("key " + e.Key.ToString());
             if (e.Key == Key.Enter)
             {
                 if (InputBlock.Text.Length == 0) return;
@@ -62,8 +61,6 @@ namespace MachinaBridge
                 dc.ConsoleInput = InputBlock.Text;
                 dc.RunCommand();
                 InputBlock.Focus();
-                //Scroller.ScrollToBottom();  // moved to ConsoleContent.Writeline
-                _lineId = -1;
             }
         }
 

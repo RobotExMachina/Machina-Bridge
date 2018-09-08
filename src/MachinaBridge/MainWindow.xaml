@@ -9,39 +9,49 @@
         Title="MainWindow" Height="800" Width="1600" Background="#FF2E2E2E"
         Closing="Window_Closing" Loaded="MainWindow_Loaded">
     <Grid>
-        <Label x:Name="lbl_MachinaBridgeApp" Content="MACHINA BRIDGE APP" HorizontalAlignment="Left" Height="52" Margin="10,10,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White" FontSize="24"/>
-        <Label x:Name="lbl_Robot" Content="ROBOT" HorizontalAlignment="Left" Height="52" Margin="10,68,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White" FontSize="18"/>
+        <Label x:Name="lbl_MachinaBridgeApp" Content="MACHINA BRIDGE APP" HorizontalAlignment="Left" Height="52" Margin="10,10,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans" Foreground="White" FontSize="24"/>
+        <Label x:Name="lbl_Robot" Content="ROBOT" HorizontalAlignment="Left" Height="52" Margin="10,68,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White" FontSize="18"/>
         <Separator Height="15" Margin="10,47,10,0" Foreground="White" VerticalAlignment="Top"/>
-        <Label x:Name="lbl_Brand" Content="BRAND" HorizontalAlignment="Left" Height="52" Margin="10,152,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White"/>
-        <ComboBox x:Name="combo_Brand" HorizontalAlignment="Left" Margin="16,174,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily="Montserrat Ultra Light" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_Brand_SelectionChanged">
+        <Label x:Name="lbl_Brand" Content="BRAND" HorizontalAlignment="Left" Height="52" Margin="10,152,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White"/>
+        <ComboBox x:Name="combo_Brand" HorizontalAlignment="Left" Margin="16,174,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_Brand_SelectionChanged">
             <ComboBoxItem Content="ABB"/>
             <ComboBoxItem Content="UR"/>
         </ComboBox>
-        <Label x:Name="lbl_Model" Content="MODEL" HorizontalAlignment="Left" Height="52" Margin="10,208,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White"/>
-        <ComboBox x:Name="combo_Model" HorizontalAlignment="Left" Margin="16,230,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily="Montserrat Ultra Light" FontSize="10" Foreground="Black" BorderBrush="White" Background="White" IsEnabled ="False" IsEditable="False" IsHitTestVisible="False" Focusable="False">
+        <Label x:Name="lbl_Model" Content="MODEL" HorizontalAlignment="Left" Height="52" Margin="10,208,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White"/>
+        <ComboBox x:Name="combo_Model" HorizontalAlignment="Left" Margin="16,230,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="White" Background="White" IsEnabled ="False" IsEditable="False" IsHitTestVisible="False" Focusable="False">
         </ComboBox>
-        <Label x:Name="lbl_Connection" Content="CONNECTION" HorizontalAlignment="Left" Height="52" Margin="10,306,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White" FontSize="18"/>
-        <Label x:Name="lbl_Manager" Content="MANAGER" HorizontalAlignment="Left" Height="52" Margin="10,340,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White"/>
-        <ComboBox x:Name="combo_Manager" HorizontalAlignment="Left" Margin="16,364,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily="Montserrat Ultra Light" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_Manager_SelectionChanged">
+        <Label x:Name="lbl_Connection" Content="CONNECTION" HorizontalAlignment="Left" Height="52" Margin="10,306,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White" FontSize="18"/>
+        <Label x:Name="lbl_Manager" Content="MANAGER" HorizontalAlignment="Left" Height="52" Margin="10,340,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White"/>
+        <ComboBox x:Name="combo_Manager" HorizontalAlignment="Left" Margin="16,364,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_Manager_SelectionChanged">
             <ComboBoxItem Content="USER"/>
             <ComboBoxItem Content="MACHINA"/>
         </ComboBox>
-        <Label x:Name="lbl_IP" Content="IP" HorizontalAlignment="Left" Height="26" Margin="10,412,0,0" VerticalAlignment="Top" Width="77" FontFamily="Montserrat Ultra Light" Foreground="White"/>
-        <Label x:Name="lnl_Port" Content="PORT" HorizontalAlignment="Left" Height="26" Margin="10,444,0,0" VerticalAlignment="Top" Width="77" FontFamily="Montserrat Ultra Light" Foreground="White"/>
-        <TextBox x:Name="txtbox_IP" HorizontalAlignment="Left" Height="22" Margin="87,416,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="251" FontFamily="Montserrat Ultra Light" TextAlignment="Right" FontSize="10" TextChanged="txtbox_IP_TextChanged"/>
-        <TextBox x:Name="txtbox_Port" HorizontalAlignment="Left" Height="22" Margin="87,450,0,0" TextWrapping="Wrap" Text="7000" VerticalAlignment="Top" Width="251" FontFamily="Montserrat Ultra Light" TextAlignment="Right" FontSize="10"/>
-        <Button x:Name="btn_Connect" Content="CONNECT" HorizontalAlignment="Left" Height="24" Margin="16,494,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily="Montserrat Ultra Light" FontWeight="Bold" Click="btn_Connect_Click"/>
-        <Button x:Name="btn_ResetBridge" Content="RESET BRIDGE" HorizontalAlignment="Left" Height="24" Margin="16,727,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily="Montserrat Ultra Light" FontWeight="Bold"/>
-        <Label x:Name="lbl_Bridge" Content="BRIDGE" HorizontalAlignment="Left" Height="52" Margin="10,585,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White" FontSize="18"/>
-        <Label x:Name="lbl_Clients" Content="CLIENTS:" HorizontalAlignment="Left" Height="52" Margin="10,643,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White"/>
+        <Label x:Name="lbl_IP" Content="IP" HorizontalAlignment="Left" Height="26" Margin="10,412,0,0" VerticalAlignment="Top" Width="77" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White"/>
+        <Label x:Name="lnl_Port" Content="PORT" HorizontalAlignment="Left" Height="26" Margin="10,444,0,0" VerticalAlignment="Top" Width="77" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White"/>
+        <TextBox x:Name="txtbox_IP" HorizontalAlignment="Left" Height="22" Margin="87,416,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="251" FontFamily=".\Resources\#IBM Plex Mono Medium" TextAlignment="Right" FontSize="10"/>
+        <TextBox x:Name="txtbox_Port" HorizontalAlignment="Left" Height="22" Margin="87,450,0,0" TextWrapping="Wrap" Text="7000" VerticalAlignment="Top" Width="251" FontFamily=".\Resources\#IBM Plex Mono Medium" TextAlignment="Right" FontSize="10"/>
+        <Button x:Name="btn_Connect" Content="CONNECT" HorizontalAlignment="Left" Height="24" Margin="16,494,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily=".\Resources\#IBM Plex Sans Thin" FontWeight="Bold" Click="btn_Connect_Click"/>
+        <Button x:Name="btn_ResetBridge" Content="RESET BRIDGE" HorizontalAlignment="Left" Height="24" Margin="16,727,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily=".\Resources\#IBM Plex Sans Thin" FontWeight="Bold"/>
+        <Label x:Name="lbl_Bridge" Content="BRIDGE" HorizontalAlignment="Left" Height="52" Margin="10,585,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White" FontSize="18"/>
+        <Label x:Name="lbl_Clients" Content="CLIENTS:" HorizontalAlignment="Left" Height="52" Margin="10,643,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White"/>
         <Rectangle HorizontalAlignment="Left" Height="72" Margin="87,651,0,0" Stroke="White" StrokeThickness="1" VerticalAlignment="Top" Width="251"/>
-        <Label x:Name="lbl_Server" Content="SERVER:" HorizontalAlignment="Left" Height="30" Margin="10,617,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White"/>
+        <Label x:Name="lbl_Server" Content="SERVER:" HorizontalAlignment="Left" Height="30" Margin="10,617,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White"/>
         <Label x:Name="lbl_ServerURL" Content="" HorizontalAlignment="Left" Height="25" Margin="96,618,0,0" VerticalAlignment="Top" Width="232" FontFamily="Consolas" Foreground="White" FontSize="10"/>
         <TextBlock x:Name="txtblock_Clients" HorizontalAlignment="Left" Height="60" Margin="96,657,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="232" Foreground="White" FontFamily="Consolas" FontSize="10"/>
-        <Label x:Name="lbl_Brand_Copy" Content="NAME" HorizontalAlignment="Left" Height="52" Margin="10,97,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White"/>
-        <TextBox x:Name="txtbox_Name" HorizontalAlignment="Left" Height="30" Margin="16,119,0,0" TextWrapping="Wrap" Text="ROBOTEXMACHINA" VerticalAlignment="Top" Width="322" FontFamily="Montserrat Ultra Light" FontSize="10" SelectionChanged="txtbox_Name_SelectionChanged"/>
+        <Label x:Name="lbl_Brand_Copy" Content="NAME" HorizontalAlignment="Left" Height="52" Margin="10,97,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White"/>
+        <TextBox x:Name="txtbox_Name" HorizontalAlignment="Left" Height="30" Margin="16,119,0,0" TextWrapping="Wrap" Text="ROBOTEXMACHINA" VerticalAlignment="Top" Width="322" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" SelectionChanged="txtbox_Name_SelectionChanged"/>
 
-        <Grid Margin="996,68,10,18" Background="Black">
+        <Label x:Name="lbl_Console" Content="CONSOLE" HorizontalAlignment="Left" Height="52" Margin="990,68,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Thin" Foreground="White" FontSize="18"/>
+        <Button x:Name="btn_ConsoleClear" Content="CLEAR" HorizontalAlignment="Left" Height="20" Margin="1332,92,0,0" VerticalAlignment="Top" Width="120" Background="White" FontFamily=".\Resources\#IBM Plex Sans Thin" FontSize="10" Click="btn_ConsoleClear_Click"/>
+        <ComboBox x:Name="combo_LogLevel" HorizontalAlignment="Right" Margin="0,92,10,0" VerticalAlignment="Top" Width="120" Height="20" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_LogLevel_SelectionChanged">
+            <ComboBoxItem Content="0 - NONE" Tag="0"/>
+            <ComboBoxItem Content="1 - ERROR" Tag="1"/>
+            <ComboBoxItem Content="2 - WARNING" Tag="2"/>
+            <ComboBoxItem Content="3 - INFO" Tag="3"/>
+            <ComboBoxItem Content="4 - VERBOSE" Tag="4"/>
+            <ComboBoxItem IsSelected="True" Content="5 - DEBUG" Tag="5"/>
+        </ComboBox>
+        <Grid Margin="996,119,10,18" Background="Black">
             <Grid.RowDefinitions>
                 <RowDefinition Height="8*" />
                 <RowDefinition Height="3" />
@@ -53,7 +63,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <!-- https://stackoverflow.com/a/2552911/1934487-->
-                                <TextBlock Name="consoleOutputLine" FontFamily="Consolas" Foreground="White">
+                                <TextBlock Name="consoleOutputLine" FontFamily=".\Resources\#IBM Plex Mono" Foreground="White">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0}: {1}">
                                             <Binding Path="Level" />
@@ -94,10 +104,10 @@
                 </StackPanel>
             </ScrollViewer>
             <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch" Background="#FFA0A0A0" />
-            <TextBox Grid.Row="2" Text="{Binding ConsoleInput, Mode=TwoWay}" Background="Black" Foreground="White" FontFamily="Consolas" Name="InputBlock" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" />
+            <TextBox Grid.Row="2" Text="{Binding ConsoleInput, Mode=TwoWay}" Background="Black" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono" Name="InputBlock" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" />
         </Grid>
-        
-        
-        
+
+
+
     </Grid>
 </Window>

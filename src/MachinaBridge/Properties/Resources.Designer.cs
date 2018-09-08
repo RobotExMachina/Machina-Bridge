@@ -59,5 +59,75 @@ namespace MachinaBridge.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] IBMPLEXMONO_LIGHT {
+            get {
+                object obj = ResourceManager.GetObject("IBMPLEXMONO_LIGHT", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] IBMPLEXMONO_MEDIUM {
+            get {
+                object obj = ResourceManager.GetObject("IBMPLEXMONO_MEDIUM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] IBMPLEXMONO_REGULAR {
+            get {
+                object obj = ResourceManager.GetObject("IBMPLEXMONO_REGULAR", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] IBMPLEXMONO_THIN {
+            get {
+                object obj = ResourceManager.GetObject("IBMPLEXMONO_THIN", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] IBMPLEXSANS_LIGHT {
+            get {
+                object obj = ResourceManager.GetObject("IBMPLEXSANS_LIGHT", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] IBMPLEXSANS_REGULAR {
+            get {
+                object obj = ResourceManager.GetObject("IBMPLEXSANS_REGULAR", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] IBMPLEXSANS_THIN {
+            get {
+                object obj = ResourceManager.GetObject("IBMPLEXSANS_THIN", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

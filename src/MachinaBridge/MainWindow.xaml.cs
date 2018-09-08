@@ -641,12 +641,15 @@ namespace MachinaBridge
             Machina.Logger.Error(ex.ToString());
         }
 
-        private void txtbox_IP_TextChanged(object sender, TextChangedEventArgs e)
+        private void combo_LogLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
 
-        
+        private void btn_ConsoleClear_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
 
