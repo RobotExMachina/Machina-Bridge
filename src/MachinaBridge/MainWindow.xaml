@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MachinaBridge"
+        xmlns:machina="clr-namespace:Machina;assembly=Machina"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1600" Background="#FF2E2E2E"
         Closing="Window_Closing" Loaded="MainWindow_Loaded">
@@ -12,7 +13,7 @@
         <Label x:Name="lbl_Robot" Content="ROBOT" HorizontalAlignment="Left" Height="52" Margin="10,68,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White" FontSize="18"/>
         <Separator Height="15" Margin="10,47,10,0" Foreground="White" VerticalAlignment="Top"/>
         <Label x:Name="lbl_Brand" Content="BRAND" HorizontalAlignment="Left" Height="52" Margin="10,152,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White"/>
-        <ComboBox x:Name="combo_Brand" HorizontalAlignment="Left" Margin="16,174,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily="Montserrat Ultra Light" FontSize="10" Foreground="Black" BorderBrush="#FF74FF00" Background="#FFFF0606" SelectedIndex="0" SelectionChanged="combo_Brand_SelectionChanged">
+        <ComboBox x:Name="combo_Brand" HorizontalAlignment="Left" Margin="16,174,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily="Montserrat Ultra Light" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_Brand_SelectionChanged">
             <ComboBoxItem Content="ABB"/>
             <ComboBoxItem Content="UR"/>
         </ComboBox>
@@ -21,7 +22,7 @@
         </ComboBox>
         <Label x:Name="lbl_Connection" Content="CONNECTION" HorizontalAlignment="Left" Height="52" Margin="10,306,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White" FontSize="18"/>
         <Label x:Name="lbl_Manager" Content="MANAGER" HorizontalAlignment="Left" Height="52" Margin="10,340,0,0" VerticalAlignment="Top" Width="328" FontFamily="Montserrat Ultra Light" Foreground="White"/>
-        <ComboBox x:Name="combo_Manager" HorizontalAlignment="Left" Margin="16,364,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily="Montserrat Ultra Light" FontSize="10" Foreground="Black" BorderBrush="#FF74FF00" Background="#FFFF0606" SelectedIndex="0" SelectionChanged="combo_Manager_SelectionChanged">
+        <ComboBox x:Name="combo_Manager" HorizontalAlignment="Left" Margin="16,364,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily="Montserrat Ultra Light" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_Manager_SelectionChanged">
             <ComboBoxItem Content="USER"/>
             <ComboBoxItem Content="MACHINA"/>
         </ComboBox>
@@ -51,7 +52,42 @@
                     <ItemsControl ItemsSource="{Binding ConsoleOutput, Mode=OneWay}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=.}" Foreground="White" FontFamily="Consolas"/>
+                                <!-- https://stackoverflow.com/a/2552911/1934487-->
+                                <TextBlock Name="consoleOutputLine" FontFamily="Consolas" Foreground="White">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}: {1}">
+                                            <Binding Path="Level" />
+                                            <Binding Path="Message" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Path=Level}">
+                                        <DataTrigger.Value>
+                                            <machina:LogLevel>ERROR</machina:LogLevel>
+                                        </DataTrigger.Value>
+                                        <Setter TargetName="consoleOutputLine" Property="Foreground" Value="Red"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=Level}">
+                                        <DataTrigger.Value>
+                                            <machina:LogLevel>WARNING</machina:LogLevel>
+                                        </DataTrigger.Value>
+                                        <Setter TargetName="consoleOutputLine" Property="Foreground" Value="Yellow"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=Level}">
+                                        <DataTrigger.Value>
+                                            <machina:LogLevel>VERBOSE</machina:LogLevel>
+                                        </DataTrigger.Value>
+                                        <Setter TargetName="consoleOutputLine" Property="Foreground" Value="#FFA8A7A7"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=Level}">
+                                        <DataTrigger.Value>
+                                            <machina:LogLevel>DEBUG</machina:LogLevel>
+                                        </DataTrigger.Value>
+                                        <Setter TargetName="consoleOutputLine" Property="Foreground" Value="#FF686262"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
