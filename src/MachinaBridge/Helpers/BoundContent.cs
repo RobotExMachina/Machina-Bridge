@@ -17,18 +17,23 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 
 using Machina;
-
-using WebSocketSharp;
-using WebSocketSharp.Server;
+using MAction = Machina.Action;
 
 namespace MachinaBridge
 {
 
     // https://stackoverflow.com/a/14957478/1934487
-    public class ConsoleContent : INotifyPropertyChanged
+    public class BoundContent : INotifyPropertyChanged
     {
         MainWindow _parent;
 
+        //   ██████╗ ██████╗ ███╗   ██╗███████╗ ██████╗ ██╗     ███████╗
+        //  ██╔════╝██╔═══██╗████╗  ██║██╔════╝██╔═══██╗██║     ██╔════╝
+        //  ██║     ██║   ██║██╔██╗ ██║███████╗██║   ██║██║     █████╗  
+        //  ██║     ██║   ██║██║╚██╗██║╚════██║██║   ██║██║     ██╔══╝  
+        //  ╚██████╗╚██████╔╝██║ ╚████║███████║╚██████╔╝███████╗███████╗
+        //   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚══════╝╚══════╝
+        //                                                              
         private List<string> _consoleInputBuffer = new List<string>();
         private int _bufferPointer = -1;
         private string _unfinished;  // stores an unfinished instruction while navigating the buffer
@@ -94,7 +99,7 @@ namespace MachinaBridge
             }
         }
 
-        public ConsoleContent(MainWindow parent)
+        public BoundContent(MainWindow parent)
         {
             this._parent = parent;
             _consoleInputBuffer.Add("");
@@ -134,6 +139,36 @@ namespace MachinaBridge
         }
 
 
+
+        //   ██████╗ ██╗   ██╗███████╗██╗   ██╗███████╗
+        //  ██╔═══██╗██║   ██║██╔════╝██║   ██║██╔════╝
+        //  ██║   ██║██║   ██║█████╗  ██║   ██║█████╗  
+        //  ██║▄▄ ██║██║   ██║██╔══╝  ██║   ██║██╔══╝  
+        //  ╚██████╔╝╚██████╔╝███████╗╚██████╔╝███████╗
+        //   ╚══▀▀═╝  ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝
+        //                                             
+        private List<ActionWrapper> _actionsQueue = new List<ActionWrapper>();
+        ObservableCollection<ActionWrapper> actionsQueue = new ObservableCollection<ActionWrapper>();
+
+        public ObservableCollection<ActionWrapper> ActionsQueue
+        {
+            get
+            {
+                return actionsQueue;
+            }
+            set
+            {
+                actionsQueue = value;
+                OnPropertyChanged("ActionsQueue");
+            }
+        }
+
+
+
+
+
+
+
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged(string propertyName)
         {
@@ -141,4 +176,28 @@ namespace MachinaBridge
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
+
+
+
+    public class ActionWrapper
+    {
+        private MAction _action;
+
+        public string QueueName => ToQueueString();
+        public ExecutionState State => 
+            ExecutionState.Issued;
+        public int Id => this._action.Id;
+
+        public ActionWrapper(MAction action)
+        {
+            this._action = action;
+        }
+
+        private string ToQueueString()
+        {
+            return $"[ ] #{Id} {this._action.ToInstruction()}";
+        }
+    }
 }
+
+

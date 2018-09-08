@@ -45,7 +45,41 @@
 
         <ScrollViewer Name="QueueScroller" Margin="372,119,638,18" Background="Black" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" VerticalScrollBarVisibility="Auto">
             <StackPanel Name="QueueStackPanel">
-                <TextBlock Background="Green">Foo</TextBlock>
+                <ItemsControl ItemsSource="{Binding ActionsQueue, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- https://stackoverflow.com/a/2552911/1934487-->
+                            <TextBlock Name="QueueStackLine">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}">
+                                        <Binding Path="QueueName" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <!-- https://docs.microsoft.com/en-us/dotnet/framework/wpf/data/data-templating-overview#use-datatriggers-to-apply-property-values-->
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Path=State}">
+                                    <DataTrigger.Value>
+                                        <machina:ExecutionState>Issued</machina:ExecutionState>
+                                    </DataTrigger.Value>
+                                    <Setter TargetName="QueueStackLine" Property="Background" Value="Red"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}">
+                                    <DataTrigger.Value>
+                                        <machina:ExecutionState>Released</machina:ExecutionState>
+                                    </DataTrigger.Value>
+                                    <Setter TargetName="QueueStackLine" Property="Background" Value="Yellow"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}">
+                                    <DataTrigger.Value>
+                                        <machina:ExecutionState>Executed</machina:ExecutionState>
+                                    </DataTrigger.Value>
+                                    <Setter TargetName="QueueStackLine" Property="Background" Value="Green"/>
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
         </ScrollViewer>
 

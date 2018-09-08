@@ -44,7 +44,7 @@ namespace MachinaBridge
         // https://stackoverflow.com/a/18331866/1934487
         SynchronizationContext uiContext;
         
-        ConsoleContent dc;
+        BoundContent dc;
 
         public MainWindow()
         {
@@ -52,7 +52,7 @@ namespace MachinaBridge
 
             InitializeWebSocketServer();
 
-            dc = new ConsoleContent(this);
+            dc = new BoundContent(this);
 
             DataContext = dc;
 
@@ -60,6 +60,13 @@ namespace MachinaBridge
 
             _maxLogLevel = Machina.LogLevel.DEBUG;
             Machina.Logger.CustomLogging += Logger_CustomLogging;
+            
+
+        }
+
+        private void Bot_ActionIssued(object sender, ActionIssuedArgs args)
+        {
+            this.dc.ActionsQueue.Add(new ActionWrapper(args.LastAction));
         }
 
         private void Logger_CustomLogging(LoggerArgs e)
@@ -108,6 +115,8 @@ namespace MachinaBridge
             bot.ActionReleased += BroadCastEvent;
             bot.ActionExecuted += BroadCastEvent;
             bot.MotionUpdate += BroadCastEvent;
+
+            bot.ActionIssued += Bot_ActionIssued;
 
             bot.ControlMode(ControlType.Stream);
 

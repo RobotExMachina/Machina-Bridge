@@ -28,18 +28,7 @@ namespace MachinaBridge
             InputBlock.KeyDown += InputBlock_KeyDown;
             InputBlock.PreviewMouseDown += InputBlock_PreviewMouseDown;
             //InputBlock.Focus();  // want the user to click on the InputBlock to delete text
-
-            combo_LogLevel.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "./Resources/#IBM Plex Mono Bold");
-
-            TextBlock tb = new TextBlock();
-            tb.Name = "Second";
-            tb.Text = "bar";
-
-            //v<TextBlock Background="Green" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10">
-            QueueStackPanel.Children.Add(tb);
-            QueueStackPanel.RegisterName(tb.Name, tb);
-
-
+            
             InputBlock.Text = "Enter any command to stream it to the robot...";
         }
 
