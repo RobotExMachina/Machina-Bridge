@@ -46,7 +46,7 @@
                 <RowDefinition Height="3" />
                 <RowDefinition Height="2*" />
             </Grid.RowDefinitions>
-            <ScrollViewer Name="Scroller" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer Name="Scroller" VerticalScrollBarVisibility="Auto" FontSize="10">
                 <StackPanel >
                     <ItemsControl ItemsSource="{Binding ConsoleOutput, Mode=OneWay}">
                         <ItemsControl.ItemTemplate>

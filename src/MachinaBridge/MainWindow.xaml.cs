@@ -33,7 +33,7 @@ namespace MachinaBridge
         public static Robot bot;
         public static List<Tool> tools = new List<Tool>();
         public static WebSocketServer wssv;
-        public static string wssvURL = "ws://127.0.0.1:6999";
+        public static string wssvURL = "ws://127.0.0.1:6997";
         public static string wssvBehavior = "/Bridge";
 
         // Robot options (quick and dirty defaults)
@@ -41,6 +41,9 @@ namespace MachinaBridge
         public static string _robotBrand;
         public static string _connectionManager;
 
+        // https://stackoverflow.com/a/18331866/1934487
+        SynchronizationContext uiContext;
+        
         ConsoleContent dc;
 
         public MainWindow()
@@ -55,7 +58,18 @@ namespace MachinaBridge
 
             DataContext = dc;
 
-            Machina.Logger.WriteLine += Console.WriteLine;
+            uiContext = SynchronizationContext.Current;
+
+            Machina.Logger.CustomLogging += Logger_CustomLogging;
+        }
+
+        private void Logger_CustomLogging(LoggerArgs e)
+        {
+            // https://stackoverflow.com/a/18331866/1934487
+            uiContext.Post(x =>
+            {
+                dc.ConsoleOutput.Add($"{e.Level}: {e.Message}");
+            }, null);
         }
 
         private void InitializeWebSocketServer()
