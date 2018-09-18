@@ -26,7 +26,7 @@ namespace MachinaBridge
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MachinaBridgeWindow : Window
     {
         public static readonly string Version = "0.8.1.";
 
@@ -46,7 +46,7 @@ namespace MachinaBridge
         
         BoundContent dc;
 
-        public MainWindow()
+        public MachinaBridgeWindow()
         {
             InitializeComponent();
 
@@ -71,6 +71,7 @@ namespace MachinaBridge
                 {
                     dc.ConsoleOutput.Add(e);
                     ConsoleScroller.ScrollToBottom();
+                    //ConsoleScroller
                 }, null);
             }
         }
@@ -130,19 +131,14 @@ namespace MachinaBridge
 
         private void Bot_ActionExecuted(object sender, ActionExecutedArgs args)
         {
-            this.dc.FlagActionAs(args.LastAction, ExecutionState.Executed);
+            int index = this.dc.FlagActionAs(args.LastAction, ExecutionState.Executed);
+
+            //ScrollQueueToElement(index);
         }
 
         private void Bot_ActionReleased(object sender, ActionReleasedArgs args)
         {
             int index = this.dc.FlagActionAs(args.LastAction, ExecutionState.Released);
-            //if (index > -1)
-            //{
-            //    uiContext.Post(x =>
-            //    {
-            //        this.dc.ActionsQueue[index] = this.dc.ActionsQueue[index];  // tick the observable object
-            //    }, null);
-            //}
         }
 
         private void Bot_ActionIssued(object sender, ActionIssuedArgs args)
@@ -174,6 +170,19 @@ namespace MachinaBridge
             bot = null;
         }
 
+        //// Doesn't really work well
+        //public void ScrollQueueToElement(int index)
+        //{
+        //    uiContext.Post(x => {
+        //        // https://stackoverflow.com/a/603227/1934487
+        //        var item = QueueItemControl.Items.GetItemAt(index);
+        //        ItemsControl ic = QueueStackPanel.Children[0] as ItemsControl;
+        //        var container = ic.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+        //        var tb = ic.ItemTemplate.FindName("QueueStackLine", container) as TextBlock;
+
+        //        QueueScroller.ScrollToVerticalOffset(tb.TransformToVisual(QueueScroller).TransformBounds(new Rect(0, 0, 1, 1)).Bottom);
+        //    }, null);
+        //}
 
         public bool ExecuteInstructionOnContext(string instruction)
         {
@@ -688,9 +697,9 @@ namespace MachinaBridge
     public class BridgeBehavior : WebSocketBehavior
     {
         private Robot _robot;
-        private MainWindow _parent;
+        private MachinaBridgeWindow _parent;
 
-        public BridgeBehavior(Robot robot, MainWindow parent)
+        public BridgeBehavior(Robot robot, MachinaBridgeWindow parent)
         {
             this._robot = robot;
             this._parent = parent;

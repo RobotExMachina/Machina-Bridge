@@ -25,7 +25,7 @@ namespace MachinaBridge
     // https://stackoverflow.com/a/14957478/1934487
     public class BoundContent : INotifyPropertyChanged
     {
-        MainWindow _parent;
+        MachinaBridgeWindow _parent;
 
         //   ██████╗ ██████╗ ███╗   ██╗███████╗ ██████╗ ██╗     ███████╗
         //  ██╔════╝██╔═══██╗████╗  ██║██╔════╝██╔═══██╗██║     ██╔════╝
@@ -99,7 +99,7 @@ namespace MachinaBridge
             }
         }
 
-        public BoundContent(MainWindow parent)
+        public BoundContent(MachinaBridgeWindow parent)
         {
             this._parent = parent;
             _consoleInputBuffer.Add("");
@@ -148,7 +148,14 @@ namespace MachinaBridge
         //   ╚══▀▀═╝  ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝
         //                                             
         ObservableCollection<ActionWrapper> actionsQueue = new ObservableCollection<ActionWrapper>();
-        private int _lastReleasedIndex = 0;
+        private Dictionary<ExecutionState, int> _lastIndex = new Dictionary<ExecutionState, int>()
+        {
+            { ExecutionState.Issued, 0 },
+            { ExecutionState.Released, 0 },
+            { ExecutionState.Executing, 0 },
+            { ExecutionState.Executed, 0 }
+        };
+        private int _execLimit = 3;
 
         public ObservableCollection<ActionWrapper> ActionsQueue
         {
@@ -166,13 +173,17 @@ namespace MachinaBridge
         public int FlagActionAs(MAction action, ExecutionState state)
         {
             bool found = false;
-            for (int i = _lastReleasedIndex; i < actionsQueue.Count; i++)
+            for (int i = _lastIndex[state]; i < actionsQueue.Count; i++)
             {
                 if (actionsQueue[i].Id == action.Id)
                 {
                     actionsQueue[i].State = state;
                     found = true;
-                    _lastReleasedIndex = i;
+                    _lastIndex[state] = i;
+                    if (state == ExecutionState.Executed)
+                    {
+                        FlagNextActionAsExecuting(i);
+                    }
                     return i;
                 }
             }
@@ -187,18 +198,54 @@ namespace MachinaBridge
                     {
                         actionsQueue[i].State = state;
                         found = true;
-                        _lastReleasedIndex = i;
+                        _lastIndex[state] = i;
+                        if (state == ExecutionState.Executed)
+                        {
+                            FlagNextActionAsExecuting(i);
+                            ClearExecutedExcess();
+                        }
                         return i;
                     }
                 }
             }
 
+            // Very quick and dirty
+
             return -1;
         }
 
+        public void FlagNextActionAsExecuting(int index)
+        {
+            if (index < actionsQueue.Count - 1)
+            {
+                actionsQueue[index + 1].State = ExecutionState.Executing;
+            }
+        }
 
+        public void SetClearExecutedUpTo(int count)
+        {
+            _execLimit = count;
+            ClearExecutedExcess();
+        }
 
+        public void ClearExecutedExcess()
+        {
+            if (actionsQueue.Count <= _execLimit) return;
 
+            int count = 0;
+            for (int i = 0; i < _execLimit; i++)
+            {
+                if (actionsQueue[i].State != ExecutionState.Executed)
+                {
+                    count = i;
+                    break;
+                }
+            }
+            for (int i = 0; i < count; i++)
+            {
+                actionsQueue.RemoveAt(0);
+            }
+        }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -230,8 +277,21 @@ namespace MachinaBridge
             }
         }
         public int Id => this._action.Id;
-
         private ExecutionState _state = ExecutionState.Issued;
+
+        public int TextMode
+        {
+            get
+            {
+                return _textMode; 
+            }
+            set
+            {
+                _textMode = value;
+                OnPropertyChanged("QueueName");
+            }
+        }
+        private int _textMode = 1;  // 0 for .ToString, 1 for ToInstruction
 
         public ActionWrapper(MAction action)
         {
@@ -240,7 +300,7 @@ namespace MachinaBridge
 
         private string ToQueueString()
         {
-            return $"[{StateChar()}] #{Id} {this._action.ToInstruction()}";
+            return $"[{StateChar()}] #{Id} {(_textMode == 1 ? this._action.ToInstruction() : this._action.ToString())}";
         }
 
         private char StateChar()

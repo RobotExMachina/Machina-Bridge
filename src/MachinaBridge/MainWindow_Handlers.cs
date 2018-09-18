@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 
 namespace MachinaBridge
 {
-    public partial class MainWindow : Window
+    public partial class MachinaBridgeWindow : Window
     {
         private bool wasInputBlockClicked = false;
         private Machina.LogLevel _maxLogLevel;
@@ -28,7 +28,7 @@ namespace MachinaBridge
             InputBlock.KeyDown += InputBlock_KeyDown;
             InputBlock.PreviewMouseDown += InputBlock_PreviewMouseDown;
             //InputBlock.Focus();  // want the user to click on the InputBlock to delete text
-            
+
             InputBlock.Text = "Enter any command to stream it to the robot...";
         }
 
@@ -119,7 +119,7 @@ namespace MachinaBridge
             // For UR, there is no support for machina manager
             if (_robotBrand.Equals("UR", StringComparison.CurrentCultureIgnoreCase))
             {
-                foreach(ComboBoxItem item in combo_Manager.Items)
+                foreach (ComboBoxItem item in combo_Manager.Items)
                 {
                     if (item.Content.ToString() == "USER")
                     {
@@ -166,7 +166,7 @@ namespace MachinaBridge
         {
             if (btn_Connect.Content.ToString() == "CONNECT")
             {
-                if(InitializeRobot())
+                if (InitializeRobot())
                 {
                     btn_Connect.Content = "DISCONNECT";
                     EnableElement(txtbox_Name, false);
@@ -198,7 +198,42 @@ namespace MachinaBridge
         {
             ComboBox box = sender as ComboBox;
             ComboBoxItem item = box.SelectedItem as ComboBoxItem;
-            _maxLogLevel = (Machina.LogLevel) Convert.ToInt32(item.Tag);
+            _maxLogLevel = (Machina.LogLevel)Convert.ToInt32(item.Tag);
+        }
+
+        private void combo_QueueTextMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox box = sender as ComboBox;
+            ComboBoxItem item = box.SelectedItem as ComboBoxItem;
+            try
+            {
+                string mode = item.Content.ToString();
+                int tm = 0;
+                if (mode.Equals("INSTRUCTION"))
+                {
+                    tm = 1;
+                }
+
+                foreach (ActionWrapper a in this.dc.ActionsQueue)
+                {
+                    a.TextMode = tm;
+                }
+            }
+            catch (Exception ex)
+            {
+                Machina.Logger.Error("Something went wrong changing Queue text mode:");
+                Machina.Logger.Error(ex.ToString());
+            }
+
+        }
+
+        private void cbx_ClearExecuted_Checked(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void cbx_ClearExecuted_Unchecked(object sender, RoutedEventArgs e)
+        {
 
         }
 
