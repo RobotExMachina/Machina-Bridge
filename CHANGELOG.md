@@ -22,6 +22,9 @@
 ```
 # TODO:
 
+---
+# v0.8.2
+- Tons of changes and improvements: better UI, logging system, queue monitor, smarter console, etc...
 
 ---
 # v0.7.0
