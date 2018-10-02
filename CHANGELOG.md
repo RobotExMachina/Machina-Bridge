@@ -23,6 +23,10 @@
 # TODO:
 
 ---
+# v0.8.3
+- Add "Download drivers" button.
+
+---
 # v0.8.2
 - Tons of changes and improvements: better UI, logging system, queue monitor, smarter console, etc...
 

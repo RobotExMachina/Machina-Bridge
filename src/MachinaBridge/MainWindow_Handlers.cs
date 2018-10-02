@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO.Compression;
 
 
 namespace MachinaBridge
@@ -229,18 +230,24 @@ namespace MachinaBridge
 
         private void cbx_ClearExecuted_Checked(object sender, RoutedEventArgs e)
         {
-            
+            Machina.Logger.Warning("Clear executed actions still not implemented...");
         }
 
         private void cbx_ClearExecuted_Unchecked(object sender, RoutedEventArgs e)
         {
-
+            Machina.Logger.Warning("Clear executed actions still not implemented...");
         }
 
         private void btn_ConsoleClear_Click(object sender, RoutedEventArgs e)
         {
             dc.ClearConsoleOutput();
         }
+
+        private void btn_DownloadDrivers_Click(object sender, RoutedEventArgs e)
+        {
+            DownloadDrivers();
+        }
+
 
 
 

@@ -15,11 +15,15 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.IO.Compression;
 
 using Machina;
 
 using WebSocketSharp;
 using WebSocketSharp.Server;
+using Logger = Machina.Logger;
+using Microsoft.Win32;
 
 namespace MachinaBridge
 {
@@ -168,6 +172,93 @@ namespace MachinaBridge
             if (bot != null)
                 bot.Disconnect();
             bot = null;
+        }
+
+        internal void DownloadDrivers()
+        {
+            // Create a fake robot not to interfere with the main one
+            Robot driverBot = Robot.Create(_robotName, _robotBrand);
+            driverBot.ControlMode(ControlType.Online);
+            var parameters = new Dictionary<string, string>()
+            {
+                {"HOSTNAME", txtbox_IP.Text},
+                {"PORT", txtbox_Port.Text}
+            };
+
+            var files = driverBot.GetDeviceDriverModules(parameters);
+
+            // Clear temp folder
+            string path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "machina_modules");
+
+            //https://stackoverflow.com/a/1288747/1934487
+            System.IO.DirectoryInfo di = new DirectoryInfo(path);
+            if (di.Exists)
+            {
+                Logger.Debug("Clearing " + path);
+                foreach (FileInfo file in di.GetFiles())
+                {
+                    Logger.Debug("Deleting " + file.FullName);
+                    file.Delete();
+                }
+                foreach (DirectoryInfo dir in di.GetDirectories())
+                {
+                    Logger.Debug("Deleting " + dir.FullName);
+                    dir.Delete(true);
+                }
+            }
+            else
+            {
+                di.Create();
+                Logger.Debug("Created " + path);
+            }
+
+            // Save temp files
+            foreach (var pair in files)
+            {
+                string filename = pair.Key;
+                string content = pair.Value;
+                
+
+                string filepath = System.IO.Path.Combine(path, filename);
+                try
+                {
+                    System.IO.File.WriteAllText(filepath, content, Encoding.ASCII);
+                }
+                catch
+                {
+                    Logger.Error("Could not save " + filename + " to "  + filepath);
+                    Logger.Error("Could not download drivers");
+                    return;
+                }
+
+                Logger.Debug("Saved module to " + filepath);
+            }
+
+            // Zip the file
+            string zipPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "machina_modules.zip");
+            System.IO.FileInfo fi = new FileInfo(zipPath);
+            if (fi.Exists)
+            {
+                fi.Delete();
+                Logger.Debug("Deleted old " + zipPath);
+            }
+            ZipFile.CreateFromDirectory(path, zipPath);
+            Logger.Debug("Zipped files to " + zipPath);
+
+            // Prompt file save dialog: https://www.wpf-tutorial.com/dialogs/the-savefiledialog/
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Zip file (*.zip)|*.zip";
+            saveFileDialog.DefaultExt = "zip";
+            saveFileDialog.AddExtension = true;
+            saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            saveFileDialog.FileName = "machina_modules.zip";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                //File.WriteAllText(saveFileDialog.FileName, "asdasdA");
+                File.Copy(zipPath, saveFileDialog.FileName);
+                Logger.Debug("Copied " + zipPath + " to " + saveFileDialog.FileName);
+            }
+
         }
 
         //// Doesn't really work well
@@ -691,6 +782,7 @@ namespace MachinaBridge
         }
 
 
+
     }
 
 
@@ -723,7 +815,7 @@ namespace MachinaBridge
             _parent.ExecuteInstructionOnContext(e.Data);
         }
 
-        protected override void OnError(ErrorEventArgs e)
+        protected override void OnError(WebSocketSharp.ErrorEventArgs e)
         {
             //base.OnError(e);
             Console.WriteLine("  BRIDGE ERROR: " + e.Message);
