@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Data.SqlClient;
 using System.IO;
 using System.IO.Compression;
 
@@ -46,8 +47,11 @@ namespace MachinaBridge
         public  string _robotBrand;
         public  string _connectionManager;
 
+        internal List<string> _connectedClients = new List<string>();
+
+
         // https://stackoverflow.com/a/18331866/1934487
-        SynchronizationContext uiContext;
+        internal SynchronizationContext uiContext;
         
         BoundContent dc;
 
@@ -147,11 +151,10 @@ namespace MachinaBridge
             {
                 //Machina.Logger.Info($"Listening on port {wssv.Port}, and providing WebSocket services:");
                 //foreach (var path in wssv.WebSocketServices.Paths) Machina.Logger.Info($"- {path}");
-                Logger.Info("WebSocket server started on " + (wssvURL + wssvBehavior));
+                Logger.Info("Waiting for incoming connections on " + (wssvURL + wssvBehavior));
             }
 
-            lbl_ServerURL.Content = wssvURL + wssvBehavior;
-            
+            //lbl_ServerURL.Content = wssvURL + wssvBehavior;
         }
 
         private bool InitializeRobot()
@@ -315,6 +318,18 @@ namespace MachinaBridge
             }
 
         }
+
+        internal void UpdateClientBox()
+        {
+            txtblock_Clients.Text = "";
+            foreach (var name in _connectedClients)
+            {
+                txtblock_Clients.Text += name + " ";
+            }
+        }
+
+
+
 
         //// Doesn't really work well
         //public void ScrollQueueToElement(int index)
@@ -850,6 +865,7 @@ namespace MachinaBridge
     {
         private Robot _robot;
         private MachinaBridgeWindow _parent;
+        private string _clientName;
 
         public BridgeBehavior(Robot robot, MachinaBridgeWindow parent)
         {
@@ -860,7 +876,16 @@ namespace MachinaBridge
         protected override void OnOpen()
         {
             //base.OnOpen();
-            Console.WriteLine("  BRIDGE: opening bridge");
+            //Console.WriteLine("  BRIDGE: opening bridge");
+            _clientName = Context.QueryString["name"];
+            _parent._connectedClients.Add(_clientName);
+            //_parent.UpdateClientBox();
+            _parent.uiContext.Post(x =>
+            {
+                _parent.UpdateClientBox();
+            }, null);
+
+            Logger.Info("Client \"" + _clientName + "\" connected...");
         }
 
         protected override void OnMessage(MessageEventArgs e)
@@ -878,13 +903,21 @@ namespace MachinaBridge
         protected override void OnError(WebSocketSharp.ErrorEventArgs e)
         {
             //base.OnError(e);
-            Console.WriteLine("  BRIDGE ERROR: " + e.Message);
+            //Console.WriteLine("  BRIDGE ERROR: " + e.Message);
+            Logger.Error("WS error: " + e.Message);
         }
 
         protected override void OnClose(CloseEventArgs e)
         {
             //base.OnClose(e);
-            Console.WriteLine($"  BRIDGE: closed bridge: {e.Code} {e.Reason}");
+            Logger.Debug($"WS client disconnected: {e.Code} {e.Reason}");
+            Logger.Warning("Client \"" + _clientName + "\" disconnected...");
+            _parent._connectedClients.Remove(_clientName);
+            //_parent.UpdateClientBox();
+            _parent.uiContext.Post(x =>
+            {
+                _parent.UpdateClientBox();
+            }, null);
 
             _parent.wssv.WebSocketServices.Broadcast($"{{\"event\":\"client-disconnected\",\"user\":\"clientname\"}}");
         }

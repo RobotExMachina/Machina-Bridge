@@ -25,7 +25,9 @@
 ---
 # v0.8.3
 - Add "Download drivers" button.
-- Add version dump to console
+- Add version dump to console.
+- WebSocket server URL is now customizable.
+- Add client dis/connection notifications.
 
 ---
 # v0.8.2

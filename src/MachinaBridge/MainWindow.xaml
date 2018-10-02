@@ -41,9 +41,8 @@
 
         <Label x:Name="lbl_Bridge" Content="BRIDGE" HorizontalAlignment="Left" Height="52" Margin="10,585,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
         <Label x:Name="lbl_Server" Content="SERVER" HorizontalAlignment="Left" Height="30" Margin="10,617,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <Label x:Name="lbl_ServerURL" Content="" HorizontalAlignment="Left" Height="25" Margin="96,568,0,0" VerticalAlignment="Top" Width="232" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10"/>
         <TextBox x:Name="txtbox_WSServerURL" Text="ws://127.0.0.1:6999/Bridge" HorizontalAlignment="Left" Height="22" Margin="87,619,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="251" FontFamily=".\Resources\#IBM Plex Mono Medium" TextAlignment="Right" FontSize="10"/>
-        <Label x:Name="lbl_Clients" Content="CLIENTS" HorizontalAlignment="Left" Height="52" Margin="10,643,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
+        <Label x:Name="lbl_Clients" Content="CLIENTS" HorizontalAlignment="Left" Height="52" Margin="10,673,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
         <Rectangle HorizontalAlignment="Left" Height="72" Margin="87,651,0,0" Stroke="White" StrokeThickness="1" VerticalAlignment="Top" Width="251"/>
         <TextBlock x:Name="txtblock_Clients" HorizontalAlignment="Left" Height="60" Margin="96,657,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="232" Foreground="White" FontFamily="Consolas" FontSize="10"/>
         <Button x:Name="btn_ResetBridge" Content="RESET BRIDGE" HorizontalAlignment="Left" Height="24" Margin="16,727,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontWeight="Bold" Click="btn_ResetBridge_Click"/>
