@@ -32,7 +32,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.1.";
+        public static readonly string Version = "0.8.3";
 
         public  Robot bot;
         public  List<Tool> tools = new List<Tool>();
@@ -62,8 +62,10 @@ namespace MachinaBridge
 
             uiContext = SynchronizationContext.Current;
 
-            _maxLogLevel = Machina.LogLevel.DEBUG;
+            _maxLogLevel = Machina.LogLevel.INFO;
             Machina.Logger.CustomLogging += Logger_CustomLogging;
+
+            Logger.Info("Machina Bridge: " + Version + "; Core: " + Robot.Version);
         }
         
         private void Logger_CustomLogging(LoggerArgs e)
@@ -176,6 +178,8 @@ namespace MachinaBridge
 
         internal void DownloadDrivers()
         {
+            Logger.Info("Downloading Machina Drivers...");
+
             // Create a fake robot not to interfere with the main one
             Robot driverBot = Robot.Create(_robotName, _robotBrand);
             driverBot.ControlMode(ControlType.Online);
@@ -240,7 +244,7 @@ namespace MachinaBridge
             if (fi.Exists)
             {
                 fi.Delete();
-                Logger.Debug("Deleted old " + zipPath);
+                Logger.Debug("Deleted previous " + zipPath);
             }
             ZipFile.CreateFromDirectory(path, zipPath);
             Logger.Debug("Zipped files to " + zipPath);
@@ -254,11 +258,17 @@ namespace MachinaBridge
             saveFileDialog.FileName = "machina_modules.zip";
             if (saveFileDialog.ShowDialog() == true)
             {
-                //File.WriteAllText(saveFileDialog.FileName, "asdasdA");
+                fi = new FileInfo(saveFileDialog.FileName);
+                if (fi.Exists)
+                {
+                    fi.Delete();
+                    Logger.Debug("Deleted previous " + saveFileDialog.FileName);
+                }
                 File.Copy(zipPath, saveFileDialog.FileName);
                 Logger.Debug("Copied " + zipPath + " to " + saveFileDialog.FileName);
             }
 
+            Logger.Info("Drivers saved to " + saveFileDialog.FileName);
         }
 
         //// Doesn't really work well

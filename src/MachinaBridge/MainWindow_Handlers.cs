@@ -253,44 +253,7 @@ namespace MachinaBridge
         }
 
 
-
-
-
-    //    if (combo_Brand == null) return;
-
-    //    //Console.WriteLine("BRAND CHANGED");
-    //    var comboitem = combo_Brand.SelectedItem as ComboBoxItem;
-    //    _robotBrand = comboitem.Content.ToString();
-    //    //Console.WriteLine(_robotBrand);
-
-    //    if (combo_Manager == null) return;
-
-    //    // For UR, there is no support for machina manager
-    //    if (_robotBrand.Equals("UR", StringComparison.CurrentCultureIgnoreCase))
-    //    {
-    //        foreach (ComboBoxItem item in combo_Manager.Items)
-    //        {
-    //            if (item.Content.ToString() == "USER")
-    //            {
-    //                combo_Manager.SelectedValue = item;
-    //                EnableElement(combo_Manager, false);
-    //                break;
-    //            }
-    //        }
-    //    }
-    //    else
-    //{
-    //EnableElement(combo_Manager, true);
-    //    foreach (ComboBoxItem item in combo_Manager.Items)
-    //{
-    //    if (item.Content.ToString() == "USER")
-    //    {
-    //        combo_Manager.SelectedValue = item;
-    //        break;
-    //    }
-    //}
-    //}
-
+     
 
 
 
