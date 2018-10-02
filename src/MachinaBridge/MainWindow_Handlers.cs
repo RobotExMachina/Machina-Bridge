@@ -142,6 +142,8 @@ namespace MachinaBridge
                     }
                 }
             }
+
+            ManageDownloadButtonVisibility();
         }
 
         private void txtbox_Name_SelectionChanged(object sender, RoutedEventArgs e)
@@ -161,6 +163,8 @@ namespace MachinaBridge
             bool enable = _connectionManager.Equals("user", StringComparison.CurrentCultureIgnoreCase);
             EnableElement(txtbox_IP, enable);
             EnableElement(txtbox_Port, enable);
+
+            ManageDownloadButtonVisibility();
         }
 
         private void btn_Connect_Click(object sender, RoutedEventArgs e)
@@ -251,6 +255,58 @@ namespace MachinaBridge
 
 
 
+
+    //    if (combo_Brand == null) return;
+
+    //    //Console.WriteLine("BRAND CHANGED");
+    //    var comboitem = combo_Brand.SelectedItem as ComboBoxItem;
+    //    _robotBrand = comboitem.Content.ToString();
+    //    //Console.WriteLine(_robotBrand);
+
+    //    if (combo_Manager == null) return;
+
+    //    // For UR, there is no support for machina manager
+    //    if (_robotBrand.Equals("UR", StringComparison.CurrentCultureIgnoreCase))
+    //    {
+    //        foreach (ComboBoxItem item in combo_Manager.Items)
+    //        {
+    //            if (item.Content.ToString() == "USER")
+    //            {
+    //                combo_Manager.SelectedValue = item;
+    //                EnableElement(combo_Manager, false);
+    //                break;
+    //            }
+    //        }
+    //    }
+    //    else
+    //{
+    //EnableElement(combo_Manager, true);
+    //    foreach (ComboBoxItem item in combo_Manager.Items)
+    //{
+    //    if (item.Content.ToString() == "USER")
+    //    {
+    //        combo_Manager.SelectedValue = item;
+    //        break;
+    //    }
+    //}
+    //}
+
+
+
+
+        private void ManageDownloadButtonVisibility()
+        {
+            if (btn_DownloadDrivers == null) return;
+
+            if (_robotBrand.Equals("ABB") && _connectionManager.Equals("USER"))
+            {
+                btn_DownloadDrivers.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                btn_DownloadDrivers.Visibility = Visibility.Hidden;
+            }
+        }
 
         private void EnableElement(ComboBox comboBox, bool enabled)
         {
