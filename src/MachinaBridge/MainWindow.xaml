@@ -113,9 +113,9 @@
             <ComboBoxItem Content="0 - NONE" Tag="0"/>
             <ComboBoxItem Content="1 - ERROR" Tag="1"/>
             <ComboBoxItem Content="2 - WARNING" Tag="2"/>
-            <ComboBoxItem Content="3 - INFO" Tag="3"/>
+            <ComboBoxItem IsSelected="True" Content="3 - INFO" Tag="3"/>
             <ComboBoxItem Content="4 - VERBOSE" Tag="4"/>
-            <ComboBoxItem IsSelected="True" Content="5 - DEBUG" Tag="5"/>
+            <ComboBoxItem Content="5 - DEBUG" Tag="5"/>
         </ComboBox>
         <Grid Name="ConsoleGrid" Margin="842,119,20,18" Background="Black" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
@@ -173,7 +173,7 @@
             <TextBox Grid.Row="2" Text="{Binding ConsoleInput, Mode=TwoWay}" Background="Black" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono" Name="InputBlock" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" />
         </Grid>
         <Button x:Name="btn_DownloadDrivers" Content="DOWNLOAD DRIVERS" HorizontalAlignment="Left" Margin="218,340,0,0" VerticalAlignment="Top" Width="120" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="10" Click="btn_DownloadDrivers_Click" Visibility="Visible"/>
-
+        
 
 
 

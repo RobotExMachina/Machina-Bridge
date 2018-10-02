@@ -25,6 +25,7 @@
 ---
 # v0.8.3
 - Add "Download drivers" button.
+- Add version dump to console
 
 ---
 # v0.8.2
