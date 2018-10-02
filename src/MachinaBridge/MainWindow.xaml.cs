@@ -37,8 +37,9 @@ namespace MachinaBridge
         public  Robot bot;
         public  List<Tool> tools = new List<Tool>();
         public  WebSocketServer wssv;
-        public  string wssvURL = "ws://127.0.0.1:6999";
-        public  string wssvBehavior = "/Bridge";
+        //public  string wssvURL = "ws://127.0.0.1:6999";
+        //public  string wssvBehavior = "/Bridge";
+        public static string wssvURL, wssvBehavior;
 
         // Robot options (quick and dirty defaults)
         public  string _robotName;
@@ -54,8 +55,6 @@ namespace MachinaBridge
         {
             InitializeComponent();
 
-            InitializeWebSocketServer();
-
             dc = new BoundContent(this);
 
             DataContext = dc;
@@ -66,6 +65,8 @@ namespace MachinaBridge
             Machina.Logger.CustomLogging += Logger_CustomLogging;
 
             Logger.Info("Machina Bridge: " + Version + "; Core: " + Robot.Version);
+
+            InitializeWebSocketServer();
         }
         
         private void Logger_CustomLogging(LoggerArgs e)
@@ -82,14 +83,59 @@ namespace MachinaBridge
             }
         }
 
-        private void InitializeWebSocketServer()
+        private bool ParseWebSocketURL()
         {
-            if (wssv != null && wssv.IsListening)
+            string url = txtbox_WSServerURL.Text;
+            string[] parts = url.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+            // Should be something like {"ws:", "127.0.0.1", "route" [, ...] } 
+            if (parts.Length < 3)
             {
+                Logger.Error("Please add a route to the websocket url, like \"/Bridge\"");
+                return false;
+            }
+            else if (!parts[0].Equals("ws:", StringComparison.InvariantCultureIgnoreCase))
+            {
+                Logger.Error("WebSocket URL must start with \"ws:\"");
+                return false;
+            }
+            else if (!Machina.Net.Net.ValidateIPv4Port(parts[1]))
+            {
+                Logger.Error("Invalid IP address \"" + parts[1] + "\"");
+                return false;
+            }
+
+            wssvURL = parts[0] + "//" + parts[1];
+            wssvBehavior = "/" + String.Join("/", parts, 2, parts.Length - 2);
+
+            Logger.Debug("WebSocket server URL: " + wssvURL);
+            Logger.Debug("WebSocket server route: " + wssvBehavior);
+
+            return true;
+        }
+
+        private void StopWebSocketServer()
+        {
+            if (wssv != null)
+            {
+                Logger.Verbose("Stopping WebSocket service on " + wssv.Address + ":" + wssv.Port + wssv.WebSocketServices.Paths.ElementAt(0));
                 wssv.Stop();
                 wssv = null;
             }
+        }
 
+        private void InitializeWebSocketServer()
+        {
+            if (!ParseWebSocketURL())
+            {
+                Logger.Error("Invalid WebSocket URL \"" + txtbox_WSServerURL.Text + "\"; try something like \"ws://127.0.0.1/Bridge\"");
+                return;
+            }
+
+            if (wssv != null && wssv.IsListening)
+            {
+                StopWebSocketServer();
+            }
+            
             wssv = new WebSocketServer(wssvURL);
             //#if DEBUG
             //            wssv.Log.Level = LogLevel.Trace;
@@ -99,11 +145,13 @@ namespace MachinaBridge
             wssv.Start();
             if (wssv.IsListening)
             {
-                Machina.Logger.Verbose($"Listening on port {wssv.Port}, and providing WebSocket services:");
-                foreach (var path in wssv.WebSocketServices.Paths) Machina.Logger.Verbose($"- {path}");
+                //Machina.Logger.Info($"Listening on port {wssv.Port}, and providing WebSocket services:");
+                //foreach (var path in wssv.WebSocketServices.Paths) Machina.Logger.Info($"- {path}");
+                Logger.Info("WebSocket server started on " + (wssvURL + wssvBehavior));
             }
 
             lbl_ServerURL.Content = wssvURL + wssvBehavior;
+            
         }
 
         private bool InitializeRobot()
@@ -121,7 +169,7 @@ namespace MachinaBridge
             bot.ActionReleased += Bot_ActionReleased;
             bot.ActionExecuted += Bot_ActionExecuted;
 
-            bot.ControlMode(ControlType.Stream);
+            bot.ControlMode(ControlType.Online);
 
             if (_connectionManager == "MACHINA")
             {
@@ -162,11 +210,6 @@ namespace MachinaBridge
         {
             DisposeRobot();
             Thread.Sleep(1000);
-        }
-
-        private void StopWebSocketService()
-        {
-            wssv.Stop();
         }
 
         private void DisposeRobot()
@@ -785,6 +828,11 @@ namespace MachinaBridge
             }
 
             return s;
+        }
+
+        private void btn_ResetBridge_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeWebSocketServer();
         }
 
         public static void BadFormatInstruction(string message, Exception ex)

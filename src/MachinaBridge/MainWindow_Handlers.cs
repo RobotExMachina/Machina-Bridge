@@ -83,7 +83,7 @@ namespace MachinaBridge
             // Only give warnings if connected
             if (bot == null)
             {
-                StopWebSocketService();
+                StopWebSocketServer();
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace MachinaBridge
             }
             else
             {
-                StopWebSocketService();
+                StopWebSocketServer();
                 Disconnect();
             }
         }

@@ -14,8 +14,10 @@
             <ColumnDefinition Width="63*"/>
         </Grid.ColumnDefinitions>
         <Label x:Name="lbl_MachinaBridgeApp" Content="MACHINA BRIDGE" HorizontalAlignment="Left" Height="52" Margin="10,10,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans" Foreground="White" FontSize="24"/>
-        <Label x:Name="lbl_Robot" Content="ROBOT" HorizontalAlignment="Left" Height="52" Margin="10,68,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
         <Separator Height="15" Margin="16,47,20,0" Foreground="White" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <Label x:Name="lbl_Robot" Content="ROBOT" HorizontalAlignment="Left" Height="52" Margin="10,68,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
+        <Label x:Name="lbl_Brand_Copy" Content="NAME" HorizontalAlignment="Left" Height="52" Margin="10,97,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
+        <TextBox x:Name="txtbox_Name" HorizontalAlignment="Left" Height="30" Margin="16,119,0,0" TextWrapping="Wrap" Text="ROBOTEXMACHINA" VerticalAlignment="Top" Width="322" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" SelectionChanged="txtbox_Name_SelectionChanged"/>
         <Label x:Name="lbl_Brand" Content="BRAND" HorizontalAlignment="Left" Height="52" Margin="10,152,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
         <ComboBox x:Name="combo_Brand" HorizontalAlignment="Left" Margin="16,174,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_Brand_SelectionChanged">
             <ComboBoxItem Content="ABB"/>
@@ -31,22 +33,22 @@
             <ComboBoxItem Content="MACHINA"/>
         </ComboBox>
         <Label x:Name="lbl_IP" Content="IP" HorizontalAlignment="Left" Height="26" Margin="10,412,0,0" VerticalAlignment="Top" Width="77" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <Label x:Name="lnl_Port" Content="PORT" HorizontalAlignment="Left" Height="26" Margin="10,444,0,0" VerticalAlignment="Top" Width="77" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
         <TextBox x:Name="txtbox_IP" HorizontalAlignment="Left" Height="22" Margin="87,416,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="251" FontFamily=".\Resources\#IBM Plex Mono Medium" TextAlignment="Right" FontSize="10"/>
+        <Label x:Name="lnl_Port" Content="PORT" HorizontalAlignment="Left" Height="26" Margin="10,444,0,0" VerticalAlignment="Top" Width="77" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
         <TextBox x:Name="txtbox_Port" HorizontalAlignment="Left" Height="22" Margin="87,450,0,0" TextWrapping="Wrap" Text="7000" VerticalAlignment="Top" Width="251" FontFamily=".\Resources\#IBM Plex Mono Medium" TextAlignment="Right" FontSize="10"/>
+        <Button x:Name="btn_DownloadDrivers" Content="DOWNLOAD DRIVERS" HorizontalAlignment="Left" Margin="87,485,0,0" VerticalAlignment="Top" Width="251" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="10" Click="btn_DownloadDrivers_Click" Visibility="Visible"/>
         <Button x:Name="btn_Connect" Content="CONNECT" HorizontalAlignment="Left" Height="24" Margin="16,516,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontWeight="Bold" Click="btn_Connect_Click"/>
-        <Button x:Name="btn_ResetBridge" Content="RESET BRIDGE" HorizontalAlignment="Left" Height="24" Margin="16,727,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontWeight="Bold"/>
+
         <Label x:Name="lbl_Bridge" Content="BRIDGE" HorizontalAlignment="Left" Height="52" Margin="10,585,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
-        <Label x:Name="lbl_Clients" Content="CLIENTS:" HorizontalAlignment="Left" Height="52" Margin="10,643,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
+        <Label x:Name="lbl_Server" Content="SERVER" HorizontalAlignment="Left" Height="30" Margin="10,617,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
+        <Label x:Name="lbl_ServerURL" Content="" HorizontalAlignment="Left" Height="25" Margin="96,568,0,0" VerticalAlignment="Top" Width="232" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10"/>
+        <TextBox x:Name="txtbox_WSServerURL" Text="ws://127.0.0.1:6999/Bridge" HorizontalAlignment="Left" Height="22" Margin="87,619,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="251" FontFamily=".\Resources\#IBM Plex Mono Medium" TextAlignment="Right" FontSize="10"/>
+        <Label x:Name="lbl_Clients" Content="CLIENTS" HorizontalAlignment="Left" Height="52" Margin="10,643,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
         <Rectangle HorizontalAlignment="Left" Height="72" Margin="87,651,0,0" Stroke="White" StrokeThickness="1" VerticalAlignment="Top" Width="251"/>
-        <Label x:Name="lbl_Server" Content="SERVER:" HorizontalAlignment="Left" Height="30" Margin="10,617,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <Label x:Name="lbl_ServerURL" Content="" HorizontalAlignment="Left" Height="25" Margin="96,618,0,0" VerticalAlignment="Top" Width="232" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10"/>
         <TextBlock x:Name="txtblock_Clients" HorizontalAlignment="Left" Height="60" Margin="96,657,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="232" Foreground="White" FontFamily="Consolas" FontSize="10"/>
-        <Label x:Name="lbl_Brand_Copy" Content="NAME" HorizontalAlignment="Left" Height="52" Margin="10,97,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <TextBox x:Name="txtbox_Name" HorizontalAlignment="Left" Height="30" Margin="16,119,0,0" TextWrapping="Wrap" Text="ROBOTEXMACHINA" VerticalAlignment="Top" Width="322" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" SelectionChanged="txtbox_Name_SelectionChanged"/>
+        <Button x:Name="btn_ResetBridge" Content="RESET BRIDGE" HorizontalAlignment="Left" Height="24" Margin="16,727,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontWeight="Bold" Click="btn_ResetBridge_Click"/>
 
         <Label x:Name="lbl_Queue" Content="QUEUE" HorizontalAlignment="Left" Height="52" Margin="366,68,0,0" VerticalAlignment="Top" Width="96" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
-
         <StackPanel Margin="0,95,789,651" Orientation="Horizontal" HorizontalAlignment="Right">
             <CheckBox Name="cbx_ClearExecuted" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" IsChecked="True" Checked="cbx_ClearExecuted_Checked" Unchecked="cbx_ClearExecuted_Unchecked">
                 <TextBlock>Clear Executed</TextBlock>
@@ -172,8 +174,7 @@
             <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch" Background="#FFA0A0A0" />
             <TextBox Grid.Row="2" Text="{Binding ConsoleInput, Mode=TwoWay}" Background="Black" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono" Name="InputBlock" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" />
         </Grid>
-        <Button x:Name="btn_DownloadDrivers" Content="DOWNLOAD DRIVERS" HorizontalAlignment="Left" Margin="87,485,0,0" VerticalAlignment="Top" Width="251" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="10" Click="btn_DownloadDrivers_Click" Visibility="Visible"/>
-
+        
 
 
 
