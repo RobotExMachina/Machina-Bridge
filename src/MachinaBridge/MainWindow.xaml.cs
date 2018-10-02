@@ -178,7 +178,7 @@ namespace MachinaBridge
 
         internal void DownloadDrivers()
         {
-            Logger.Info("Downloading Machina Drivers...");
+            Logger.Info("Downloading Machina Drivers for " + _robotBrand + " robot on " + txtbox_IP.Text + ":" + txtbox_Port.Text);
 
             // Create a fake robot not to interfere with the main one
             Robot driverBot = Robot.Create(_robotName, _robotBrand);
@@ -256,6 +256,7 @@ namespace MachinaBridge
             saveFileDialog.AddExtension = true;
             saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             saveFileDialog.FileName = "machina_modules.zip";
+
             if (saveFileDialog.ShowDialog() == true)
             {
                 fi = new FileInfo(saveFileDialog.FileName);
@@ -266,9 +267,10 @@ namespace MachinaBridge
                 }
                 File.Copy(zipPath, saveFileDialog.FileName);
                 Logger.Debug("Copied " + zipPath + " to " + saveFileDialog.FileName);
+
+                Logger.Info("Drivers saved to " + saveFileDialog.FileName);
             }
 
-            Logger.Info("Drivers saved to " + saveFileDialog.FileName);
         }
 
         //// Doesn't really work well
