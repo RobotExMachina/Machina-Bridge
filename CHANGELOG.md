@@ -28,6 +28,7 @@
 - Add version dump to console.
 - WebSocket server URL is now customizable.
 - Add client dis/connection notifications.
+- Console input box now highlights selection.
 
 ---
 # v0.8.2
