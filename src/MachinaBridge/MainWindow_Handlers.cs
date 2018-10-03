@@ -58,9 +58,22 @@ namespace MachinaBridge
             {
                 if (InputBlock.Text.Length == 0) return;
 
-                dc.ConsoleInput = InputBlock.Text;
-                dc.RunCommand();
-                InputBlock.Focus();
+                // If Ctrl+Enter, insert new line
+                if (Keyboard.Modifiers == ModifierKeys.Control)
+                {
+                    // https://stackoverflow.com/a/10549299/1934487
+                    var caretIndex = InputBlock.CaretIndex;
+                    InputBlock.Text = InputBlock.Text.Insert(caretIndex, System.Environment.NewLine);
+                    InputBlock.CaretIndex = caretIndex + 1;
+                }
+                // Otherwise, issue commands
+                else
+                {
+                    dc.ConsoleInput = InputBlock.Text;
+                    dc.RunConsoleInput();
+                    InputBlock.Focus();
+                }
+
             }
         }
 

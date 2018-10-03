@@ -29,6 +29,8 @@
 - WebSocket server URL is now customizable.
 - Add client dis/connection notifications.
 - Console input box now highlights selection.
+- Add multiline input support pressing Ctrl+Enter
+- Add parsing of multiple instructions
 
 ---
 # v0.8.2

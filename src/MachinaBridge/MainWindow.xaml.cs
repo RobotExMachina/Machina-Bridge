@@ -48,8 +48,7 @@ namespace MachinaBridge
         public  string _connectionManager;
 
         internal List<string> _connectedClients = new List<string>();
-
-
+    
         // https://stackoverflow.com/a/18331866/1934487
         internal SynchronizationContext uiContext;
         
@@ -357,9 +356,10 @@ namespace MachinaBridge
 
         public bool ExecuteInstruction(string instruction)
         {
-            string[] args = ParseMessage(instruction);
+            string[] args = Parsing.ParseStatement(instruction);
             if (args == null || args.Length == 0)
             {
+                Machina.Logger.Error($"I don't understand \"{instruction}\"...");
                 return false;
             }
 
@@ -785,65 +785,42 @@ namespace MachinaBridge
             return false;
         }
 
-        public static string[] ParseMessage(string msg)
-        {
-            try
-            {
-                // MEGA quick and idrty
-                // assuming a msg int he form of "MoveTo(300, 400, 500);" with optional spaces here and there...  
-                string[] split1 = msg.Split(new char[] { '(' });
-                string[] split2 = split1[1].Split(new char[] { ')' });
-                string[] args = split2[0].Split(new char[] { ',' });
-                for (int i = 0; i < args.Length; i++)
-                {
-                    args[i] = RemoveDoubleQuotes(RemoveSideSpaces(args[i]));
-                }
-                string inst = RemoveSideSpaces(split1[0]);
+        //public static string[] ParseMessage(string msg)
+        //{
+        //    try
+        //    {
+        //        // MEGA quick and idrty
+        //        // assuming a msg int he form of "MoveTo(300, 400, 500);" with optional spaces here and there...  
+        //        string[] split1 = msg.Split(new char[] { '(' });
+        //        string[] split2 = split1[1].Split(new char[] { ')' });
+        //        string[] args = split2[0].Split(new char[] { ',' });
+        //        for (int i = 0; i < args.Length; i++)
+        //        {
+        //            args[i] = Parsing.RemoveString(Parsing.RemoveSideChars(args[i], ' '), "\"");
+        //        }
+        //        string inst = Parsing.RemoveSideChars(split1[0], ' ');
 
-                string[] ret = new string[args.Length + 1];
-                ret[0] = inst;
-                for (int i = 0; i < args.Length; i++)
-                {
-                    ret[i + 1] = args[i];
-                }
+        //        string[] ret = new string[args.Length + 1];
+        //        ret[0] = inst;
+        //        for (int i = 0; i < args.Length; i++)
+        //        {
+        //            ret[i + 1] = args[i];
+        //        }
 
-                return ret;
-            }
-            catch
-            {
-                Machina.Logger.Error($"I don't understand \"{msg}\"...");
-                return null;
-            }
-        }
+        //        return ret;
+        //    }
+        //    catch
+        //    {
+        //        Machina.Logger.Error($"I don't understand \"{msg}\"...");
+        //        return null;
+        //    }
+        //}
 
-        public static string RemoveWhiteSpaces(string str)
-        {
-            return str.Replace(" ", "");
-        }
 
-        public static string RemoveDoubleQuotes(string str)
-        {
-            return str.Replace("\"", "");
-        }
 
-        public static string RemoveSideSpaces(string str)
-        {
-            if (str == "" || str == null)
-                return str;
 
-            string s = str;
-            while (s[0] == ' ')
-            {
-                s = s.Remove(0, 1);
-            }
 
-            while (s[s.Length - 1] == ' ')
-            {
-                s = s.Remove(s.Length - 1);
-            }
 
-            return s;
-        }
 
         private void btn_ResetBridge_Click(object sender, RoutedEventArgs e)
         {
@@ -861,68 +838,6 @@ namespace MachinaBridge
     }
 
 
-    public class BridgeBehavior : WebSocketBehavior
-    {
-        private Robot _robot;
-        private MachinaBridgeWindow _parent;
-        private string _clientName;
-
-        public BridgeBehavior(Robot robot, MachinaBridgeWindow parent)
-        {
-            this._robot = robot;
-            this._parent = parent;
-        }
-
-        protected override void OnOpen()
-        {
-            //base.OnOpen();
-            //Console.WriteLine("  BRIDGE: opening bridge");
-            _clientName = Context.QueryString["name"];
-            _parent._connectedClients.Add(_clientName);
-            //_parent.UpdateClientBox();
-            _parent.uiContext.Post(x =>
-            {
-                _parent.UpdateClientBox();
-            }, null);
-
-            Logger.Info("Client \"" + _clientName + "\" connected...");
-        }
-
-        protected override void OnMessage(MessageEventArgs e)
-        {
-            //base.OnMessage(e);
-            //Console.WriteLine("  BRIDGE: received message: " + e.Data);
-            if (_robot == null) { 
-                _parent.wssv.WebSocketServices.Broadcast($"{{\"event\":\"controller-disconnected\"}}");
-                return;
-            }
-
-            _parent.ExecuteInstructionOnContext(e.Data);
-        }
-
-        protected override void OnError(WebSocketSharp.ErrorEventArgs e)
-        {
-            //base.OnError(e);
-            //Console.WriteLine("  BRIDGE ERROR: " + e.Message);
-            Logger.Error("WS error: " + e.Message);
-        }
-
-        protected override void OnClose(CloseEventArgs e)
-        {
-            //base.OnClose(e);
-            Logger.Debug($"WS client disconnected: {e.Code} {e.Reason}");
-            Logger.Warning("Client \"" + _clientName + "\" disconnected...");
-            _parent._connectedClients.Remove(_clientName);
-            //_parent.UpdateClientBox();
-            _parent.uiContext.Post(x =>
-            {
-                _parent.UpdateClientBox();
-            }, null);
-
-            _parent.wssv.WebSocketServices.Broadcast($"{{\"event\":\"client-disconnected\",\"user\":\"clientname\"}}");
-        }
-
-    }
 
 
 

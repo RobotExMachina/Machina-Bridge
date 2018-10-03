@@ -119,12 +119,8 @@ namespace MachinaBridge
         //}
 
 
-        public void RunCommand()
+        public void RunConsoleInput()
         {
-            //this.WriteLine(ConsoleInput);
-            ConsoleOutput.Add(new LoggerArgs(null, Machina.LogLevel.INFO, $"Issuing \"{ConsoleInput}\""));
-            _parent.ConsoleScroller.ScrollToBottom();
-
             if (_parent.bot == null)
             {
                 //MainWindow.wssv.WebSocketServices.Broadcast($"{{\"msg\":\"disconnected\",\"data\":[]}}");
@@ -132,7 +128,15 @@ namespace MachinaBridge
             }
             else
             {
-                _parent.ExecuteInstruction(ConsoleInput);
+                string[] instructions = Parsing.SplitStatements(ConsoleInput, ';', "//");
+
+                foreach (var instruction in instructions)
+                {
+                    ConsoleOutput.Add(new LoggerArgs(null, Machina.LogLevel.INFO, $"Issuing \"{instruction}\""));
+                    _parent.ExecuteInstruction(instruction);
+                }
+
+                _parent.ConsoleScroller.ScrollToBottom();
             }
 
             this._parent.InputBlock.Text = String.Empty;
