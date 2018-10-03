@@ -65,7 +65,7 @@ namespace MachinaBridge
             uiContext = SynchronizationContext.Current;
 
             _maxLogLevel = Machina.LogLevel.INFO;
-            Machina.Logger.CustomLogging += Logger_CustomLogging;
+            Logger.CustomLogging += Logger_CustomLogging;
 
             Logger.Info("Machina Bridge: " + Version + "; Core: " + Robot.Version);
 
@@ -779,53 +779,17 @@ namespace MachinaBridge
                 return bot.Extrude();
             }
 
-            // If here, instruction is not available
-            // If here, something went wrong...
+            // If here, instruction is not available or something went wrong...
             Machina.Logger.Error($"I don't understand \"{instruction}\"...");
             return false;
         }
-
-        //public static string[] ParseMessage(string msg)
-        //{
-        //    try
-        //    {
-        //        // MEGA quick and idrty
-        //        // assuming a msg int he form of "MoveTo(300, 400, 500);" with optional spaces here and there...  
-        //        string[] split1 = msg.Split(new char[] { '(' });
-        //        string[] split2 = split1[1].Split(new char[] { ')' });
-        //        string[] args = split2[0].Split(new char[] { ',' });
-        //        for (int i = 0; i < args.Length; i++)
-        //        {
-        //            args[i] = Parsing.RemoveString(Parsing.RemoveSideChars(args[i], ' '), "\"");
-        //        }
-        //        string inst = Parsing.RemoveSideChars(split1[0], ' ');
-
-        //        string[] ret = new string[args.Length + 1];
-        //        ret[0] = inst;
-        //        for (int i = 0; i < args.Length; i++)
-        //        {
-        //            ret[i + 1] = args[i];
-        //        }
-
-        //        return ret;
-        //    }
-        //    catch
-        //    {
-        //        Machina.Logger.Error($"I don't understand \"{msg}\"...");
-        //        return null;
-        //    }
-        //}
+        
 
 
 
 
 
 
-
-        private void btn_ResetBridge_Click(object sender, RoutedEventArgs e)
-        {
-            InitializeWebSocketServer();
-        }
 
         public static void BadFormatInstruction(string message, Exception ex)
         {

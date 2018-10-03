@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 
 namespace MachinaBridge
@@ -42,14 +43,55 @@ namespace MachinaBridge
         /// <param name="e"></param>
         private void InputBlock_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Up)
+            // Don't do this for every single keystroke!
+            if (e.Key == Key.Down || e.Key == Key.Up)
             {
-                this.dc.ConsoleInputBack();
+                int dir = 0;
+                bool isInputMultiline = Regex.IsMatch(InputBlock.Text, Environment.NewLine);
+
+                if (isInputMultiline)
+                {
+                    // Figure out what to do here
+                    var caretIndex = InputBlock.CaretIndex;
+                    string[] lines = InputBlock.Text.Split(new string[] {Environment.NewLine}, StringSplitOptions.None);
+                    if (caretIndex < lines[0].Length)
+                    {
+                        dir = -1;
+                    }
+                    else if (caretIndex >= (InputBlock.Text.Length - lines[lines.Length - 1].Length))
+                    {
+                        dir = 1;
+                    }
+                }
+                else
+                {
+                    if (e.Key == Key.Up)
+                    {
+                        dir = -1;
+                    }
+                    else if (e.Key == Key.Down)
+                    {
+                        dir = 1;
+                    }
+                }
+
+                // Move or not
+                switch (dir)
+                {
+                    case -1:
+                        this.dc.ConsoleInputBack();
+                        break;
+
+                    case 1:
+                        this.dc.ConsoleInputForward();
+                        break;
+
+                    default:
+                        // do nothing!
+                        break;
+                }
             }
-            else if (e.Key == Key.Down)
-            {
-                this.dc.ConsoleInputForward();
-            }
+            
         }
 
         private void InputBlock_KeyDown(object sender, KeyEventArgs e)
@@ -265,8 +307,13 @@ namespace MachinaBridge
             DownloadDrivers();
         }
 
+        private void btn_ResetBridge_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeWebSocketServer();
+        }
 
-     
+
+
 
 
 
