@@ -585,7 +585,13 @@ namespace MachinaBridge
                         return false;
                     }
 
-                    return bot.ExternalAxis(axisNumber, increment);
+                    string target = "All";
+                    if (args.Length > 3)
+                    {
+                        target = args[3];
+                    }
+
+                    return bot.ExternalAxis(axisNumber, increment, target);
                 }
                 catch (Exception ex)
                 {
@@ -611,7 +617,13 @@ namespace MachinaBridge
                         return false;
                     }
 
-                    return bot.ExternalAxisTo(axisNumber, val);
+                    string target = "All";
+                    if (args.Length > 3)
+                    {
+                        target = args[3];
+                    }
+
+                    return bot.ExternalAxisTo(axisNumber, val, target);
                 }
                 catch (Exception ex)
                 {
