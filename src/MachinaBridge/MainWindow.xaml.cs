@@ -598,20 +598,60 @@ namespace MachinaBridge
                 try
                 {
                     int axisNumber;
-                    double increment;
+                    double val;
                     if (!Int32.TryParse(args[1], out axisNumber) || axisNumber < 1 || axisNumber > 6)
                     {
                         Console.WriteLine($"ERROR: Invalid axis number");
                         return false;
                     }
 
-                    if (!Double.TryParse(args[2], out increment))
+                    if (!Double.TryParse(args[2], out val))
                     {
-                        Console.WriteLine($"ERROR: Invalid increment value");
+                        Console.WriteLine($"ERROR: Invalid value " + args[2]);
                         return false;
                     }
 
-                    return bot.ExternalAxisTo(axisNumber, increment);
+                    return bot.ExternalAxisTo(axisNumber, val);
+                }
+                catch (Exception ex)
+                {
+                    BadFormatInstruction(instruction, ex);
+                    return false;
+                }
+            }
+            //else if (args[0].Equals("ArmAngle", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        double val;
+
+            //        if (!Double.TryParse(args[1], out val))
+            //        {
+            //            Console.WriteLine($"ERROR: Invalid value " + args[1]);
+            //            return false;
+            //        }
+
+            //        return bot.ArmAngle(val);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            else if (args[0].Equals("ArmAngleTo", StringComparison.CurrentCultureIgnoreCase))
+            {
+                try
+                {
+                    double val;
+
+                    if (!Double.TryParse(args[1], out val))
+                    {
+                        Console.WriteLine($"ERROR: Invalid value " + args[1]);
+                        return false;
+                    }
+
+                    return bot.ArmAngleTo(val);
                 }
                 catch (Exception ex)
                 {
