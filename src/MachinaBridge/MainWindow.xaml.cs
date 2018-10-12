@@ -25,6 +25,7 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using Logger = Machina.Logger;
 using Microsoft.Win32;
+using LogLevel = Machina.LogLevel;
 
 namespace MachinaBridge
 {
@@ -70,6 +71,11 @@ namespace MachinaBridge
             Logger.Info("Machina Bridge: " + Version + "; Core: " + Robot.Version);
 
             InitializeWebSocketServer();
+
+#if DEBUG
+            var item = combo_LogLevel.Items.GetItemAt(5) as ComboBoxItem;
+            item.IsSelected = true;
+#endif
         }
         
         private void Logger_CustomLogging(LoggerArgs e)
@@ -103,7 +109,7 @@ namespace MachinaBridge
             }
             else if (!Machina.Net.Net.ValidateIPv4Port(parts[1]))
             {
-                Logger.Error("Invalid IP address \"" + parts[1] + "\"");
+                Logger.Error("Invalid IP:Port address \"" + parts[1] + "\"");
                 return false;
             }
 
@@ -126,12 +132,12 @@ namespace MachinaBridge
             }
         }
 
-        private void InitializeWebSocketServer()
+        private bool InitializeWebSocketServer()
         {
             if (!ParseWebSocketURL())
             {
                 Logger.Error("Invalid WebSocket URL \"" + txtbox_WSServerURL.Text + "\"; try something like \"ws://127.0.0.1/Bridge\"");
-                return;
+                return false;
             }
 
             if (wssv != null && wssv.IsListening)
@@ -140,12 +146,19 @@ namespace MachinaBridge
             }
             
             wssv = new WebSocketServer(wssvURL);
-            //#if DEBUG
-            //            wssv.Log.Level = LogLevel.Trace;
-            //#endif
-            //wssv.AddWebSocketService<BridgeBehavior>(wssvBehavior);
             wssv.AddWebSocketService(wssvBehavior, () => new BridgeBehavior(bot, this));
-            wssv.Start();
+            
+            // @TODO: add a check here if the port is in use, and try a different port instead
+            try
+            {
+                wssv.Start();
+            }
+            catch
+            {
+                Logger.Error("Default websocket server is not available, please enter a new one manually...");
+                return false;
+            }
+
             if (wssv.IsListening)
             {
                 //Machina.Logger.Info($"Listening on port {wssv.Port}, and providing WebSocket services:");
@@ -153,8 +166,12 @@ namespace MachinaBridge
                 Logger.Info("Waiting for incoming connections on " + (wssvURL + wssvBehavior));
             }
 
+            return true;
             //lbl_ServerURL.Content = wssvURL + wssvBehavior;
         }
+
+
+
 
         private bool InitializeRobot()
         {
@@ -170,6 +187,7 @@ namespace MachinaBridge
             bot.ActionIssued += Bot_ActionIssued;
             bot.ActionReleased += Bot_ActionReleased;
             bot.ActionExecuted += Bot_ActionExecuted;
+            bot.MotionUpdate += Bot_MotionUpdate;
 
             bot.ControlMode(ControlType.Online);
 
@@ -183,6 +201,11 @@ namespace MachinaBridge
                 return bot.Connect(txtbox_IP.Text, Convert.ToInt32(txtbox_Port.Text));
             }
 
+        }
+
+        private void Bot_MotionUpdate(object sender, MotionUpdateArgs args)
+        {
+            Logger.Debug(args.ToString());
         }
 
         private void Bot_ActionExecuted(object sender, ActionExecutedArgs args)
@@ -575,13 +598,13 @@ namespace MachinaBridge
                     double increment;
                     if (!Int32.TryParse(args[1], out axisNumber) || axisNumber < 1 || axisNumber > 6)
                     {
-                        Console.WriteLine($"ERROR: Invalid axis number");
+                        Logger.Error($"Invalid axis number");
                         return false;
                     }
 
                     if (!Double.TryParse(args[2], out increment))
                     {
-                        Console.WriteLine($"ERROR: Invalid increment value");
+                        Logger.Error($"Invalid increment value");
                         return false;
                     }
 
@@ -607,13 +630,13 @@ namespace MachinaBridge
                     double val;
                     if (!Int32.TryParse(args[1], out axisNumber) || axisNumber < 1 || axisNumber > 6)
                     {
-                        Console.WriteLine($"ERROR: Invalid axis number");
+                        Logger.Error($"Invalid axis number");
                         return false;
                     }
 
                     if (!Double.TryParse(args[2], out val))
                     {
-                        Console.WriteLine($"ERROR: Invalid value " + args[2]);
+                        Logger.Error($"Invalid value " + args[2]);
                         return false;
                     }
 
@@ -631,26 +654,28 @@ namespace MachinaBridge
                     return false;
                 }
             }
-            //else if (args[0].Equals("ArmAngle", StringComparison.CurrentCultureIgnoreCase))
-            //{
-            //    try
-            //    {
-            //        double val;
+            else if (args[0].Equals("ArmAngle", StringComparison.CurrentCultureIgnoreCase))
+            {
+                Logger.Warning(
+                    "Relative `ArmAngle` is temporarily disabled, please use the absolute `ArmAngleTo` version instead.");
+                //try
+                //{
+                //    double val;
 
-            //        if (!Double.TryParse(args[1], out val))
-            //        {
-            //            Console.WriteLine($"ERROR: Invalid value " + args[1]);
-            //            return false;
-            //        }
+                //    if (!Double.TryParse(args[1], out val))
+                //    {
+                //        Console.WriteLine($"ERROR: Invalid value " + args[1]);
+                //        return false;
+                //    }
 
-            //        return bot.ArmAngle(val);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        BadFormatInstruction(instruction, ex);
-            //        return false;
-            //    }
-            //}
+                //    return bot.ArmAngle(val);
+                //}
+                //catch (Exception ex)
+                //{
+                //    BadFormatInstruction(instruction, ex);
+                //    return false;
+                //}
+            }
             else if (args[0].Equals("ArmAngleTo", StringComparison.CurrentCultureIgnoreCase))
             {
                 try
@@ -659,7 +684,7 @@ namespace MachinaBridge
 
                     if (!Double.TryParse(args[1], out val))
                     {
-                        Console.WriteLine($"ERROR: Invalid value " + args[1]);
+                        Logger.Error($"Invalid value " + args[1]);
                         return false;
                     }
 
@@ -702,7 +727,24 @@ namespace MachinaBridge
             }
             else if (args[0].Equals("CustomCode", StringComparison.CurrentCultureIgnoreCase))
             {
-                bot.Logger.Error("\"CustomCode\" is not a streamable Action, only available for offline code compilation");
+                bot.Logger.Warning("\"CustomCode\" can lead to unexpected results, use with caution and only if you know what you are doing.");
+
+                try
+                {
+                    string statement = args[1];
+                    bool dec = false;
+                    if (args.Length > 2)
+                    {
+                        dec = bool.Parse(args[2]);  // if not good, throw and explain
+                    }
+
+                    return bot.CustomCode(statement, dec);
+                }
+                catch (Exception ex)
+                {
+                    BadFormatInstruction(instruction, ex);
+                }
+
                 return false;
             }
             else if (args[0].Equals("new Tool", StringComparison.CurrentCultureIgnoreCase) ||

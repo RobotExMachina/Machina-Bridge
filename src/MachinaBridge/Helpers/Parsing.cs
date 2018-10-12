@@ -48,7 +48,9 @@ namespace MachinaBridge
         }
 
         /// <summary>
-        /// Given a bunch of code, splits it into clean individual statements. Removes new line chars, in-line "//" comments and splits by 
+        /// Given a bunch of code, splits it into clean individual statements.
+        /// Removes new line chars, in-line "//" comments and splits by statementSeparator.
+        /// Will respect characters inside double quotes.
         /// </summary>
         /// <param name="program"></param>
         /// <param name="statementSeparator"></param>
@@ -59,8 +61,12 @@ namespace MachinaBridge
             string inline = RemoveString(program, Environment.NewLine);
 
             // Split by statement
-            string[] statements = inline.Split(new char[] {statementSeparator}, StringSplitOptions.RemoveEmptyEntries);
+            //string[] statements = inline.Split(new char[] {statementSeparator}, StringSplitOptions.RemoveEmptyEntries);
 
+            // Split by statement maintaining chars wrapped in doublequotes https://stackoverflow.com/a/1757107/1934487
+            string[] statements =
+                RemoveEmptyLines(Regex.Split(inline, statementSeparator + "(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+            
             // Remove inline comments
             for (int i = 0; i < statements.Length; i++)
             {
@@ -122,6 +128,18 @@ namespace MachinaBridge
             }
 
             return s;
+        }
+
+        // This is terrible, but does the job...
+        public static string[] RemoveEmptyLines(IEnumerable<string> array)
+        {
+            List<string> list = new List<string>();
+            foreach (var str in array)
+            {
+                if (str != String.Empty) list.Add(str);
+            }
+
+            return list.ToArray();
         }
     }
 }

@@ -31,6 +31,11 @@
 - Console input box now highlights selection.
 - Add multiline input support pressing Ctrl+Enter
 - Add parsing of multiple instructions
+- Fix app crash whenever the WS server address was in use.
+- Add `ArmAngle`, `CustomCode` and `ExernalAxis` with extaxtarget argument
+- DEBUG mode now opens the app in 5 - DEBUG
+- `MotionUpdates` are logged on the console
+- Improved instruction parser.
 
 ---
 # v0.8.2

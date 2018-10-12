@@ -151,6 +151,11 @@
             Writes a description of each pending Action to the Console.
             </summary>
         </member>
+        <member name="T:Machina.ActionArmAngle">
+            <summary>
+            An action to change the arm-angle value for 7-dof robotic arms. 
+            </summary>
+        </member>
         <member name="T:Machina.ActionAttachTool">
             <summary>
             Attaches a Tool to the robot flange. Must have beeb previously defined on the Robot.
@@ -405,10 +410,10 @@
             <param name="block">Use actions in waiting queue or buffer?</param>
             <returns></returns>
         </member>
-        <member name="M:Machina.CompilerABB.GetUNSAFERobTargetValue(Machina.RobotCursor)">
+        <member name="M:Machina.CompilerABB.GetRobTargetValue(Machina.RobotCursor)">
             <summary>
             Returns an RAPID robtarget representation of the current state of the cursor.
-            WARNING: this method is EXTREMELY UNSAFE; it performs no IK calculations, assigns default [0,0,0,0] 
+            WARNING: this method is UNSAFE; it performs no IK calculations, assigns default [0,0,0,0] 
             robot configuration and assumes the robot controller will figure out the correct one.
             </summary>
             <returns></returns>
@@ -440,11 +445,18 @@
             <param name="cursor"></param>
             <returns></returns>
         </member>
-        <member name="M:Machina.CompilerABB.GetExternalJointsValue(Machina.RobotCursor)">
+        <member name="M:Machina.CompilerABB.GetExternalJointsRobTargetValue(Machina.RobotCursor)">
             <summary>
-            Returns a RAPID representation of an extjoints object
+            Gets the cursors extax representation for a Cartesian target.
             </summary>
             <param name="cursor"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.CompilerABB.GetExternalAxesValue(Machina.ExternalAxes)">
+            <summary>
+            Gets the RAPID extax representation from an ExternalAxes object.
+            </summary>
+            <param name="extax"></param>
             <returns></returns>
         </member>
         <member name="T:Machina.CompilerHuman">
@@ -875,11 +887,28 @@
             Reverts the Driver object to a blank state before any connection attempt, objects retrieved, subscriptions, etc,
             </summary>
         </member>
+        <member name="M:Machina.Drivers.Driver.GetDeviceDriverModules(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Returns the driver modules necessary to run on this device for Machina to talk to it.
+            Takes a dictionary of values to be replaced on the modules, such as {"IP","192.168.125.1"} or {"PORT","7000"}.
+            Returns a dict with filename-file pairs. 
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
         <member name="M:Machina.Drivers.Driver.ConnectToDevice(System.Int32)">
             <summary>
             Performs all necessary operations for a successful real-time connection to a real/virtual device.
             </summary>
             <param name="deviceId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Drivers.Driver.ConnectToDevice(System.String,System.Int32)">
+            <summary>
+            Performs all necessary operations for a successful real-time connection to a real/virtual device.
+            </summary>
+            <param name="ip"></param>
+            <param name="port"></param>
             <returns></returns>
         </member>
         <member name="M:Machina.Drivers.Driver.DisconnectFromDevice">
@@ -969,6 +998,15 @@
             Main constructor
             </summary>
         </member>
+        <member name="M:Machina.Drivers.DriverABB.GetDeviceDriverModules(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Returns the driver modules necessary to run on this device for Machina to talk to it.
+            Takes a dictionary of values to be replaced on the modules, such as {"IP","192.168.125.1"} or {"PORT","7000"}.
+            Returns a dict with filename-file pairs. 
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
         <member name="M:Machina.Drivers.DriverABB.ConnectToDevice(System.String,System.Int32)">
             <summary>
             Start a TCP connection to device via its address on the network.
@@ -1018,11 +1056,16 @@
             interactivity where response time is not a priority. 
             </summary>
         </member>
-        <member name="F:Machina.ControlType.Stream">
+        <member name="F:Machina.ControlType.Online">
             <summary>
             Online connection to a controller, the library will stream individual targets
             at run time as they get priority. Provides the closest approximation to real-time
             interaction, useful on situations where low latency is required.
+            </summary>
+        </member>
+        <member name="F:Machina.ControlType.Stream">
+            <summary>
+            Alias for online, to deprecate
             </summary>
         </member>
         <member name="T:Machina.CycleType">
@@ -1102,6 +1145,26 @@
         <member name="T:Machina.LogLevel">
             <summary>
             Defines how verbose should internal logging be
+            </summary>
+        </member>
+        <member name="T:Machina.ExternalAxesTarget">
+            <summary>
+            Defines where will the external axes be applied to
+            </summary>
+        </member>
+        <member name="F:Machina.ExternalAxesTarget.All">
+            <summary>
+            All kinds of external axes.
+            </summary>
+        </member>
+        <member name="F:Machina.ExternalAxesTarget.Cartesian">
+            <summary>
+            Only external axes for cartesian motion.
+            </summary>
+        </member>
+        <member name="F:Machina.ExternalAxesTarget.Joint">
+            <summary>
+            Only external axes for joint motion.
             </summary>
         </member>
         <member name="T:Machina.ActionExecutedArgs">
@@ -1321,7 +1384,22 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Machina.Net.GetLocalIPAddressInNetwork(System.String,System.String,System.String@)">
+        <member name="M:Machina.Net.Net.ValidateIPv4(System.String)">
+            <summary>
+            Returns true if input it is a valid IPv4 address.
+            https://stackoverflow.com/a/11412991/1934487
+            </summary>
+            <param name="ipString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Net.Net.ValidateIPv4Port(System.String)">
+            <summary>
+            Returns true if input it is a valid IPv4 address + port, like "127.0.0.1:7000"
+            </summary>
+            <param name="ipString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Net.Net.GetLocalIPAddressInNetwork(System.String,System.String,System.String@)">
             <summary>
             Given a remote IP address and a subnet mask, tries to find the local IP address of this host in the same subnet.
             This is useful to figure out which IP this host is using in the same network as the remote. 
@@ -3408,12 +3486,21 @@
             <param name="initiate"></param>
             <returns></returns>
         </member>
-        <member name="M:Machina.Control.IssueExternalAxisRequest(System.Int32,System.Double,System.Boolean)">
+        <member name="M:Machina.Control.IssueExternalAxisRequest(System.Int32,System.Double,Machina.ExternalAxesTarget,System.Boolean)">
             <summary>
             Issue a request to modify a external axis in this robot.
             Note axisNumber is one-based, i.e. axisNumber 1 is _externalAxes[0]
             </summary>
             <param name="axisNumber"></param>
+            <param name="value"></param>
+            <param name="target"></param>
+            <param name="relative"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Control.IssueArmAngleRequest(System.Double,System.Boolean)">
+            <summary>
+            Issue a request to modify the arm-angle value for 7-dof robotic arms. 
+            </summary>
             <param name="value"></param>
             <param name="relative"></param>
             <returns></returns>
@@ -3597,14 +3684,14 @@
         </member>
         <member name="M:Machina.Robot.ControlMode(Machina.ControlType)">
             <summary>
-            Sets the control type the robot will operate under, like "offline", "execute" or "stream".
+            Sets the control type the robot will operate under, like "offline" or "online".
             </summary>
             <param name="controlType"></param>
             <returns></returns>
         </member>
         <member name="M:Machina.Robot.ControlMode(System.String)">
             <summary>
-            Sets the control type the robot will operate under, like "offline", "execute" or "stream".
+            Sets the control type the robot will operate under, like "offline" or "online".
             </summary>
             <param name="controlType"></param>
             <returns></returns>
@@ -3997,6 +4084,27 @@
             <param name="axisNumber">Axis number from 1 to 6.</param>
             <param name="increment">Increment value in mm or degrees.</param>
         </member>
+        <member name="M:Machina.Robot.ExternalAxis(System.Int32,System.Double,System.String)">
+            <summary>
+            Increase the value of one of the robot's external axis. 
+            Values expressed in degrees or milimeters, depending on the nature of the external axis.
+            Note that the effect of this change of external axis will go in effect on the next motion Action.
+            </summary>
+            <param name="axisNumber">Axis number from 1 to 6.</param>
+            <param name="increment">Increment value in mm or degrees.</param>
+            <param name="externalAxesTarget">Apply this change to all external axes, or only cartesian/joint targets.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.ExternalAxis(System.Int32,System.Double,Machina.ExternalAxesTarget)">
+            <summary>
+            Increase the value of one of the robot's external axis. 
+            Values expressed in degrees or milimeters, depending on the nature of the external axis.
+            Note that the effect of this change of external axis will go in effect on the next motion Action.
+            </summary>
+            <param name="axisNumber">Axis number from 1 to 6.</param>
+            <param name="increment">Increment value in mm or degrees.</param>
+            <param name="externalAxesTarget">Apply this change to all external axes, or only cartesian/joint targets.</param>
+        </member>
         <member name="M:Machina.Robot.ExternalAxisTo(System.Int32,System.Double)">
             <summary>
             Set the value of one of the robot's external axis. 
@@ -4005,6 +4113,35 @@
             </summary>
             <param name="axisNumber">Axis number from 1 to 6.</param>
             <param name="value">Axis value in mm or degrees.</param>
+        </member>
+        <member name="M:Machina.Robot.ExternalAxisTo(System.Int32,System.Double,System.String)">
+            <summary>
+            Set the value of one of the robot's external axis. 
+            Values expressed in degrees or milimeters, depending on the nature of the external axis.
+            Note that the effect of this change of external axis will go in effect on the next motion Action.
+            </summary>
+            <param name="axisNumber">Axis number from 1 to 6.</param>
+            <param name="value">Axis value in mm or degrees.</param>
+            <param name="externalAxesTarget">Apply this change to all external axes, or only cartesian/joint targets.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.ExternalAxisTo(System.Int32,System.Double,Machina.ExternalAxesTarget)">
+            <summary>
+            Set the value of one of the robot's external axis. 
+            Values expressed in degrees or milimeters, depending on the nature of the external axis.
+            Note that the effect of this change of external axis will go in effect on the next motion Action.
+            </summary>
+            <param name="axisNumber">Axis number from 1 to 6.</param>
+            <param name="value">Axis value in mm or degrees.</param>
+            <param name="externalAxesTarget">Apply this change to all external axes, or only cartesian/joint targets.</param>
+        </member>
+        <member name="M:Machina.Robot.ArmAngleTo(System.Double)">
+            <summary>
+            Set the value of the arm-angle parameter.
+            This value represents the planar offset around the 7th axis for 7-dof robotic arms.
+            </summary>
+            <param name="value">Angular value in degrees.</param>
+            <returns></returns>
         </member>
         <member name="M:Machina.Robot.Wait(System.Int64)">
             <summary>
@@ -4180,6 +4317,13 @@
             </summary>
             <param name="action"></param>
             <returns></returns>
+        </member>
+        <member name="M:Machina.Robot.GetDeviceDriverModules(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Returns the module files necessary to load on the device for a successful connection.
+            </summary>
+            <param name="parameters">Values necessary to be replaced on the modules, such as {"HOSTNAME","192.168.125.1"} or {"PORT","7000"}.</param>
+            <returns>A dict with filename-filecontent pairs.</returns>
         </member>
         <member name="M:Machina.Robot.GetCurrentPosition">
             <summary>
