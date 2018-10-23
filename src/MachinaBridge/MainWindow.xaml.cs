@@ -34,7 +34,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.3";
+        public static readonly string Version = "0.8.4";
 
         public  Robot bot;
         public  List<Tool> tools = new List<Tool>();
@@ -71,6 +71,9 @@ namespace MachinaBridge
             Logger.Info("Machina Bridge: " + Version + "; Core: " + Robot.Version);
 
             InitializeWebSocketServer();
+
+            // Handle pasting text on the input
+            DataObject.AddPastingHandler(InputBlock, InputBlock_Paste);
 
 #if DEBUG
             var item = combo_LogLevel.Items.GetItemAt(5) as ComboBoxItem;

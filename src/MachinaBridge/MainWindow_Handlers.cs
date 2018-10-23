@@ -34,6 +34,22 @@ namespace MachinaBridge
             InputBlock.Text = "Enter any command to stream it to the robot...";
         }
 
+        /// <summary>
+        /// Enables pasting text with newline characters.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void InputBlock_Paste(object sender, DataObjectPastingEventArgs e)
+        {
+            // Tried https://stackoverflow.com/a/3061506/1934487 btu e.Handled wouldn't work
+            // Implemented by toggling AcceptsReturn on for proper system handling of text pasting,
+            // and posting a threaded call to turn it off. Not great, but does the trick... 
+            var isText = e.SourceDataObject.GetDataPresent(DataFormats.UnicodeText, true);
+            if (!isText) return;
+
+            InputBlock.AcceptsReturn = true;
+            uiContext.Post(x => { InputBlock.AcceptsReturn = false; }, null);
+        }
 
 
         /// <summary>
