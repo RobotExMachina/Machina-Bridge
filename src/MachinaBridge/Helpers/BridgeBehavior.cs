@@ -50,6 +50,8 @@ namespace MachinaBridge
                 return;
             }
 
+            Logger.Verbose("Action from \"" + _clientName + "\": " + e.Data);
+
             _parent.ExecuteInstructionOnContext(e.Data);
         }
 

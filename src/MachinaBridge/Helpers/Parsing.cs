@@ -25,10 +25,11 @@ namespace MachinaBridge
                 // assuming a msg int he form of "MoveTo(300, 400, 500);" with optional spaces here and there...  
                 string[] split1 = statement.Split(new char[] { '(' });
                 string[] split2 = split1[1].Split(new char[] { ')' });
-                string[] args = split2[0].Split(new char[] { ',' });
+                //string[] args = split2[0].Split(new char[] { ',' });  // @TODO: must especify that commas should not be inside double quotes...
+                string[] args = RemoveEmptyLines(Regex.Split(split2[0], ',' + "(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
                 for (int i = 0; i < args.Length; i++)
                 {
-                    args[i] = RemoveString(RemoveSideChars(args[i], ' '), "\"");
+                    args[i] = RemoveSideChars(RemoveSideChars(args[i], ' '), '"');
                 }
                 string inst = RemoveSideChars(split1[0], ' ');
 
