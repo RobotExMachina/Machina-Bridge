@@ -35,7 +35,7 @@
         </member>
         <member name="M:Machina.Action.ToInstruction">
             <summary>
-            Generates a string representing a "serialized" instruction representing the 
+            Generates a string representing a "serialized" instruction with the 
             Machina-API command that would have generated this action. 
             Useful for generating actions to send to the Bridge.
             </summary>
@@ -1301,6 +1301,11 @@
         <member name="P:Machina.MotionUpdateArgs.ExternalAxes">
             <summary>
             Last known roobt external axes.
+            </summary>
+        </member>
+        <member name="T:Machina.IInstructable">
+            <summary>
+            Makes an object serializable into the Machina API instruction that would generate an equal instance of it.
             </summary>
         </member>
         <member name="M:Machina.IO.ReadTextResource(System.String)">
