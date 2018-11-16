@@ -23,6 +23,15 @@
 # TODO:
 
 ---
+# v0.8.5
+- Core update: https://github.com/RobotExMachina/Machina.NET/releases/tag/v0.8.5
+
+---
+# v0.8.4
+- Bug fixes with tool definitions
+- Numbers serialize as `CultureInvariant`
+
+---
 # v0.8.3
 - Add "Download drivers" button.
 - Add version dump to console.

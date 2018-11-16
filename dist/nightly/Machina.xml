@@ -3088,6 +3088,15 @@
             <param name="other"></param>
             <returns></returns>
         </member>
+        <member name="M:Machina.RotationVector.#ctor(System.Double,System.Double,System.Double)">
+            <summary>
+            Creates a rotation represented by a RotationVector: an unit rotation
+            axis multiplied by the rotation angle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+        </member>
         <member name="M:Machina.RotationVector.#ctor(System.Double,System.Double,System.Double,System.Double)">
             <summary>
             Creates a rotation represented by a RotationVector: an unit rotation
