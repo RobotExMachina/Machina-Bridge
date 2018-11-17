@@ -23,6 +23,7 @@ namespace MachinaBridge
     {
         private bool wasInputBlockClicked = false;
         private Machina.LogLevel _maxLogLevel;
+        private bool sendOnEnter = true;
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -70,11 +71,13 @@ namespace MachinaBridge
                     // Figure out what to do here
                     var caretIndex = InputBlock.CaretIndex;
                     string[] lines = InputBlock.Text.Split(new string[] {Environment.NewLine}, StringSplitOptions.None);
-                    if (caretIndex < lines[0].Length)
+                    // If caret on top line
+                    if (e.Key == Key.Up && caretIndex < lines[0].Length)
                     {
                         dir = -1;
                     }
-                    else if (caretIndex >= (InputBlock.Text.Length - lines[lines.Length - 1].Length))
+                    // If caret on last line
+                    else if (e.Key == Key.Down && caretIndex >= (InputBlock.Text.Length - lines[lines.Length - 1].Length))
                     {
                         dir = 1;
                     }
@@ -95,11 +98,17 @@ namespace MachinaBridge
                 switch (dir)
                 {
                     case -1:
-                        this.dc.ConsoleInputBack();
+                        if (this.dc.ConsoleInputBack())
+                        {
+                            //ChangeCaretToEnd(InputBlock);
+                        }
                         break;
 
                     case 1:
-                        this.dc.ConsoleInputForward();
+                        if (this.dc.ConsoleInputForward())
+                        {
+                            //ChangeCaretToBeginning(InputBlock);
+                        }
                         break;
 
                     default:
@@ -110,30 +119,54 @@ namespace MachinaBridge
             
         }
 
+        public void ChangeCaretToBeginning(TextBox txtBox)
+        {
+            txtBox.CaretIndex = 0;
+        }
+
+        public void ChangeCaretToEnd(TextBox txtBox)
+        {
+            txtBox.CaretIndex = txtBox.Text.Length - 1;
+        }
+
+
         private void InputBlock_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
                 if (InputBlock.Text.Length == 0) return;
 
-                // If Ctrl+Enter, insert new line
-                if (Keyboard.Modifiers == ModifierKeys.Control)
+                if (sendOnEnter)
                 {
-                    // https://stackoverflow.com/a/10549299/1934487
-                    var caretIndex = InputBlock.CaretIndex;
-                    InputBlock.Text = InputBlock.Text.Insert(caretIndex, System.Environment.NewLine);
-                    InputBlock.CaretIndex = caretIndex + 1;
+                    IssueInputBlock();
                 }
-                // Otherwise, issue commands
                 else
                 {
-                    dc.ConsoleInput = InputBlock.Text;
-                    dc.RunConsoleInput();
-                    InputBlock.Focus();
+                    // If Ctrl+Enter, issue commands
+                    if (Keyboard.Modifiers == ModifierKeys.Control)
+                    {
+                        IssueInputBlock();
+                    }
+                    // Otherwise, new line
+                    else
+                    {
+                        // https://stackoverflow.com/a/10549299/1934487
+                        var caretIndex = InputBlock.CaretIndex;
+                        InputBlock.Text = InputBlock.Text.Insert(caretIndex, System.Environment.NewLine);
+                        InputBlock.CaretIndex = caretIndex + 1;
+                    }
                 }
-
             }
         }
+        
+        internal void IssueInputBlock()
+        {
+            dc.ConsoleInput = InputBlock.Text;
+            dc.RunConsoleInput();
+            InputBlock.Focus();
+        }
+
+
 
         /// <summary>
         /// Quick and dirty clear the ConsoleInput on first click.
@@ -250,6 +283,7 @@ namespace MachinaBridge
                     EnableElement(combo_Manager, false);
                     EnableElement(txtbox_IP, false);
                     EnableElement(txtbox_Port, false);
+                    UpdateRobotStatus();
                 }
             }
             else if (btn_Connect.Content.ToString() == "DISCONNECT")
@@ -267,6 +301,7 @@ namespace MachinaBridge
                     EnableElement(txtbox_Port, true);
                 }
                 btn_Connect.Content = "CONNECT";
+                UpdateRobotStatus();
             }
         }
 
@@ -328,6 +363,21 @@ namespace MachinaBridge
             InitializeWebSocketServer();
         }
 
+        private void btn_InputBlock_Send_Click(object sender, RoutedEventArgs e)
+        {
+            IssueInputBlock();
+        }
+
+        private void cbx_EnterSends_Checked(object sender, RoutedEventArgs e)
+        {
+            sendOnEnter = true;
+        }
+
+        private void cbx_EnterSends_Unchecked(object sender, RoutedEventArgs e)
+        {
+            sendOnEnter = false;
+        }
+
 
 
 
@@ -365,6 +415,8 @@ namespace MachinaBridge
                 textBox.IsEnabled = enabled;
             }
         }
+
+
 
 
     }

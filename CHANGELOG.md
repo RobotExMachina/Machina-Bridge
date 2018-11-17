@@ -22,6 +22,9 @@
 ```
 # TODO:
 
+# v0.8.6
+- Add "Send on Enter" to override immediate send behavior.
+
 ---
 # v0.8.5
 - Core update: https://github.com/RobotExMachina/Machina.NET/releases/tag/v0.8.5

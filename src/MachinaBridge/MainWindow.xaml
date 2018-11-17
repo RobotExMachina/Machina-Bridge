@@ -9,10 +9,10 @@
         Title="Machina Bridge" Height="800" Width="1600" Background="#FF2E2E2E"
         Closing="Window_Closing" Loaded="MainWindow_Loaded">
     <Grid>
-        <Grid.ColumnDefinitions>
+        <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="733*"/>
             <ColumnDefinition Width="63*"/>
-        </Grid.ColumnDefinitions>
+        </Grid.ColumnDefinitions>-->
         <Label x:Name="lbl_MachinaBridgeApp" Content="MACHINA BRIDGE" HorizontalAlignment="Left" Height="52" Margin="10,10,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans" Foreground="White" FontSize="24"/>
         <Separator Height="15" Margin="16,47,20,0" Foreground="White" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
         <Label x:Name="lbl_Robot" Content="ROBOT" HorizontalAlignment="Left" Height="52" Margin="10,68,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
@@ -47,17 +47,17 @@
         <TextBlock x:Name="txtblock_Clients" HorizontalAlignment="Left" Height="60" Margin="96,657,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="232" Foreground="White" FontFamily="Consolas" FontSize="10"/>
         <Button x:Name="btn_ResetBridge" Content="RESET BRIDGE" HorizontalAlignment="Left" Height="24" Margin="16,727,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontWeight="Bold" Click="btn_ResetBridge_Click"/>
 
-        <Label x:Name="lbl_Queue" Content="QUEUE" HorizontalAlignment="Left" Height="52" Margin="366,68,0,0" VerticalAlignment="Top" Width="96" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
-        <StackPanel Margin="0,95,789,651" Orientation="Horizontal" HorizontalAlignment="Right">
-            <CheckBox Name="cbx_ClearExecuted" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" IsChecked="True" Checked="cbx_ClearExecuted_Checked" Unchecked="cbx_ClearExecuted_Unchecked">
-                <TextBlock>Clear Executed</TextBlock>
+        <Label x:Name="lbl_Queue" Content="QUEUE" HorizontalAlignment="Left" Height="52" Margin="366,306,0,0" VerticalAlignment="Top" Width="96" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
+        <StackPanel Visibility="Visible" Margin="0,327,917,419" Orientation="Horizontal" HorizontalAlignment="Right">
+            <CheckBox x:Name="cbx_ClearExecuted" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" IsChecked="True" Checked="cbx_ClearExecuted_Checked" Unchecked="cbx_ClearExecuted_Unchecked">
+                <TextBlock><Run Text="Clear Executed"/></TextBlock>
             </CheckBox>
         </StackPanel>
-        <ComboBox x:Name="combo_QueueTextMode" HorizontalAlignment="Right" Margin="0,92,656,0" VerticalAlignment="Top" Width="100" Height="20" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_QueueTextMode_SelectionChanged">
+        <ComboBox x:Name="combo_QueueTextMode" HorizontalAlignment="Right" Margin="0,327,779,0" VerticalAlignment="Top" Width="100" Height="20" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_QueueTextMode_SelectionChanged">
             <ComboBoxItem IsEnabled="True" Content="INSTRUCTION"/>
             <ComboBoxItem Content="HUMAN"/>
         </ComboBox>
-        <ScrollViewer Name="QueueScroller" Margin="372,119,656,18" Background="Black" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <ScrollViewer Name="QueueScroller" Margin="372,364,779,18" Background="Black" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <StackPanel Name="QueueStackPanel">
                 <ItemsControl Name="QueueItemControl" ItemsSource="{Binding ActionsQueue, Mode=OneWay}">
                     <ItemsControl.ItemTemplate>
@@ -118,7 +118,8 @@
             <ComboBoxItem Content="4 - VERBOSE" Tag="4"/>
             <ComboBoxItem Content="5 - DEBUG" Tag="5"/>
         </ComboBox>
-        <Grid Name="ConsoleGrid" Margin="842,119,20,18" Background="Black" Grid.ColumnSpan="2">
+
+        <Grid Name="ConsoleGrid" Margin="842,119,20,48" Background="Black" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="8*" />
                 <RowDefinition Height="3" />
@@ -173,9 +174,39 @@
             <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch" Background="#FFA0A0A0" />
             <TextBox Name="InputBlock" Grid.Row="2" Text="{Binding ConsoleInput, Mode=TwoWay}" Background="Black" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono" BorderBrush="{x:Null}" SelectionBrush="#A500F3FF"/>
         </Grid>
-        
 
+        <Label x:Name="lbl_Status" Content="STATUS" HorizontalAlignment="Left" Height="52" Margin="366,69,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
 
+        <Label x:Name="lbl_Status_TCP_Position" Content="POSITION" Padding="2" HorizontalAlignment="Left" Height="20" Margin="370,113,0,0" VerticalAlignment="Top" Width="144" FontFamily=".\Resources\#IBM Plex Mono Light" Foreground="White" FontSize="10"/>
+        <Label x:Name="lbl_Status_TCP_Position_Value" Content="-" Padding="2" HorizontalAlignment="Left" Height="20" Margin="481,113,0,0" VerticalAlignment="Top" Width="332" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10" HorizontalContentAlignment="Right"/>
+
+        <Label x:Name="lbl_Status_TCP_Orientation" Content="ORIENTATION" Padding="2" HorizontalAlignment="Left" Height="20" Margin="370,133,0,0" VerticalAlignment="Top" Width="144" FontFamily=".\Resources\#IBM Plex Mono Light" Foreground="White" FontSize="10"/>
+        <Label x:Name="lbl_Status_TCP_Orientation_Value" Content="-" Padding="2"  HorizontalAlignment="Left" Height="20" Margin="481,133,0,0" VerticalAlignment="Top" Width="332" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10" HorizontalContentAlignment="Right"/>
+
+        <Label x:Name="lbl_Status_Axes" Content="AXES" Padding="2" HorizontalAlignment="Left" Height="20" Margin="370,152,0,0" VerticalAlignment="Top" Width="144" FontFamily=".\Resources\#IBM Plex Mono Light" Foreground="White" FontSize="10"/>
+        <Label x:Name="lbl_Status_Axes_Value" Content="-" Padding="2" HorizontalAlignment="Left" Height="20" Margin="481,152,0,0" VerticalAlignment="Top" Width="332" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10" HorizontalContentAlignment="Right"/>
+
+        <Label x:Name="lbl_Status_Ext_Axes" Content="EXT.AXES" Padding="2" HorizontalAlignment="Left" Height="20" Margin="370,172,0,0" VerticalAlignment="Top" Width="144" FontFamily=".\Resources\#IBM Plex Mono Light" Foreground="White" FontSize="10"/>
+        <Label x:Name="lbl_Status_Ext_Axes_Value" Content="-" Padding="2" HorizontalAlignment="Left" Height="20" Margin="481,172,0,0" VerticalAlignment="Top" Width="332" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10" HorizontalContentAlignment="Right"/>
+
+        <Label x:Name="lbl_Status_SpeedAcceleration" Content="SPEED/ACCELERATION" Padding="2" HorizontalAlignment="Left" Height="20" Margin="370,192,0,0" VerticalAlignment="Top" Width="144" FontFamily=".\Resources\#IBM Plex Mono Light" Foreground="White" FontSize="10"/>
+        <Label x:Name="lbl_Status_SpeedAcceleration_Value" Content="-" Padding="2" HorizontalAlignment="Left" Height="20" Margin="481,192,0,0" VerticalAlignment="Top" Width="332" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10" HorizontalContentAlignment="Right"/>
+
+        <Label x:Name="lbl_Status_Precision" Content="PRECISION" Padding="2" HorizontalAlignment="Left" Height="20" Margin="370,212,0,0" VerticalAlignment="Top" Width="144" FontFamily=".\Resources\#IBM Plex Mono Light" Foreground="White" FontSize="10"/>
+        <Label x:Name="lbl_Status_Precision_Value" Content="-" Padding="2" HorizontalAlignment="Left" Height="20" Margin="481,212,0,0" VerticalAlignment="Top" Width="332" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10" HorizontalContentAlignment="Right"/>
+
+        <Label x:Name="lbl_Status_MotionMode" Content="MOTION MODE" Padding="2" HorizontalAlignment="Left" Height="20" Margin="370,232,0,0" VerticalAlignment="Top" Width="144" FontFamily=".\Resources\#IBM Plex Mono Light" Foreground="White" FontSize="10"/>
+        <Label x:Name="lbl_Status_MotionMode_Value" Content="-" Padding="2" HorizontalAlignment="Left" Height="20" Margin="481,232,0,0" VerticalAlignment="Top" Width="332" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10" HorizontalContentAlignment="Right"/>
+
+        <Label x:Name="lbl_Status_Tool" Content="TOOL" Padding="2" HorizontalAlignment="Left" Height="20" Margin="370,252,0,0" VerticalAlignment="Top" Width="144" FontFamily=".\Resources\#IBM Plex Mono Light" Foreground="White" FontSize="10"/>
+        <Label x:Name="lbl_Status_Tool_Value" Content="-" Padding="2" HorizontalAlignment="Left" Height="20" Margin="481,252,0,0" VerticalAlignment="Top" Width="332" FontFamily=".\Resources\#IBM Plex Mono Medium" Foreground="White" FontSize="10" HorizontalContentAlignment="Right"/>
+
+        <StackPanel Visibility="Visible" Margin="0,731,95,15" Orientation="Horizontal" HorizontalAlignment="Right">
+            <CheckBox x:Name="cbx_EnterSends" Foreground="White" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" IsChecked="True" Checked="cbx_EnterSends_Checked" Unchecked="cbx_EnterSends_Unchecked">
+                <TextBlock><Run Text="Send on Enter"/></TextBlock>
+            </CheckBox>
+        </StackPanel>
+        <Button x:Name="btn_InputBlock_Send" Content="SEND" HorizontalAlignment="Left" Height="20" Margin="1523,731,0,0" VerticalAlignment="Top" Width="49" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="10" Click="btn_InputBlock_Send_Click"/>
 
     </Grid>
 </Window>

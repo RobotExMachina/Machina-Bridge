@@ -64,7 +64,9 @@ namespace MachinaBridge
             }
             _bufferPointer++;
             if (_bufferPointer > _consoleInputBuffer.Count - 1)
+            {
                 _bufferPointer = _consoleInputBuffer.Count - 1;
+            }
             _parent.InputBlock.Text = _consoleInputBuffer[_consoleInputBuffer.Count - 1 - _bufferPointer];
             return true;
         }
@@ -82,9 +84,12 @@ namespace MachinaBridge
             {
                 _parent.InputBlock.Text = _consoleInputBuffer[_consoleInputBuffer.Count - 1 - _bufferPointer];
             }
+
+            // Move caret to end
+            _parent.InputBlock.CaretIndex = _parent.InputBlock.Text.Length;
+
             return true;
         }
-
 
         public ObservableCollection<LoggerArgs> ConsoleOutput
         {
@@ -256,7 +261,9 @@ namespace MachinaBridge
         void OnPropertyChanged(string propertyName)
         {
             if (null != PropertyChanged)
+            {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 

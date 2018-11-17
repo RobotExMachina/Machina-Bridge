@@ -20,6 +20,7 @@ using System.IO;
 using System.IO.Compression;
 
 using Machina;
+using MVector = Machina.Vector;
 
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -34,7 +35,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.4";
+        public static readonly string Version = "0.8.6";
 
         public  Robot bot;
         public  List<Tool> tools = new List<Tool>();
@@ -89,8 +90,8 @@ namespace MachinaBridge
                 uiContext.Post(x =>
                 {
                     dc.ConsoleOutput.Add(e);
+                    //dc.ConsoleOutput.Add(bot.GetCurrentPosition().X);
                     ConsoleScroller.ScrollToBottom();
-                    //ConsoleScroller
                 }, null);
             }
         }
@@ -206,6 +207,8 @@ namespace MachinaBridge
 
         }
 
+
+
         private void Bot_MotionUpdate(object sender, MotionUpdateArgs args)
         {
             Logger.Debug(args.ToString());
@@ -215,8 +218,11 @@ namespace MachinaBridge
         {
             int index = this.dc.FlagActionAs(args.LastAction, ExecutionState.Executed);
 
+            UpdateRobotStatus();
+
             //ScrollQueueToElement(index);
         }
+        
 
         private void Bot_ActionReleased(object sender, ActionReleasedArgs args)
         {
@@ -353,6 +359,74 @@ namespace MachinaBridge
             }
         }
 
+        internal void UpdateRobotStatus()
+        {
+            if (bot == null)
+            {
+                ResetRobotStatus();
+                return;
+            }
+
+            uiContext.Post(x =>
+            {
+                Machina.Vector pos = bot.GetCurrentPosition();
+                string posStr = pos?.ToString(true) ?? "-";
+                lbl_Status_TCP_Position_Value.Content = posStr;
+
+                Machina.Orientation ori = bot.GetCurrentRotation();
+                string oriStr = ori?.ToString(true) ?? "-";
+                lbl_Status_TCP_Orientation_Value.Content = oriStr;
+
+                Machina.Joints axes = bot.GetCurrentAxes();
+                string axesStr = axes?.ToString(true) ?? "-";
+                lbl_Status_Axes_Value.Content = axesStr;
+
+                Machina.ExternalAxes extax = bot.GetCurrentExternalAxes();
+                bool nullext = true;
+                if (extax != null)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if (extax[i] != null)
+                        {
+                            nullext = false;
+                            break;
+                        }
+                    }
+                }
+                lbl_Status_Ext_Axes_Value.Content = nullext ? "-" : extax.ToString(true);
+
+                double speed = bot.GetCurrentSpeed();
+                double acc = bot.GetCurrentAcceleration();
+                string speedacc = Math.Round(speed, Machina.Geometry.STRING_ROUND_DECIMALS_MM) + " mm/s / " + Math.Round(acc, Machina.Geometry.STRING_ROUND_DECIMALS_MM) + " mm/s^2";
+                lbl_Status_SpeedAcceleration_Value.Content = speedacc;
+
+                double precision = bot.GetCurrentPrecision();
+                lbl_Status_Precision_Value.Content =
+                    Math.Round(precision, Machina.Geometry.STRING_ROUND_DECIMALS_MM) + " mm";
+
+                Machina.MotionType mtype = bot.GetCurrentMotionMode();
+                lbl_Status_MotionMode_Value.Content = mtype.ToString();
+                
+                lbl_Status_Tool_Value.Content = bot.GetCurrentTool().name;
+
+            }, null);
+        }
+
+        internal void ResetRobotStatus()
+        {
+            uiContext.Post(x =>
+            {
+                lbl_Status_TCP_Position_Value.Content = "-";
+                lbl_Status_TCP_Orientation_Value.Content = "-";
+                lbl_Status_Axes_Value.Content = "-";
+                lbl_Status_Ext_Axes_Value.Content = "-";
+                lbl_Status_SpeedAcceleration_Value.Content = "-";
+                lbl_Status_Precision_Value.Content = "-";
+                lbl_Status_MotionMode_Value.Content = "-";
+                lbl_Status_Tool_Value.Content = "-";
+            }, null);
+        }
 
 
 
@@ -369,6 +443,7 @@ namespace MachinaBridge
         //        QueueScroller.ScrollToVerticalOffset(tb.TransformToVisual(QueueScroller).TransformBounds(new Rect(0, 0, 1, 1)).Bottom);
         //    }, null);
         //}
+
 
         public bool ExecuteInstructionOnContext(string instruction)
         {
@@ -880,13 +955,6 @@ namespace MachinaBridge
             Machina.Logger.Error($"I don't understand \"{instruction}\"...");
             return false;
         }
-        
-
-
-
-
-
-
 
         public static void BadFormatInstruction(string message, Exception ex)
         {
