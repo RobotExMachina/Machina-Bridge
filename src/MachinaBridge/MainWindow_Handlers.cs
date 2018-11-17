@@ -212,10 +212,10 @@ namespace MachinaBridge
 
         private void combo_Brand_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (combo_Brand == null) return;
+            if (combo_Robot_Brand == null) return;
 
             //Console.WriteLine("BRAND CHANGED");
-            var comboitem = combo_Brand.SelectedItem as ComboBoxItem;
+            var comboitem = combo_Robot_Brand.SelectedItem as ComboBoxItem;
             _robotBrand = comboitem.Content.ToString();
             //Console.WriteLine(_robotBrand);
 
@@ -252,7 +252,7 @@ namespace MachinaBridge
 
         private void txtbox_Name_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            _robotName = txtbox_Name.Text;
+            _robotName = txtbox_Robot_Name.Text;
         }
 
         private void combo_Manager_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -278,8 +278,8 @@ namespace MachinaBridge
                 if (InitializeRobot())
                 {
                     btn_Connect.Content = "DISCONNECT";
-                    EnableElement(txtbox_Name, false);
-                    EnableElement(combo_Brand, false);
+                    EnableElement(txtbox_Robot_Name, false);
+                    EnableElement(combo_Robot_Brand, false);
                     EnableElement(combo_Manager, false);
                     EnableElement(txtbox_IP, false);
                     EnableElement(txtbox_Port, false);
@@ -289,8 +289,8 @@ namespace MachinaBridge
             else if (btn_Connect.Content.ToString() == "DISCONNECT")
             {
                 DisposeRobot();
-                EnableElement(txtbox_Name, true);
-                EnableElement(combo_Brand, true);
+                EnableElement(txtbox_Robot_Name, true);
+                EnableElement(combo_Robot_Brand, true);
                 if (_robotBrand != "UR")
                 {
                     EnableElement(combo_Manager, true);

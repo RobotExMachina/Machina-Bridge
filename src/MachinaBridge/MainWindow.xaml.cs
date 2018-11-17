@@ -352,10 +352,17 @@ namespace MachinaBridge
 
         internal void UpdateClientBox()
         {
-            txtblock_Clients.Text = "";
-            foreach (var name in _connectedClients)
+            txtblock_Bridge_Clients.Text = "";
+            if (_connectedClients.Count == 0)
             {
-                txtblock_Clients.Text += name + " ";
+                txtblock_Bridge_Clients.Text += "No clients connected";
+            }
+            else
+            {
+                foreach (var name in _connectedClients)
+                {
+                    txtblock_Bridge_Clients.Text += name + " ";
+                }
             }
         }
 

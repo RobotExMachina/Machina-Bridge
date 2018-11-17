@@ -9,43 +9,175 @@
         Title="Machina Bridge" Height="800" Width="1600" Background="#FF2E2E2E"
         Closing="Window_Closing" Loaded="MainWindow_Loaded">
     <Grid>
-        <!--<Grid.ColumnDefinitions>
-            <ColumnDefinition Width="733*"/>
-            <ColumnDefinition Width="63*"/>
-        </Grid.ColumnDefinitions>-->
-        <Label x:Name="lbl_MachinaBridgeApp" Content="MACHINA BRIDGE" HorizontalAlignment="Left" Height="52" Margin="10,10,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans" Foreground="White" FontSize="24"/>
-        <Separator Height="15" Margin="16,47,20,0" Foreground="White" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <Label x:Name="lbl_Robot" Content="ROBOT" HorizontalAlignment="Left" Height="52" Margin="10,68,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
-        <Label x:Name="lbl_Brand_Copy" Content="NAME" HorizontalAlignment="Left" Height="52" Margin="10,97,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <TextBox x:Name="txtbox_Name" HorizontalAlignment="Left" Height="30" Margin="16,119,0,0" TextWrapping="Wrap" Text="ROBOTEXMACHINA" VerticalAlignment="Top" Width="322" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" SelectionChanged="txtbox_Name_SelectionChanged"/>
-        <Label x:Name="lbl_Brand" Content="BRAND" HorizontalAlignment="Left" Height="52" Margin="10,152,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <ComboBox x:Name="combo_Brand" HorizontalAlignment="Left" Margin="16,174,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_Brand_SelectionChanged">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+
+        <!--HEADER-->
+        <Separator 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                Margin="16,47,16,0" VerticalAlignment="Top"  Height="15" 
+                Foreground="White"/>
+        <Label x:Name="lbl_MachinaBridgeApp" 
+                Content="MACHINA BRIDGE" 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                Margin="10,10" HorizontalAlignment="Left" Height="52" VerticalAlignment="Top" Width="250" 
+                FontFamily=".\Resources\#IBM Plex Sans" FontSize="24" 
+                Foreground="White" />
+
+        <!-- 1. SETTINGS COLUMN -->
+        <!-- ROBOT -->
+        <Label x:Name="lbl_Robot" 
+                Content="ROBOT"
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                Margin="10,68,10,0" VerticalAlignment="Top" 
+                FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="18" 
+                Foreground="White"/>
+
+        <Label x:Name="lbl_Robot_Name" 
+                Content="NAME" 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                Margin="10,97,10,0" VerticalAlignment="Top" 
+                FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
+        <TextBox x:Name="txtbox_Robot_Name"  
+                Text="ROBOTEXMACHINA" 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                Margin="16,119,10,0" VerticalAlignment="Top" Height="30" Padding="7"
+                FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" TextWrapping="Wrap"
+                SelectionChanged="txtbox_Name_SelectionChanged" />
+
+        <Label x:Name="lbl_Robot_Brand" Content="BRAND" Margin="10,152,10,0" VerticalAlignment="Top" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" Grid.ColumnSpan="1"/>
+        <ComboBox x:Name="combo_Robot_Brand" 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                Margin="16,174,10,0" VerticalAlignment="Top" Height="30" Padding="8"
+                FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10"
+                Foreground="Black" BorderBrush="#FFABADB3" Background="White" 
+                SelectedIndex="0"
+                SelectionChanged="combo_Brand_SelectionChanged">
             <ComboBoxItem Content="ABB"/>
             <ComboBoxItem Content="UR"/>
         </ComboBox>
-        <Label x:Name="lbl_Model" Content="MODEL" HorizontalAlignment="Left" Height="52" Margin="10,208,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <ComboBox x:Name="combo_Model" HorizontalAlignment="Left" Margin="16,230,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="White" Background="White" IsEnabled ="False" IsEditable="False" IsHitTestVisible="False" Focusable="False">
-        </ComboBox>
-        <Label x:Name="lbl_Connection" Content="CONNECTION" HorizontalAlignment="Left" Height="52" Margin="10,306,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
-        <Label x:Name="lbl_Manager" Content="MANAGER" HorizontalAlignment="Left" Height="24" Margin="10,340,0,0" VerticalAlignment="Top" Width="154" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <ComboBox x:Name="combo_Manager" HorizontalAlignment="Left" Margin="16,364,0,0" VerticalAlignment="Top" Width="322" Height="30" FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="#FFABADB3" Background="White" SelectedIndex="0" SelectionChanged="combo_Manager_SelectionChanged">
+
+        <!--<Label x:Name="lbl_Robot_Model" Content="MODEL" Margin="10,208,10,0" VerticalAlignment="Top" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" Grid.ColumnSpan="1"/>-->
+        <!--<ComboBox x:Name="combo_Model" HorizontalAlignment="Left" Margin="16,230,0,0" VerticalAlignment="Top" Width="322" Height="30" 
+                  FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" Foreground="Black" BorderBrush="White" Background="White" IsEnabled ="False" IsEditable="False" IsHitTestVisible="False" Focusable="False">
+        </ComboBox>-->
+
+        <!-- CONNECTION -->
+        <Separator 
+            Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+            Margin="16,263,10,0" VerticalAlignment="Top"  Height="15" 
+            Foreground="White"/>
+        <Label x:Name="lbl_Connection" 
+               Content="CONNECTION"
+               Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+               Margin="10,281,10,0" VerticalAlignment="Top" 
+               FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18" />
+
+        <Label x:Name="lbl_Connection_Manager" 
+               Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+               Content="MANAGER" 
+               Margin="10,315,10,0" VerticalAlignment="Top" 
+               FontFamily=".\Resources\#IBM Plex Sans Light" 
+               Foreground="White" />
+        <ComboBox x:Name="combo_Manager" 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                Margin="16,339,10,0" VerticalAlignment="Top" Height="30" Padding="8"
+                FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" 
+                Foreground="Black" BorderBrush="#FFABADB3" Background="White" 
+                SelectedIndex="0"
+                SelectionChanged="combo_Manager_SelectionChanged">
             <ComboBoxItem Content="USER"/>
             <ComboBoxItem Content="MACHINA"/>
         </ComboBox>
-        <Label x:Name="lbl_IP" Content="IP" HorizontalAlignment="Left" Height="26" Margin="10,412,0,0" VerticalAlignment="Top" Width="77" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <TextBox x:Name="txtbox_IP" HorizontalAlignment="Left" Height="22" Margin="87,416,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="251" FontFamily=".\Resources\#IBM Plex Mono Medium" TextAlignment="Right" FontSize="10"/>
-        <Label x:Name="lnl_Port" Content="PORT" HorizontalAlignment="Left" Height="26" Margin="10,444,0,0" VerticalAlignment="Top" Width="77" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <TextBox x:Name="txtbox_Port" HorizontalAlignment="Left" Height="22" Margin="87,450,0,0" TextWrapping="Wrap" Text="7000" VerticalAlignment="Top" Width="251" FontFamily=".\Resources\#IBM Plex Mono Medium" TextAlignment="Right" FontSize="10"/>
-        <Button x:Name="btn_DownloadDrivers" Content="DOWNLOAD DRIVERS" HorizontalAlignment="Left" Margin="87,485,0,0" VerticalAlignment="Top" Width="251" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="10" Click="btn_DownloadDrivers_Click" Visibility="Visible"/>
-        <Button x:Name="btn_Connect" Content="CONNECT" HorizontalAlignment="Left" Height="24" Margin="16,516,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontWeight="Bold" Click="btn_Connect_Click"/>
 
-        <Label x:Name="lbl_Bridge" Content="BRIDGE" HorizontalAlignment="Left" Height="52" Margin="10,585,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
-        <Label x:Name="lbl_Server" Content="SERVER" HorizontalAlignment="Left" Height="30" Margin="10,617,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <TextBox x:Name="txtbox_WSServerURL" Text="ws://127.0.0.1:6999/Bridge" HorizontalAlignment="Left" Height="22" Margin="87,619,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="251" FontFamily=".\Resources\#IBM Plex Mono Medium" TextAlignment="Right" FontSize="10"/>
-        <Label x:Name="lbl_Clients" Content="CLIENTS" HorizontalAlignment="Left" Height="52" Margin="10,673,0,0" VerticalAlignment="Top" Width="328" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
-        <Rectangle HorizontalAlignment="Left" Height="72" Margin="87,651,0,0" Stroke="White" StrokeThickness="1" VerticalAlignment="Top" Width="251"/>
-        <TextBlock x:Name="txtblock_Clients" HorizontalAlignment="Left" Height="60" Margin="96,657,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="232" Foreground="White" FontFamily="Consolas" FontSize="10"/>
-        <Button x:Name="btn_ResetBridge" Content="RESET BRIDGE" HorizontalAlignment="Left" Height="24" Margin="16,727,0,0" VerticalAlignment="Top" Width="322" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontWeight="Bold" Click="btn_ResetBridge_Click"/>
+        <Label x:Name="lbl_Connection_IP" 
+               Content="IP"  
+               Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" 
+               Margin="10,387,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width ="72" 
+               FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
+        <TextBox x:Name="txtbox_IP" 
+                 Text="127.0.0.1" 
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                 Margin="87,391,10,0" VerticalAlignment="Top" Height="22" Padding="3"
+                 FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" TextAlignment="Right"/>
+
+        <Label x:Name="lnl_Connection_Port" 
+               Content="PORT"
+               Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+               Margin="10,419,0,0"  VerticalAlignment="Top" HorizontalAlignment="Left" 
+               FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
+        <TextBox x:Name="txtbox_Port" 
+                 Text="7000"
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                 Margin="87,425,10,0" VerticalAlignment="Top" Height="22" Padding="3"
+                 FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" TextAlignment="Right"/>
+
+        <Button x:Name="btn_DownloadDrivers" 
+                Content="DOWNLOAD DRIVERS" 
+                Visibility="Visible"
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                Margin="87,460,10,0" VerticalAlignment="Top" Height="18"   
+                FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="10" 
+                Background="White" 
+                Click="btn_DownloadDrivers_Click"/>
+
+        <Button x:Name="btn_Connect" 
+                Content="CONNECT" 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                Margin="16,491,10,0" VerticalAlignment="Top" Height="24"
+                FontFamily=".\Resources\#IBM Plex Sans Light" FontWeight="Bold" 
+                Background="White" 
+                Click="btn_Connect_Click"/>
+
+        <!-- BRIDGE -->
+        <Separator 
+            Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+            Margin="16,567,10,0" VerticalAlignment="Top"  Height="15" 
+            Foreground="White"/>
+        <Label x:Name="lbl_Bridge" 
+               Content="BRIDGE"
+               Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+               Margin="10,585,10,0" VerticalAlignment="Top" 
+               FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18" />
+
+        <Label x:Name="lbl_Bridge_Server" 
+               Content="SERVER"  
+               Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" 
+               Margin="10,617,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width ="72" 
+               FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
+        <TextBox x:Name="txtbox_WSServerURL" 
+                 Text="ws://127.0.0.1:6999/Bridge" 
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                 Margin="87,619,10,0" VerticalAlignment="Top" Height="22" Padding="3"
+                 FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" TextAlignment="Right"/>
+
+        <Label x:Name="lbl_Bridge_Clients" 
+               Content="CLIENTS"  
+               Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" 
+               Margin="10,651,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width ="72" 
+               FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
+        <Rectangle x:Name="rect_Bridge_Clients" 
+                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" 
+                    Margin="87,651,10,0" VerticalAlignment="Top" Height="72" 
+                    Stroke="White" StrokeThickness="1"/>
+        <TextBlock x:Name="txtblock_Bridge_Clients" 
+                   Text="No clients connected"
+                   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" 
+                   Margin="94,657,17,0" Height="60" VerticalAlignment="Top"
+                   FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" TextWrapping="Wrap" 
+                   Foreground="White"/>
+
+        <Button x:Name="btn_ResetBridge" 
+                Content="RESET BRIDGE" 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                Margin="16,727,10,0" VerticalAlignment="Top" Height="24"
+                FontFamily=".\Resources\#IBM Plex Sans Light" FontWeight="Bold" 
+                Background="White" 
+                Click="btn_ResetBridge_Click"/>
+
 
         <Label x:Name="lbl_Queue" Content="QUEUE" HorizontalAlignment="Left" Height="52" Margin="366,306,0,0" VerticalAlignment="Top" Width="96" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" FontSize="18"/>
         <StackPanel Visibility="Visible" Margin="0,327,917,419" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -207,6 +339,7 @@
             </CheckBox>
         </StackPanel>
         <Button x:Name="btn_InputBlock_Send" Content="SEND" HorizontalAlignment="Left" Height="20" Margin="1523,731,0,0" VerticalAlignment="Top" Width="49" Background="White" FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="10" Click="btn_InputBlock_Send_Click"/>
+
 
     </Grid>
 </Window>
