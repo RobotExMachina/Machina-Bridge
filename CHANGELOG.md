@@ -23,7 +23,8 @@
 # TODO:
 
 # v0.8.6
-- Add "Send on Enter" to override immediate send behavior.
+- Add "Send on Enter" checkbox option to override immediate send behavior.
+- Massive improvements in layout.
 
 ---
 # v0.8.5
