@@ -410,8 +410,8 @@
             <ComboBoxItem Content="0 - NONE" Tag="0"/>
             <ComboBoxItem Content="1 - ERROR" Tag="1"/>
             <ComboBoxItem Content="2 - WARNING" Tag="2"/>
-            <ComboBoxItem IsSelected="True" Content="3 - INFO" Tag="3"/>
-            <ComboBoxItem Content="4 - VERBOSE" Tag="4"/>
+            <ComboBoxItem Content="3 - INFO" Tag="3"/>
+            <ComboBoxItem IsSelected="True" Content="4 - VERBOSE" Tag="4"/>
             <ComboBoxItem Content="5 - DEBUG" Tag="5"/>
         </ComboBox>
 

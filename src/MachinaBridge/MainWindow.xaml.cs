@@ -66,7 +66,7 @@ namespace MachinaBridge
 
             uiContext = SynchronizationContext.Current;
 
-            _maxLogLevel = Machina.LogLevel.INFO;
+            _maxLogLevel = Machina.LogLevel.VERBOSE;
             Logger.CustomLogging += Logger_CustomLogging;
 
             Logger.Info("Machina Bridge: " + Version + "; Core: " + Robot.Version);
