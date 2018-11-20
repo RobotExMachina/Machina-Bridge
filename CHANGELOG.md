@@ -23,8 +23,11 @@
 # TODO:
 
 # v0.8.6
+- Add states to the UI.
 - Add "Send on Enter" checkbox option to override immediate send behavior.
-- Massive improvements in layout.
+- Layout is now fully responsive and scalable.
+- `Verbose` is now the default loglevel (to see relative actions values)
+- Core update: https://github.com/RobotExMachina/Machina.NET/releases/tag/v0.8.6
 
 ---
 # v0.8.5

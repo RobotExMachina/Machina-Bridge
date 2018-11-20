@@ -495,6 +495,15 @@
             <param name="cursor"></param>
             <returns></returns>
         </member>
+        <member name="M:Machina.Drivers.Communication.Protocols.URCommunicationProtocol.WrapParamsWithZeroPrecision(System.Int32[],Machina.RobotCursor)">
+            <summary>
+            Workaround to SW3.0 crash problem: https://github.com/RobotExMachina/Machina.NET/issues/7
+            For such motions, make precision zero temporarily.
+            </summary>
+            <param name="_params"></param>
+            <param name="cursor"></param>
+            <returns></returns>
+        </member>
         <member name="M:Machina.Drivers.Communication.Protocols.ABBCommunicationProtocol.GetActionMessages(Machina.Action,Machina.RobotCursor)">
             <summary>
             Given an Action and a RobotCursor representing the state of the robot after application, 
@@ -3337,6 +3346,36 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Machina.Control.GetCurrentSpeedSetting">
+            <summary>
+            Gets current speed setting.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Control.GetCurrentAccelerationSetting">
+            <summary>
+            Gets current scceleration setting.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Control.GetCurrentPrecisionSetting">
+            <summary>
+            Gets current precision setting.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Control.GetCurrentMotionTypeSetting">
+            <summary>
+            Gets current Motion setting.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Control.GetCurrentReferenceCS">
+            <summary>
+            Gets the reference coordinate system used for relative transform actions.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Machina.Control.GetCurrentTool">
             <summary>
             Returns a Tool object representing the currently attached tool, null if none.
@@ -3365,30 +3404,6 @@
             <summary>
             In 'execute' mode, flushes all pending actions, creates a program, 
             uploads it to the controller and runs it.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Control.GetCurrentSpeedSetting">
-            <summary>
-            Gets current speed setting.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Control.GetCurrentPrecisionSettings">
-            <summary>
-            Gets current precision setting.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Control.GetCurrentMotionTypeSetting">
-            <summary>
-            Gets current Motion setting.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Control.GetCurrentReferenceCS">
-            <summary>
-            Gets the reference coordinate system used for relative transform actions.
             </summary>
             <returns></returns>
         </member>
