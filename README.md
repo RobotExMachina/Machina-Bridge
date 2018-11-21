@@ -4,6 +4,6 @@
 
 A Machina-powered Windows application that allows online connections to industrial robotic arms, real-time streaming of actions via a command-line interface, queue management, and interfacing with other applications via a websockets server.
 
-More info on:
-- https://youtu.be/EQgwLRl60LU
-- https://youtu.be/eDxWjU9qk8E
+## Documentation
+A full set of tutorials and associated projects can be found here:
+https://www.youtube.com/playlist?list=PLvxxYImPCApXj3tHVKmpTS_AuMPngnA47
