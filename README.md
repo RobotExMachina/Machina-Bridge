@@ -6,4 +6,5 @@ A Machina-powered Windows application that allows online connections to industri
 
 ## Documentation
 A full set of tutorials and associated projects can be found here:
-https://www.youtube.com/playlist?list=PLvxxYImPCApXj3tHVKmpTS_AuMPngnA47
+
+![https://www.youtube.com/playlist?list=PLvxxYImPCApXj3tHVKmpTS_AuMPngnA47](assets/machina_tutorials_banner.png)
