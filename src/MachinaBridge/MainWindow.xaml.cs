@@ -464,7 +464,7 @@ namespace MachinaBridge
 
         public bool ExecuteInstruction(string instruction)
         {
-            string[] args = Parsing.ParseStatement(instruction);
+            string[] args = Machina.Utilities.Parsing.ParseStatement(instruction);
             if (args == null || args.Length == 0)
             {
                 Machina.Logger.Error($"I don't understand \"{instruction}\"...");

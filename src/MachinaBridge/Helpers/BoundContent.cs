@@ -133,7 +133,7 @@ namespace MachinaBridge
             }
             else
             {
-                string[] instructions = Parsing.SplitStatements(ConsoleInput, ';', "//");
+                string[] instructions = Machina.Utilities.Parsing.SplitStatements(ConsoleInput, ';', "//");
 
                 foreach (var instruction in instructions)
                 {
