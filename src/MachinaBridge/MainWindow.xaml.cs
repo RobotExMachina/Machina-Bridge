@@ -415,7 +415,7 @@ namespace MachinaBridge
                 Machina.MotionType mtype = bot.GetCurrentMotionMode();
                 lbl_Status_MotionMode_Value.Content = mtype.ToString();
                 
-                lbl_Status_Tool_Value.Content = bot.GetCurrentTool().name;
+                lbl_Status_Tool_Value.Content = bot.GetCurrentTool()?.name ?? "(no tool)";
 
             }, null);
         }

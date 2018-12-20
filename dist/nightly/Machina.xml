@@ -4765,6 +4765,18 @@
             Update the current extrudedLength.
             </summary>
         </member>
+        <member name="M:Machina.RobotCursor.ApplyToolTransformToCursor(Machina.RobotCursor,Machina.Tool,Machina.RobotLogger,System.Boolean)">
+            <summary>
+            Modify a cursor's TCP transform according to a tool. Useful for Attach operations.
+            </summary>
+            <param name="tool"></param>
+        </member>
+        <member name="M:Machina.RobotCursor.UndoToolTransformOnCursor(Machina.RobotCursor,Machina.Tool,Machina.RobotLogger,System.Boolean)">
+            <summary>
+            Undo tool-based TCP transformations on a cursor. Useful for Detach operations.
+            </summary>
+            <param name="tool"></param>
+        </member>
         <member name="T:Machina.Settings">
             <summary>
             A class representing a Setting state, to be un/buffered.
@@ -4892,12 +4904,149 @@
             <param name="username"></param>
             <param name="password"></param>
         </member>
-        <member name="T:Machina.Util">
+        <member name="T:Machina.Utilities.Parsing">
+            <summary>
+            Utility functions for code parsing operations.
+            </summary>
+        </member>
+        <member name="M:Machina.Utilities.Parsing.ParseStatement(System.String)">
+            <summary>
+            Given a statement in the form of "Command(arg1, arg2, ...);", returns an array of clean args,
+            with the first element being the instruction, and the rest the ordered list of args in string form
+            without the double quotes. 
+            </summary>
+            <param name="statement"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Parsing.SplitStatements(System.String,System.Char,System.String)">
+            <summary>
+            Given a bunch of code, splits it into clean individual statements.
+            Removes new line chars, in-line "//" comments and splits by statementSeparator.
+            Will respect characters inside double quotes.
+            </summary>
+            <param name="program"></param>
+            <param name="statementSeparator"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Parsing.RemoveInLineComments(System.String,System.String)">
+            <summary>
+            Given a line of code, returns a new one with all inline comments removed from it.
+            </summary>
+            <param name="instruction"></param>
+            <param name="commentSymbol"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Machina.Utilities.Strings">
+            <summary>
+            Utility functions for string operations.
+            </summary>
+        </member>
+        <member name="M:Machina.Utilities.Strings.SafeProgramName(System.String)">
+            <summary>
+            Returns a string with safe ASCII characters to be used as a robot program name. 
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Strings.EscapeDoubleQuotes(System.String)">
+            <summary>
+            Finds double quotes on a string and scapes them adding a backlash in front.
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Strings.CompareVersions(System.String,System.String,System.Char)">
+            <summary>
+            Compares strings representing semantic versioning versions, like "1.3.2".
+            Returns 1 if A is newer than B, -1 if B is newer than A, and 0 if same version. 
+            </summary>
+            <param name="versionA"></param>
+            <param name="versionB"></param>
+            <param name="delimiter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Strings.IsValidVariableName(System.String)">
+            <summary>
+            Checks if the argument is a valid variable name. 
+            Basically, it returns true if the first character of the string is a letter...
+            </summary>
+            <param name="varName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Strings.ObjectArrayToString(System.Object[],System.Char)">
+            <summary>
+            Given an array of objects, returns a string representation using their own .ToString()
+            </summary>
+            <param name="objs"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Machina.Utilities.Strings.EnumerateArray(System.String[],System.String,System.String,System.String)" -->
+        <member name="M:Machina.Utilities.Strings.RemoveSideChars(System.String,System.Char)">
+            <summary>
+            Given a string, returns a new string with all preceding and trailing occurreces of another string removed.
+            </summary>
+            <param name="str"></param>
+            <param name="rem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Strings.RemoveSideChar(System.String,System.Char)">
+            <summary>
+            Given a string, returns a new string with one occurrence of the param char removed. 
+            </summary>
+            <param name="str"></param>
+            <param name="rem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Strings.RemoveEmptyLines(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Given an enumerable of strings, returns a clean list with no empty lines.  
+            </summary>
+            <param name="array"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Strings.RemoveString(System.String,System.String)">
+            <summary>
+            Given a string, returns a new string with all occurrences of another string within it removed.
+            </summary>
+            <param name="str"></param>
+            <param name="rem"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Machina.Utilities.Conversion">
+            <summary>
+            Utility functions for data conversions.
+            </summary>
+        </member>
+        <member name="M:Machina.Utilities.Conversion.Int32ArrayToByteArray(System.Int32[],System.Boolean)">
+            <summary>
+            Converts an array of signed int32 to a byte array. Useful for buffering. 
+            </summary>
+            <param name="intArray"></param>
+            <param name="littleEndian">Set endianness. Windows systems are little endian, while most network communication is bigendian.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Conversion.ByteArrayToInt32Array(System.Byte[],System.Int32,System.Boolean)">
+            <summary>
+            Converts an array of bytes to an array of signed int32. 
+            </summary>
+            <param name="bytes"></param>
+            <param name="byteCount">If 0, the whole byte array will be used.</param>
+            <param name="bytesAreLittleEndian">Is the byte array little endian? This will be used to define how to translate the buffer to this system's endianness.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Machina.Utilities.Conversion.NullableDoublesFromObjects(System.Object[])">
+            <summary>
+            Takes an array of objects and converts it into an array of nullable doubles.
+            </summary>
+            <param name="objs"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Machina.Utilities.Numeric">
             <summary>
             Utility static methods
             </summary>
         </member>
-        <member name="M:Machina.Util.Remap(System.Double,System.Double,System.Double,System.Double,System.Double)">
+        <member name="M:Machina.Utilities.Numeric.Remap(System.Double,System.Double,System.Double,System.Double,System.Double)">
             <summary>
             Remaps a value from source to target numerical domains.
             </summary>
@@ -4908,53 +5057,13 @@
             <param name="newMax"></param>
             <returns></returns>
         </member>
-        <member name="M:Machina.Util.Int32ArrayToByteArray(System.Int32[],System.Boolean)">
+        <member name="M:Machina.Utilities.Numeric.AreSimilar(System.Nullable{System.Double}[],System.Nullable{System.Double}[],System.Double)">
             <summary>
-            Converts an array of signed int32 to a byte array. Useful for buffering. 
+            Compares two arrays of nullable doubles for similarity.
             </summary>
-            <param name="intArray"></param>
-            <param name="littleEndian">Set endianness. Windows systems are little endian, while most network communication is bigendian.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Util.ByteArrayToInt32Array(System.Byte[],System.Int32,System.Boolean)">
-            <summary>
-            Converts an array of bytes to an array of signed int32. 
-            </summary>
-            <param name="bytes"></param>
-            <param name="byteCount">If 0, the whole byte array will be used.</param>
-            <param name="bytesAreLittleEndian">Is the byte array little endian? This will be used to define how to translate the buffer to this system's endianness.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Util.SafeProgramName(System.String)">
-            <summary>
-            Returns a string with safe ASCII characters to be used as a robot program name. 
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Util.EscapeDoubleQuotes(System.String)">
-            <summary>
-            Finds double quotes on a string and scapes them adding a backlash in front.
-            </summary>
-            <param name="str"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Util.CompareVersions(System.String,System.String,System.Char)">
-            <summary>
-            Compares strings representing semantic versioning versions, like "1.3.2".
-            Returns 1 if A is newer than B, -1 if B is newer than A, and 0 if same version. 
-            </summary>
-            <param name="versionA"></param>
-            <param name="versionB"></param>
-            <param name="delimiter"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Machina.Util.IsValidVariableName(System.String)">
-            <summary>
-            Checks if the argument is a valid variable name. 
-            Basically, it returns true if the first character of the string is a letter...
-            </summary>
-            <param name="varName"></param>
+            <param name="a"></param>
+            <param name="b"></param>
+            <param name="epsilon"></param>
             <returns></returns>
         </member>
     </members>
