@@ -21,6 +21,11 @@
 //   ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚══════╝ ╚═════╝  ╚═════╝
 ```
 # TODO
+- [ ] Save last connection configuration to a JSON file, and preload it next time the user opens the app.
+- [ ] Save also something like the last 10 command blocks?
+
+# v0.8.8b
+- Added `InvariantCulture` parsing for `Double` inputs: https://github.com/RobotExMachina/Machina-Bridge/issues/3
 
 # v0.8.8
 - Core update
@@ -39,7 +44,7 @@
 ---
 # v0.8.4
 - Bug fixes with tool definitions
-- Numbers serialize as `CultureInvariant`
+- Numbers serialize as `InvariantCulture`
 
 ---
 # v0.8.3

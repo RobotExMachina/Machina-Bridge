@@ -27,6 +27,7 @@ using WebSocketSharp.Server;
 using Logger = Machina.Logger;
 using Microsoft.Win32;
 using LogLevel = Machina.LogLevel;
+using System.Globalization;
 
 namespace MachinaBridge
 {
@@ -35,7 +36,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.6";
+        public static readonly string Version = "0.8.8b";
 
         public  Robot bot;
         public  List<Tool> tools = new List<Tool>();
@@ -488,7 +489,7 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.Speed(Convert.ToDouble(args[1]));
+                    return bot.Speed(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
                 }
                 catch (Exception ex)
                 {
@@ -500,7 +501,7 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.SpeedTo(Convert.ToDouble(args[1]));
+                    return bot.SpeedTo(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
                 }
                 catch (Exception ex)
                 {
@@ -512,7 +513,7 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.Acceleration(Convert.ToDouble(args[1]));
+                    return bot.Acceleration(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
                 }
                 catch (Exception ex)
                 {
@@ -524,7 +525,7 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.AccelerationTo(Convert.ToDouble(args[1]));
+                    return bot.AccelerationTo(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
                 }
                 catch (Exception ex)
                 {
@@ -536,7 +537,7 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.Precision(Convert.ToDouble(args[1]));
+                    return bot.Precision(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
                 }
                 catch (Exception ex)
                 {
@@ -548,7 +549,7 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.PrecisionTo(Convert.ToDouble(args[1]));
+                    return bot.PrecisionTo(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
                 }
                 catch (Exception ex)
                 {
@@ -585,7 +586,11 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.Move(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]));
+                    return bot.Move(
+                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture)
+                    );
                 }
                 catch (Exception ex)
                 {
@@ -597,7 +602,11 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.MoveTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]));
+                    return bot.MoveTo(
+                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture)
+                        );
                 }
                 catch (Exception ex)
                 {
@@ -609,7 +618,12 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.Rotate(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]), Convert.ToDouble(args[4]));
+                    return bot.Rotate(
+                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture)
+                        );
                 }
                 catch (Exception ex)
                 {
@@ -621,8 +635,14 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.RotateTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
-                        Convert.ToDouble(args[4]), Convert.ToDouble(args[5]), Convert.ToDouble(args[6]));
+                    return bot.RotateTo(
+                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
+                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[6], CultureInfo.InvariantCulture)
+                        );
                 }
                 catch (Exception ex)
                 {
@@ -639,9 +659,17 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.TransformTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
-                        Convert.ToDouble(args[4]), Convert.ToDouble(args[5]), Convert.ToDouble(args[6]),
-                        Convert.ToDouble(args[7]), Convert.ToDouble(args[8]), Convert.ToDouble(args[9]));
+                    return bot.TransformTo(
+                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
+                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[6], CultureInfo.InvariantCulture),
+                        Convert.ToDouble(args[7], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[8], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[9], CultureInfo.InvariantCulture)
+                        );
                 }
                 catch (Exception ex)
                 {
@@ -653,8 +681,14 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.Axes(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
-                        Convert.ToDouble(args[4]), Convert.ToDouble(args[5]), Convert.ToDouble(args[6]));
+                    return bot.Axes(
+                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
+                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[6], CultureInfo.InvariantCulture)
+                        );
                 }
                 catch (Exception ex)
                 {
@@ -666,8 +700,14 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.AxesTo(Convert.ToDouble(args[1]), Convert.ToDouble(args[2]), Convert.ToDouble(args[3]),
-                        Convert.ToDouble(args[4]), Convert.ToDouble(args[5]), Convert.ToDouble(args[6]));
+                    return bot.AxesTo(
+                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
+                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[6], CultureInfo.InvariantCulture)
+                        );
                 }
                 catch (Exception ex)
                 {
@@ -680,16 +720,29 @@ namespace MachinaBridge
                 try
                 {
                     int axisNumber;
-                    double increment;
-                    if (!Int32.TryParse(args[1], out axisNumber) || axisNumber < 1 || axisNumber > 6)
+                    try
                     {
-                        Logger.Error($"Invalid axis number");
+                        axisNumber = Convert.ToInt32(args[1]);
+                        if (axisNumber < 1 || axisNumber > 6)
+                        {
+                            Logger.Error($"Axis number must be between 1 and 6");
+                            return false;
+                        }
+                    }
+                    catch
+                    {
+                        Logger.Error($"Axis number must be an integer");
                         return false;
                     }
 
-                    if (!Double.TryParse(args[2], out increment))
+                    double increment;
+                    try
                     {
-                        Logger.Error($"Invalid increment value");
+                        increment = Convert.ToDouble(args[2], CultureInfo.InvariantCulture);
+                    }
+                    catch
+                    {
+                        Logger.Error($"Invalid increment value " + args[2]);
                         return false;
                     }
 
@@ -712,14 +765,27 @@ namespace MachinaBridge
                 try
                 {
                     int axisNumber;
-                    double val;
-                    if (!Int32.TryParse(args[1], out axisNumber) || axisNumber < 1 || axisNumber > 6)
+                    try
                     {
-                        Logger.Error($"Invalid axis number");
+                        axisNumber = Convert.ToInt32(args[1]);
+                        if (axisNumber < 1 || axisNumber > 6)
+                        {
+                            Logger.Error($"Axis number must be between 1 and 6");
+                            return false;
+                        }
+                    }
+                    catch
+                    {
+                        Logger.Error($"Axis number must be an integer");
                         return false;
                     }
 
-                    if (!Double.TryParse(args[2], out val))
+                    double val;
+                    try
+                    {
+                        val = Convert.ToDouble(args[2], CultureInfo.InvariantCulture);
+                    }
+                    catch
                     {
                         Logger.Error($"Invalid value " + args[2]);
                         return false;
@@ -741,37 +807,33 @@ namespace MachinaBridge
             }
             else if (args[0].Equals("ArmAngle", StringComparison.CurrentCultureIgnoreCase))
             {
-                Logger.Warning(
-                    "Relative `ArmAngle` is temporarily disabled, please use the absolute `ArmAngleTo` version instead.");
-                //try
-                //{
-                //    double val;
+                bot.Logger.Error("Relative `ArmAngle` is temporarily disabled, please use the absolute `ArmAngleTo` version instead.");
+                return false;
 
-                //    if (!Double.TryParse(args[1], out val))
-                //    {
-                //        Console.WriteLine($"ERROR: Invalid value " + args[1]);
-                //        return false;
-                //    }
-
-                //    return bot.ArmAngle(val);
-                //}
-                //catch (Exception ex)
-                //{
-                //    BadFormatInstruction(instruction, ex);
-                //    return false;
-                //}
+                //Logger.Warning(
+                    //"Relative `ArmAngle` is temporarily disabled, please use the absolute `ArmAngleTo` version instead.");
             }
             else if (args[0].Equals("ArmAngleTo", StringComparison.CurrentCultureIgnoreCase))
             {
                 try
                 {
                     double val;
-
-                    if (!Double.TryParse(args[1], out val))
+                    try
+                    {
+                        val = Convert.ToDouble(args[1], CultureInfo.InvariantCulture);
+                    }
+                    catch
                     {
                         Logger.Error($"Invalid value " + args[1]);
                         return false;
                     }
+
+                    //double val;
+                    //if (!Double.TryParse(args[1], out val))
+                    //{
+                    //    Logger.Error($"Invalid value " + args[1]);
+                    //    return false;
+                    //}
 
                     return bot.ArmAngleTo(val);
                 }
@@ -807,12 +869,12 @@ namespace MachinaBridge
             }
             else if (args[0].Equals("Comment", StringComparison.CurrentCultureIgnoreCase))
             {
-                // Do noLightg here, just go through with it.
+                // Do nothing here, just go through with it.
                 return true;
             }
             else if (args[0].Equals("CustomCode", StringComparison.CurrentCultureIgnoreCase))
             {
-                bot.Logger.Warning("\"CustomCode\" can lead to unexpected results, use with caution and only if you know what you are doing.");
+                bot.Logger.Warning("\"CustomCode\" can lead to unexpected results, use with caution and only if REALLY you know what you are doing.");
 
                 try
                 {
@@ -842,12 +904,22 @@ namespace MachinaBridge
             {
                 try
                 {
-                    return bot.DefineTool(args[1],
-                        Convert.ToDouble(args[2]), Convert.ToDouble(args[3]), Convert.ToDouble(args[4]),
-                        Convert.ToDouble(args[5]), Convert.ToDouble(args[6]), Convert.ToDouble(args[7]),
-                        Convert.ToDouble(args[8]), Convert.ToDouble(args[9]), Convert.ToDouble(args[10]),
-                        Convert.ToDouble(args[11]),
-                        Convert.ToDouble(args[12]), Convert.ToDouble(args[13]), Convert.ToDouble(args[14]));
+                    return bot.DefineTool(
+                        args[1],
+                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture),
+                        Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[6], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[7], CultureInfo.InvariantCulture),
+                        Convert.ToDouble(args[8], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[9], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[10], CultureInfo.InvariantCulture),
+                        Convert.ToDouble(args[11], CultureInfo.InvariantCulture),
+                        Convert.ToDouble(args[12], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[13], CultureInfo.InvariantCulture), 
+                        Convert.ToDouble(args[14], CultureInfo.InvariantCulture)
+                        );
                 }
                 catch (Exception ex)
                 {
@@ -930,16 +1002,16 @@ namespace MachinaBridge
                     {
                         switch (count)
                         {
-                            case 3: return bot.WriteAnalog(pin, Convert.ToDouble(args[2]));
-                            case 4: return bot.WriteAnalog(pin, Convert.ToDouble(args[2]), Convert.ToBoolean(args[3]));
+                            case 3: return bot.WriteAnalog(pin, Convert.ToDouble(args[2], CultureInfo.InvariantCulture));
+                            case 4: return bot.WriteAnalog(pin, Convert.ToDouble(args[2], CultureInfo.InvariantCulture), Convert.ToBoolean(args[3]));
                         }
                     }
                     else
                     {
                         switch (count)
                         {
-                            case 3: return bot.WriteAnalog(args[1], Convert.ToDouble(args[2]));
-                            case 4: return bot.WriteAnalog(args[1], Convert.ToDouble(args[2]), Convert.ToBoolean(args[3]));
+                            case 3: return bot.WriteAnalog(args[1], Convert.ToDouble(args[2], CultureInfo.InvariantCulture));
+                            case 4: return bot.WriteAnalog(args[1], Convert.ToDouble(args[2], CultureInfo.InvariantCulture), Convert.ToBoolean(args[3]));
                         }
                     }
 
@@ -968,8 +1040,6 @@ namespace MachinaBridge
             Machina.Logger.Error($"Badly formatted instruction: \"{message}\"");
             Machina.Logger.Error(ex.ToString());
         }
-
-
 
     }
 
