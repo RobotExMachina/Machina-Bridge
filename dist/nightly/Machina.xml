@@ -1058,13 +1058,6 @@
             Not connected to any controller. Useful for robot code generation and export.
             </summary>
         </member>
-        <member name="F:Machina.ControlType.Execute">
-            <summary>
-            Online connection to a controller, the library will upload complete programs 
-            and run them. Provides robust and fluid movement, useful on real-time 
-            interactivity where response time is not a priority. 
-            </summary>
-        </member>
         <member name="F:Machina.ControlType.Online">
             <summary>
             Online connection to a controller, the library will stream individual targets

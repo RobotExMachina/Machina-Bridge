@@ -1,6 +1,6 @@
 # Machina Bridge
 
-![](assets/banner.png)
+![](assets/banner2.png)
 
 A Machina-powered Windows application that allows online connections to industrial robotic arms, real-time streaming of actions via a command-line interface, queue management, and interfacing with other applications via a websockets server.
 
