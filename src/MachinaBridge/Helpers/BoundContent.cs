@@ -138,7 +138,7 @@ namespace MachinaBridge
                 foreach (var instruction in instructions)
                 {
                     ConsoleOutput.Add(new LoggerArgs(null, Machina.LogLevel.INFO, $"Issuing \"{instruction}\""));
-                    _parent.ExecuteInstruction(instruction);
+                    _parent.ExecuteStatement(instruction);
                 }
 
                 _parent.ConsoleScroller.ScrollToBottom();

@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using System.Data.SqlClient;
 using System.IO;
 using System.IO.Compression;
+using System.Reflection;
 
 using Machina;
 using MVector = Machina.Vector;
@@ -457,581 +458,650 @@ namespace MachinaBridge
         {
             uiContext.Post(x =>
             {
-                ExecuteInstruction(instruction);
+                ExecuteStatement(instruction);
             }, null);
             return false;
         }
 
-
-        public bool ExecuteInstruction(string instruction)
+        public static T GetTfromString<T>(string mystring)
         {
-            string[] args = Machina.Utilities.Parsing.ParseStatement(instruction);
+            var foo = TypeDescriptor.GetConverter(typeof(T));
+            return (T)(foo.ConvertFromInvariantString(mystring));
+        }
+
+        public bool ExecuteStatement(string statement)
+        {
+            return bot.Do(statement);
+
+
+            string[] args = Machina.Utilities.Parsing.ParseStatement(statement);
             if (args == null || args.Length == 0)
             {
-                Machina.Logger.Error($"I don't understand \"{instruction}\"...");
+                Machina.Logger.Error($"I don't understand \"{statement}\"...");
                 return false;
             }
 
-            // This is horrible, but oh well...
-            if (args[0].Equals("MotionMode", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.MotionMode(args[1]);
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Speed", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.Speed(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("SpeedTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.SpeedTo(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Acceleration", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.Acceleration(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("AccelerationTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.AccelerationTo(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Precision", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.Precision(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("PrecisionTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.PrecisionTo(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Coordinates", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.Logger.Error($"\"{args[0]}\" is still not implemented.");   
-                return false;
-            }
-            else if (args[0].Equals("Temperature", StringComparison.CurrentCultureIgnoreCase) || args[0].Equals("TemperatureTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.Logger.Error($"\"{args[0]}\" is still not implemented.");
-                return false;
-            }
-            else if (args[0].Equals("ExtrusionRate", StringComparison.CurrentCultureIgnoreCase) || args[0].Equals("ExtrusionRateTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.Logger.Error($"\"{args[0]}\" is still not implemented.");
-                return false;
-            }
-            else if (args[0].Equals("PushSettings", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.PushSettings();
-                return true;
-            }
-            else if (args[0].Equals("PopSettings", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.PopSettings();
-                return true;
-            }
-            else if (args[0].Equals("Move", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.Move(
-                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture)
-                    );
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("MoveTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.MoveTo(
-                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture)
-                        );
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Rotate", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.Rotate(
-                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture)
-                        );
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("RotateTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.RotateTo(
-                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
-                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[6], CultureInfo.InvariantCulture)
-                        );
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Transform", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.Logger.Error($"\"{args[0]}\" is still not implemented.");
-                return false;
-            }
-            else if (args[0].Equals("TransformTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.TransformTo(
-                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
-                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[6], CultureInfo.InvariantCulture),
-                        Convert.ToDouble(args[7], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[8], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[9], CultureInfo.InvariantCulture)
-                        );
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Axes", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.Axes(
-                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
-                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[6], CultureInfo.InvariantCulture)
-                        );
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("AxesTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.AxesTo(
-                        Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
-                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[6], CultureInfo.InvariantCulture)
-                        );
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("ExternalAxis", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    int axisNumber;
-                    try
-                    {
-                        axisNumber = Convert.ToInt32(args[1]);
-                        if (axisNumber < 1 || axisNumber > 6)
-                        {
-                            Logger.Error($"Axis number must be between 1 and 6");
-                            return false;
-                        }
-                    }
-                    catch
-                    {
-                        Logger.Error($"Axis number must be an integer");
-                        return false;
-                    }
+            // TESTING REFLECTION HERE
+            // Inspired by this: https://stackify.com/what-is-c-reflection/
+            Type robotType = typeof(Robot);
+            // https://stackoverflow.com/a/14362272/1934487
+            Dictionary<string, MethodInfo> parseableMethods = robotType
+                .GetMethods()
+                .Where(x => x.GetCustomAttributes().OfType<Machina.Attributes.ParseableFromString>().Any())
+                .ToDictionary(y => y.Name);
 
-                    double increment;
-                    try
-                    {
-                        increment = Convert.ToDouble(args[2], CultureInfo.InvariantCulture);
-                    }
-                    catch
-                    {
-                        Logger.Error($"Invalid increment value " + args[2]);
-                        return false;
-                    }
+            //foreach(var pair in parseableMethods)
+            //{
+            //    Machina.Logger.Debug(pair.Key + " --> " + pair.Value);
+            //}
 
-                    string target = "All";
-                    if (args.Length > 3)
-                    {
-                        target = args[3];
-                    }
+            Logger.Debug(parseableMethods[args[0]].ToString());
 
-                    return bot.ExternalAxis(axisNumber, increment, target);
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("ExternalAxisTo", StringComparison.CurrentCultureIgnoreCase))
+            MethodInfo reflectedMethod = parseableMethods[args[0]];
+            ParameterInfo[] paramInfos = reflectedMethod.GetParameters();
+            Logger.Info(paramInfos.Length.ToString());
+
+            if (paramInfos.Length == args.Length - 1)
             {
-                try
-                {
-                    int axisNumber;
-                    try
-                    {
-                        axisNumber = Convert.ToInt32(args[1]);
-                        if (axisNumber < 1 || axisNumber > 6)
-                        {
-                            Logger.Error($"Axis number must be between 1 and 6");
-                            return false;
-                        }
-                    }
-                    catch
-                    {
-                        Logger.Error($"Axis number must be an integer");
-                        return false;
-                    }
+                Logger.Info("Method looks good");
 
-                    double val;
-                    try
-                    {
-                        val = Convert.ToDouble(args[2], CultureInfo.InvariantCulture);
-                    }
-                    catch
-                    {
-                        Logger.Error($"Invalid value " + args[2]);
-                        return false;
-                    }
-
-                    string target = "All";
-                    if (args.Length > 3)
-                    {
-                        target = args[3];
-                    }
-
-                    return bot.ExternalAxisTo(axisNumber, val, target);
-                }
-                catch (Exception ex)
+                object[] convertedParam = new object[paramInfos.Length];
+                for (int i = 0; i < paramInfos.Length; i++)
                 {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("ArmAngle", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.Logger.Error("Relative `ArmAngle` is temporarily disabled, please use the absolute `ArmAngleTo` version instead.");
-                return false;
-
-                //Logger.Warning(
-                    //"Relative `ArmAngle` is temporarily disabled, please use the absolute `ArmAngleTo` version instead.");
-            }
-            else if (args[0].Equals("ArmAngleTo", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    double val;
-                    try
-                    {
-                        val = Convert.ToDouble(args[1], CultureInfo.InvariantCulture);
-                    }
-                    catch
-                    {
-                        Logger.Error($"Invalid value " + args[1]);
-                        return false;
-                    }
-
-                    //double val;
-                    //if (!Double.TryParse(args[1], out val))
-                    //{
-                    //    Logger.Error($"Invalid value " + args[1]);
-                    //    return false;
-                    //}
-
-                    return bot.ArmAngleTo(val);
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Wait", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.Wait(Convert.ToInt32(args[1]));
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Message", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.Message(args[1]);
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Comment", StringComparison.CurrentCultureIgnoreCase))
-            {
-                // Do nothing here, just go through with it.
-                return true;
-            }
-            else if (args[0].Equals("CustomCode", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.Logger.Warning("\"CustomCode\" can lead to unexpected results, use with caution and only if REALLY you know what you are doing.");
-
-                try
-                {
-                    string statement = args[1];
-                    bool dec = false;
-                    if (args.Length > 2)
-                    {
-                        dec = bool.Parse(args[2]);  // if not good, throw and explain
-                    }
-
-                    return bot.CustomCode(statement, dec);
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
+                    Type t = paramInfos[i].ParameterType;
+                    Logger.Info(t.ToString());
+                    TypeConverter converter = TypeDescriptor.GetConverter(t);
+                    convertedParam[i] = converter.ConvertFromInvariantString(args[i + 1]);
                 }
 
-                return false;
-            }
-            else if (args[0].Equals("new Tool", StringComparison.CurrentCultureIgnoreCase) ||
-                     args[0].Equals("Tool.Create", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.Logger.Error($"\"{args[0]}\" is deprecated, please update your client and use \"DefineTool\" instead. Action will have no effect.");
-                return false;
-            }
-            else if (args[0].Equals("DefineTool", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.DefineTool(
-                        args[1],
-                        Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[3], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[4], CultureInfo.InvariantCulture),
-                        Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[6], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[7], CultureInfo.InvariantCulture),
-                        Convert.ToDouble(args[8], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[9], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[10], CultureInfo.InvariantCulture),
-                        Convert.ToDouble(args[11], CultureInfo.InvariantCulture),
-                        Convert.ToDouble(args[12], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[13], CultureInfo.InvariantCulture), 
-                        Convert.ToDouble(args[14], CultureInfo.InvariantCulture)
-                        );
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Attach", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.Logger.Error($"\"{args[0]}\" is deprecated, please update your client and use \"AttachTool\" instead. Action will have no effect.");
-                return false;
-            }
-            else if (args[0].Equals("AttachTool", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    return bot.AttachTool(args[1]);
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
-            }
-            else if (args[0].Equals("Detach", StringComparison.CurrentCultureIgnoreCase))
-            {
-                bot.Logger.Warning($"\"{args[0]}\" is deprecated, please update your client and use \"DetachTool\" instead.");
-                return bot.DetachTool();
-            }
-            else if (args[0].Equals("DetachTool", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return bot.DetachTool();
-            }
-            else if (args[0].Equals("WriteDigital", StringComparison.CurrentCultureIgnoreCase))
-            {
-                try
-                {
-                    int count = args.Length;
-                    int pin = 0;
-                    bool digitalPin = Int32.TryParse(args[1], out pin);
+                object ret = reflectedMethod.Invoke(bot, convertedParam);
 
-                    // Numeric pins
-                    if (digitalPin)
-                    {
-                        switch (count)
-                        {
-                            case 3: return bot.WriteDigital(pin, Convert.ToBoolean(args[2]));
-                            case 4: return bot.WriteDigital(pin, Convert.ToBoolean(args[2]), Convert.ToBoolean(args[3]));
-                        }
-                    }
-                    // Named pins (ABB)
-                    else
-                    {
-                        switch (count)
-                        {
-                            case 3: return bot.WriteDigital(args[1], Convert.ToBoolean(args[2]));
-                            case 4: return bot.WriteDigital(args[1], Convert.ToBoolean(args[2]), Convert.ToBoolean(args[3]));
-                        }
-                    }
+                Logger.Info("ret: " + ret.ToString());
 
-                    // If here, something went wrong...
-                    Machina.Logger.Error($"Badly formatted instruction: \"{instruction}\"");
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
             }
-            else if (args[0].Equals("WriteAnalog", StringComparison.CurrentCultureIgnoreCase))
+            else
             {
-                try
-                {
-                    int count = args.Length;
-                    int pin = 0;
-                    bool digitalPin = Int32.TryParse(args[1], out pin);
-
-                    if (digitalPin)
-                    {
-                        switch (count)
-                        {
-                            case 3: return bot.WriteAnalog(pin, Convert.ToDouble(args[2], CultureInfo.InvariantCulture));
-                            case 4: return bot.WriteAnalog(pin, Convert.ToDouble(args[2], CultureInfo.InvariantCulture), Convert.ToBoolean(args[3]));
-                        }
-                    }
-                    else
-                    {
-                        switch (count)
-                        {
-                            case 3: return bot.WriteAnalog(args[1], Convert.ToDouble(args[2], CultureInfo.InvariantCulture));
-                            case 4: return bot.WriteAnalog(args[1], Convert.ToDouble(args[2], CultureInfo.InvariantCulture), Convert.ToBoolean(args[3]));
-                        }
-                    }
-
-                    // If here, something went wrong...
-                    Machina.Logger.Error($"Badly formatted instruction: \"{instruction}\"");
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    BadFormatInstruction(instruction, ex);
-                    return false;
-                }
+                Logger.Info("Mismatch: " + paramInfos.Length + " - " + (args.Length - 1));
             }
-            else if (args[0].Equals("Extrude", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return bot.Extrude();
-            }
+
+            
+
+            //Type robotType = typeof(Robot);
+            //// this would be case-sensitive... maybe a list of all methods could be preloaded, lowercased, and checked after null, sending a warning about casing?
+            //// Also, since there are methods with different signatures, there is ambiguity. 
+            //// How can we use reflection to find methods that only take primitives/system types? Can we use attributes to only reflect on certain methods?
+            //MethodInfo methodInfo = robotType.GetMethod(args[0]);  
+            //if (methodInfo == null)
+            //{
+            //    Machina.Logger.Error("Found no action named \"" + args[0] + "\"");
+            //}
+            //else
+            //{
+            //    Machina.Logger.Info("Cool, we have \"" + args[0] + "\"");
+            //}
+
+
+
+            //// This is horrible, but oh well...
+            //if (args[0].Equals("MotionMode", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.MotionMode(args[1]);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Speed", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.Speed(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("SpeedTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.SpeedTo(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Acceleration", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.Acceleration(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("AccelerationTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.AccelerationTo(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Precision", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.Precision(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("PrecisionTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.PrecisionTo(Convert.ToDouble(args[1], CultureInfo.InvariantCulture));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Coordinates", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.Logger.Error($"\"{args[0]}\" is still not implemented.");   
+            //    return false;
+            //}
+            //else if (args[0].Equals("Temperature", StringComparison.CurrentCultureIgnoreCase) || args[0].Equals("TemperatureTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.Logger.Error($"\"{args[0]}\" is still not implemented.");
+            //    return false;
+            //}
+            //else if (args[0].Equals("ExtrusionRate", StringComparison.CurrentCultureIgnoreCase) || args[0].Equals("ExtrusionRateTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.Logger.Error($"\"{args[0]}\" is still not implemented.");
+            //    return false;
+            //}
+            //else if (args[0].Equals("PushSettings", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.PushSettings();
+            //    return true;
+            //}
+            //else if (args[0].Equals("PopSettings", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.PopSettings();
+            //    return true;
+            //}
+            //else if (args[0].Equals("Move", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.Move(
+            //            Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[3], CultureInfo.InvariantCulture)
+            //        );
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("MoveTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.MoveTo(
+            //            Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[3], CultureInfo.InvariantCulture)
+            //            );
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Rotate", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.Rotate(
+            //            Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[3], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[4], CultureInfo.InvariantCulture)
+            //            );
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("RotateTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.RotateTo(
+            //            Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
+            //            Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[6], CultureInfo.InvariantCulture)
+            //            );
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Transform", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.Logger.Error($"\"{args[0]}\" is still not implemented.");
+            //    return false;
+            //}
+            //else if (args[0].Equals("TransformTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.TransformTo(
+            //            Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
+            //            Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[6], CultureInfo.InvariantCulture),
+            //            Convert.ToDouble(args[7], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[8], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[9], CultureInfo.InvariantCulture)
+            //            );
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Axes", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.Axes(
+            //            Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
+            //            Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[6], CultureInfo.InvariantCulture)
+            //            );
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("AxesTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.AxesTo(
+            //            Convert.ToDouble(args[1], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[3], CultureInfo.InvariantCulture),
+            //            Convert.ToDouble(args[4], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[6], CultureInfo.InvariantCulture)
+            //            );
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("ExternalAxis", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        int axisNumber;
+            //        try
+            //        {
+            //            axisNumber = Convert.ToInt32(args[1]);
+            //            if (axisNumber < 1 || axisNumber > 6)
+            //            {
+            //                Logger.Error($"Axis number must be between 1 and 6");
+            //                return false;
+            //            }
+            //        }
+            //        catch
+            //        {
+            //            Logger.Error($"Axis number must be an integer");
+            //            return false;
+            //        }
+
+            //        double increment;
+            //        try
+            //        {
+            //            increment = Convert.ToDouble(args[2], CultureInfo.InvariantCulture);
+            //        }
+            //        catch
+            //        {
+            //            Logger.Error($"Invalid increment value " + args[2]);
+            //            return false;
+            //        }
+
+            //        string target = "All";
+            //        if (args.Length > 3)
+            //        {
+            //            target = args[3];
+            //        }
+
+            //        return bot.ExternalAxis(axisNumber, increment, target);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("ExternalAxisTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        int axisNumber;
+            //        try
+            //        {
+            //            axisNumber = Convert.ToInt32(args[1]);
+            //            if (axisNumber < 1 || axisNumber > 6)
+            //            {
+            //                Logger.Error($"Axis number must be between 1 and 6");
+            //                return false;
+            //            }
+            //        }
+            //        catch
+            //        {
+            //            Logger.Error($"Axis number must be an integer");
+            //            return false;
+            //        }
+
+            //        double val;
+            //        try
+            //        {
+            //            val = Convert.ToDouble(args[2], CultureInfo.InvariantCulture);
+            //        }
+            //        catch
+            //        {
+            //            Logger.Error($"Invalid value " + args[2]);
+            //            return false;
+            //        }
+
+            //        string target = "All";
+            //        if (args.Length > 3)
+            //        {
+            //            target = args[3];
+            //        }
+
+            //        return bot.ExternalAxisTo(axisNumber, val, target);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("ArmAngle", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.Logger.Error("Relative `ArmAngle` is temporarily disabled, please use the absolute `ArmAngleTo` version instead.");
+            //    return false;
+
+            //    //Logger.Warning(
+            //        //"Relative `ArmAngle` is temporarily disabled, please use the absolute `ArmAngleTo` version instead.");
+            //}
+            //else if (args[0].Equals("ArmAngleTo", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        double val;
+            //        try
+            //        {
+            //            val = Convert.ToDouble(args[1], CultureInfo.InvariantCulture);
+            //        }
+            //        catch
+            //        {
+            //            Logger.Error($"Invalid value " + args[1]);
+            //            return false;
+            //        }
+
+            //        //double val;
+            //        //if (!Double.TryParse(args[1], out val))
+            //        //{
+            //        //    Logger.Error($"Invalid value " + args[1]);
+            //        //    return false;
+            //        //}
+
+            //        return bot.ArmAngleTo(val);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Wait", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.Wait(Convert.ToInt32(args[1]));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Message", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.Message(args[1]);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Comment", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    // Do nothing here, just go through with it.
+            //    return true;
+            //}
+            //else if (args[0].Equals("CustomCode", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.Logger.Warning("\"CustomCode\" can lead to unexpected results, use with caution and only if REALLY you know what you are doing.");
+
+            //    try
+            //    {
+            //        string statement = args[1];
+            //        bool dec = false;
+            //        if (args.Length > 2)
+            //        {
+            //            dec = bool.Parse(args[2]);  // if not good, throw and explain
+            //        }
+
+            //        return bot.CustomCode(statement, dec);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //    }
+
+            //    return false;
+            //}
+            //else if (args[0].Equals("new Tool", StringComparison.CurrentCultureIgnoreCase) ||
+            //         args[0].Equals("Tool.Create", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.Logger.Error($"\"{args[0]}\" is deprecated, please update your client and use \"DefineTool\" instead. Action will have no effect.");
+            //    return false;
+            //}
+            //else if (args[0].Equals("DefineTool", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.DefineTool(
+            //            args[1],
+            //            Convert.ToDouble(args[2], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[3], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[4], CultureInfo.InvariantCulture),
+            //            Convert.ToDouble(args[5], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[6], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[7], CultureInfo.InvariantCulture),
+            //            Convert.ToDouble(args[8], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[9], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[10], CultureInfo.InvariantCulture),
+            //            Convert.ToDouble(args[11], CultureInfo.InvariantCulture),
+            //            Convert.ToDouble(args[12], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[13], CultureInfo.InvariantCulture), 
+            //            Convert.ToDouble(args[14], CultureInfo.InvariantCulture)
+            //            );
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Attach", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.Logger.Error($"\"{args[0]}\" is deprecated, please update your client and use \"AttachTool\" instead. Action will have no effect.");
+            //    return false;
+            //}
+            //else if (args[0].Equals("AttachTool", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        return bot.AttachTool(args[1]);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Detach", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    bot.Logger.Warning($"\"{args[0]}\" is deprecated, please update your client and use \"DetachTool\" instead.");
+            //    return bot.DetachTool();
+            //}
+            //else if (args[0].Equals("DetachTool", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    return bot.DetachTool();
+            //}
+            //else if (args[0].Equals("WriteDigital", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        int count = args.Length;
+            //        int pin = 0;
+            //        bool digitalPin = Int32.TryParse(args[1], out pin);
+
+            //        // Numeric pins
+            //        if (digitalPin)
+            //        {
+            //            switch (count)
+            //            {
+            //                case 3: return bot.WriteDigital(pin, Convert.ToBoolean(args[2]));
+            //                case 4: return bot.WriteDigital(pin, Convert.ToBoolean(args[2]), Convert.ToBoolean(args[3]));
+            //            }
+            //        }
+            //        // Named pins (ABB)
+            //        else
+            //        {
+            //            switch (count)
+            //            {
+            //                case 3: return bot.WriteDigital(args[1], Convert.ToBoolean(args[2]));
+            //                case 4: return bot.WriteDigital(args[1], Convert.ToBoolean(args[2]), Convert.ToBoolean(args[3]));
+            //            }
+            //        }
+
+            //        // If here, something went wrong...
+            //        Machina.Logger.Error($"Badly formatted instruction: \"{instruction}\"");
+            //        return false;
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("WriteAnalog", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    try
+            //    {
+            //        int count = args.Length;
+            //        int pin = 0;
+            //        bool digitalPin = Int32.TryParse(args[1], out pin);
+
+            //        if (digitalPin)
+            //        {
+            //            switch (count)
+            //            {
+            //                case 3: return bot.WriteAnalog(pin, Convert.ToDouble(args[2], CultureInfo.InvariantCulture));
+            //                case 4: return bot.WriteAnalog(pin, Convert.ToDouble(args[2], CultureInfo.InvariantCulture), Convert.ToBoolean(args[3]));
+            //            }
+            //        }
+            //        else
+            //        {
+            //            switch (count)
+            //            {
+            //                case 3: return bot.WriteAnalog(args[1], Convert.ToDouble(args[2], CultureInfo.InvariantCulture));
+            //                case 4: return bot.WriteAnalog(args[1], Convert.ToDouble(args[2], CultureInfo.InvariantCulture), Convert.ToBoolean(args[3]));
+            //            }
+            //        }
+
+            //        // If here, something went wrong...
+            //        Machina.Logger.Error($"Badly formatted instruction: \"{instruction}\"");
+            //        return false;
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        BadFormatInstruction(instruction, ex);
+            //        return false;
+            //    }
+            //}
+            //else if (args[0].Equals("Extrude", StringComparison.CurrentCultureIgnoreCase))
+            //{
+            //    return bot.Extrude();
+            //}
 
             // If here, instruction is not available or something went wrong...
-            Machina.Logger.Error($"I don't understand \"{instruction}\"...");
+            Machina.Logger.Error($"I don't understand \"{statement}\"...");
             return false;
         }
 
