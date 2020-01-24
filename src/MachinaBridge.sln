@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachinaBridge", "MachinaBridge\MachinaBridge.csproj", "{B0FF475C-DA83-4F44-BE01-EBA40E639C7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Machina", "..\..\Machina\src\Machina\Machina.csproj", "{15951838-F9D6-4988-A103-B7C72BFE81A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Machina", "..\..\Machina.NET\src\Machina\Machina.csproj", "{15951838-F9D6-4988-A103-B7C72BFE81A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,5 +34,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {13DD82A3-E203-4889-87AF-B2A8FB5C59DD}
 	EndGlobalSection
 EndGlobal
