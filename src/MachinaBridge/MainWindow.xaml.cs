@@ -21,7 +21,10 @@ using System.IO.Compression;
 using System.Reflection;
 
 using Machina;
-using MVector = Machina.Vector;
+using Machina.Types.Geometry;
+using MVector = Machina.Types.Geometry.Vector;
+using MOrientation = Machina.Types.Geometry.Orientation;
+using MGeometry = Machina.Types.Geometry.Geometry;
 
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -37,7 +40,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.8b";
+        public static readonly string Version = "0.8.8b - Quantum Ballerina (UR-MOVEP) version";
 
         public  Robot bot;
         public  List<Tool> tools = new List<Tool>();
@@ -378,19 +381,19 @@ namespace MachinaBridge
 
             uiContext.Post(x =>
             {
-                Machina.Vector pos = bot.GetCurrentPosition();
+                MVector pos = bot.GetCurrentPosition();
                 string posStr = pos?.ToString(true) ?? "-";
                 lbl_Status_TCP_Position_Value.Content = posStr;
 
-                Machina.Orientation ori = bot.GetCurrentRotation();
+                MOrientation ori = bot.GetCurrentRotation();
                 string oriStr = ori?.ToString(true) ?? "-";
                 lbl_Status_TCP_Orientation_Value.Content = oriStr;
 
-                Machina.Joints axes = bot.GetCurrentAxes();
+                Joints axes = bot.GetCurrentAxes();
                 string axesStr = axes?.ToString(true) ?? "-";
                 lbl_Status_Axes_Value.Content = axesStr;
 
-                Machina.ExternalAxes extax = bot.GetCurrentExternalAxes();
+                ExternalAxes extax = bot.GetCurrentExternalAxes();
                 bool nullext = true;
                 if (extax != null)
                 {
@@ -407,14 +410,14 @@ namespace MachinaBridge
 
                 double speed = bot.GetCurrentSpeed();
                 double acc = bot.GetCurrentAcceleration();
-                string speedacc = Math.Round(speed, Machina.Geometry.STRING_ROUND_DECIMALS_MM) + " mm/s / " + Math.Round(acc, Machina.Geometry.STRING_ROUND_DECIMALS_MM) + " mm/s^2";
+                string speedacc = Math.Round(speed, MGeometry.STRING_ROUND_DECIMALS_MM) + " mm/s / " + Math.Round(acc, MGeometry.STRING_ROUND_DECIMALS_MM) + " mm/s^2";
                 lbl_Status_SpeedAcceleration_Value.Content = speedacc;
 
                 double precision = bot.GetCurrentPrecision();
                 lbl_Status_Precision_Value.Content =
-                    Math.Round(precision, Machina.Geometry.STRING_ROUND_DECIMALS_MM) + " mm";
+                    Math.Round(precision, MGeometry.STRING_ROUND_DECIMALS_MM) + " mm";
 
-                Machina.MotionType mtype = bot.GetCurrentMotionMode();
+                MotionType mtype = bot.GetCurrentMotionMode();
                 lbl_Status_MotionMode_Value.Content = mtype.ToString();
                 
                 lbl_Status_Tool_Value.Content = bot.GetCurrentTool()?.name ?? "(no tool)";
