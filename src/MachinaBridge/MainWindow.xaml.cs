@@ -40,7 +40,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.8b - Quantum Ballerina (UR-MOVEP) version";
+        public static readonly string Version = "0.8.9";
 
         public  Robot bot;
         public  List<Tool> tools = new List<Tool>();
@@ -248,7 +248,7 @@ namespace MachinaBridge
         private void Disconnect()
         {
             DisposeRobot();
-            Thread.Sleep(1000);
+            Thread.Sleep(500);
         }
 
         private void DisposeRobot()

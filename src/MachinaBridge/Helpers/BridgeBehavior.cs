@@ -44,7 +44,7 @@ namespace MachinaBridge
         {
             //base.OnMessage(e);
             //Console.WriteLine("  BRIDGE: received message: " + e.Data);
-            if (_robot == null)
+            if (_robot == null || _parent.bot == null)
             {
                 _parent.wssv.WebSocketServices.Broadcast($"{{\"event\":\"controller-disconnected\"}}");
                 return;
