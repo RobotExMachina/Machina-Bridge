@@ -318,6 +318,14 @@
                          FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" TextAlignment="Right">
             </TextBlock>
         </CheckBox>
+
+        <Button x:Name="btn_QueueClear" 
+                Content="CLEAR" 
+                Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
+                Margin="0,317,120,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="70" Height="20" 
+                Background="White" 
+                FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="10" 
+                Click="btn_QueueClear_Click"/>
         <ComboBox x:Name="combo_QueueTextMode" 
                     SelectedIndex="0" 
                     Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"

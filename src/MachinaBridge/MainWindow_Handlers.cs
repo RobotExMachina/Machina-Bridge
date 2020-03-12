@@ -353,6 +353,11 @@ namespace MachinaBridge
             dc.ClearConsoleOutput();
         }
 
+        private void btn_QueueClear_Click(object sender, RoutedEventArgs e)
+        {
+            dc.ClearActionsQueueAll();
+        }
+
         private void btn_DownloadDrivers_Click(object sender, RoutedEventArgs e)
         {
             DownloadDrivers();

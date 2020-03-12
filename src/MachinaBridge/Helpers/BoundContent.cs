@@ -211,7 +211,7 @@ namespace MachinaBridge
                         if (state == ExecutionState.Executed)
                         {
                             FlagNextActionAsExecuting(i);
-                            ClearExecutedExcess();
+                            //ClearExecutedExcess();
                         }
                         return i;
                     }
@@ -254,6 +254,19 @@ namespace MachinaBridge
             {
                 actionsQueue.RemoveAt(0);
             }
+
+            OnPropertyChanged("ActionsQueue");
+        }
+
+        public void ClearExecuted()
+        {
+
+        }
+
+        public void ClearActionsQueueAll()
+        {
+            actionsQueue.Clear();
+            OnPropertyChanged("ActionsQueue");
         }
 
 
