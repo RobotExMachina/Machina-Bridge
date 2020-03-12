@@ -24,6 +24,15 @@
 - [ ] Save last connection configuration to a JSON file, and preload it next time the user opens the app.
 - [ ] Save also something like the last 10 command blocks?
 
+# v0.8.12
+- [x] Fixed bug that made it crash when sending actions to a disconnected robot
+- [x] Try out a “Clear” all button.
+- [x] Implement auto “Clear all” on disconnection. 
+- [x] Console now has auto-empty buffer.
+- [ ] Implement auto clear executed during execution.
+- [ ] Do not leave `MotionMode` red.
+- [ ] Turn the id counter in Machina  to non-static, so that ids reset when creating a new `Robot`.
+
 # v0.8.8b
 - Added `InvariantCulture` parsing for `Double` inputs: https://github.com/RobotExMachina/Machina-Bridge/issues/3
 
