@@ -478,15 +478,11 @@ namespace MachinaBridge
                 var tt = t.TransformBounds(new Rect(0, 0, 0, 1));
                 var b = tt.Bottom;
 
-                //Logger.Debug("SCROLL");
-                //Logger.Debug("QueueScroller.VerticalOffset: " + QueueScroller.VerticalOffset);
-                //Logger.Debug(t.ToString());
-                //Logger.Debug(tt.ToString());
-                //Logger.Debug(b.ToString());
-                //Logger.Debug("Scrolling " + b + " + " + QueueScroller.VerticalOffset);
-                
+                var screenOffset = 0.33 * QueueScroller.ActualHeight;
+                int targetOffset = (int) (b + QueueScroller.VerticalOffset - screenOffset);
+
                 isUserScroll = false;
-                QueueScroller.ScrollToVerticalOffset(QueueScroller.VerticalOffset + b);
+                QueueScroller.ScrollToVerticalOffset(targetOffset);
 
             }, null);
         }
