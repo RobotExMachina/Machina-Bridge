@@ -27,6 +27,13 @@ namespace MachinaBridge
     {
         MachinaBridgeWindow _parent;
 
+        public BoundContent(MachinaBridgeWindow parent)
+        {
+            this._parent = parent;
+            _consoleInputBuffer.Add("");
+        }
+
+
         //   ██████╗ ██████╗ ███╗   ██╗███████╗ ██████╗ ██╗     ███████╗
         //  ██╔════╝██╔═══██╗████╗  ██║██╔════╝██╔═══██╗██║     ██╔════╝
         //  ██║     ██║   ██║██╔██╗ ██║███████╗██║   ██║██║     █████╗  
@@ -34,11 +41,55 @@ namespace MachinaBridge
         //  ╚██████╗╚██████╔╝██║ ╚████║███████║╚██████╔╝███████╗███████╗
         //   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚══════╝╚══════╝
         //                                                              
+
+        private const int MAX_CONSOLE_ELEMENTS = 1000;
+        private const int MIN_CONSOLE_ELEMENTS = 500;
+
+        ObservableCollection<LoggerArgs> _consoleOutput = new ObservableCollection<LoggerArgs>() { new LoggerArgs(null, Machina.LogLevel.INFO, "## MACHINA Console ##") };
+
+        public ObservableCollection<LoggerArgs> ConsoleOutput
+        {
+            get
+            {
+                return _consoleOutput;
+            }
+            set
+            {
+                _consoleOutput = value;
+                OnPropertyChanged("ConsoleOutput");
+            }
+        }
+
+        /// <summary>
+        /// Add a LoggerArgs item to the console.
+        /// </summary>
+        /// <param name="e"></param>
+        public void AddConsoleOutput(LoggerArgs e)
+        {
+            _consoleOutput.Add(e);
+
+            if (_consoleOutput.Count > MAX_CONSOLE_ELEMENTS)
+            {
+                // Is this really the most optimal way of doing this? Is there no `RemoveRange`?
+                while (_consoleOutput.Count > MIN_CONSOLE_ELEMENTS)
+                {
+                    _consoleOutput.RemoveAt(0);
+                }
+            }
+
+            _parent.ConsoleScroller.ScrollToBottom();
+        }
+
+
+        public void ClearConsoleOutput()
+        {
+            _consoleOutput.Clear();
+            OnPropertyChanged("ConsoleOutput");
+        }
+
         private List<string> _consoleInputBuffer = new List<string>();
         private int _bufferPointer = -1;
         private string _unfinished;  // stores an unfinished instruction while navigating the buffer
-
-        ObservableCollection<LoggerArgs> consoleOutput = new ObservableCollection<LoggerArgs>() { new LoggerArgs(null, Machina.LogLevel.INFO, "## MACHINA Console ##") };
 
         public string ConsoleInput
         {
@@ -90,39 +141,6 @@ namespace MachinaBridge
 
             return true;
         }
-
-        public ObservableCollection<LoggerArgs> ConsoleOutput
-        {
-            get
-            {
-                return consoleOutput;
-            }
-            set
-            {
-                consoleOutput = value;
-                OnPropertyChanged("ConsoleOutput");
-            }
-        }
-
-        public BoundContent(MachinaBridgeWindow parent)
-        {
-            this._parent = parent;
-            _consoleInputBuffer.Add("");
-        }
-
-        public void ClearConsoleOutput()
-        {
-            consoleOutput.Clear();
-            OnPropertyChanged("ConsoleOutput");
-        }
-
-
-        //public void WriteLine(string line)
-        //{
-        //    ConsoleOutput.Add(new LoggerArgs(null, Machina.LogLevel.INFO, line));
-        //    _parent.Scroller.ScrollToBottom();
-        //}
-
 
         public void RunConsoleInput()
         {
@@ -288,6 +306,24 @@ namespace MachinaBridge
 
 
 
+
+    //   █████╗  ██████╗████████╗██╗ ██████╗ ███╗   ██╗           
+    //  ██╔══██╗██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║           
+    //  ███████║██║        ██║   ██║██║   ██║██╔██╗ ██║           
+    //  ██╔══██║██║        ██║   ██║██║   ██║██║╚██╗██║           
+    //  ██║  ██║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║           
+    //  ╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝           
+    //                                                            
+    //  ██╗    ██╗██████╗  █████╗ ██████╗ ██████╗ ███████╗██████╗ 
+    //  ██║    ██║██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗
+    //  ██║ █╗ ██║██████╔╝███████║██████╔╝██████╔╝█████╗  ██████╔╝
+    //  ██║███╗██║██╔══██╗██╔══██║██╔═══╝ ██╔═══╝ ██╔══╝  ██╔══██╗
+    //  ╚███╔███╔╝██║  ██║██║  ██║██║     ██║     ███████╗██║  ██║
+    //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═╝
+    //                                                            
+    /// <summary>
+    /// Just a quick wrapper to add some UI-related properties to Action objects.
+    /// </summary>
     public class ActionWrapper : INotifyPropertyChanged
     {
         private MAction _action;

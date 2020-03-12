@@ -94,9 +94,7 @@ namespace MachinaBridge
                 // https://stackoverflow.com/a/18331866/1934487
                 uiContext.Post(x =>
                 {
-                    dc.ConsoleOutput.Add(e);
-                    //dc.ConsoleOutput.Add(bot.GetCurrentPosition().X);
-                    ConsoleScroller.ScrollToBottom();
+                    dc.AddConsoleOutput(e);
                 }, null);
             }
         }
@@ -461,9 +459,7 @@ namespace MachinaBridge
                 ItemsControl ic = QueueStackPanel.Children[0] as ItemsControl;
                 var container = ic.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
                 var tb = ic.ItemTemplate.FindName("QueueStackLine", container) as TextBlock;
-
-                //QueueScroller.ScrollToVerticalOffset(tb.TransformToVisual(QueueScroller).TransformBounds(new Rect(0, 0, 1, 1)).Bottom);
-
+                
                 var t = tb.TransformToVisual(QueueScroller);
                 var tt = t.TransformBounds(new Rect(0, 0, 0, 1));
                 var b = tt.Bottom;
@@ -476,6 +472,7 @@ namespace MachinaBridge
                 Logger.Debug("Scrolling " + b + " + " + QueueScroller.VerticalOffset);
 
                 QueueScroller.ScrollToVerticalOffset(QueueScroller.VerticalOffset + b);
+
             }, null);
         }
 
