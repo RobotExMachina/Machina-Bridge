@@ -277,19 +277,21 @@ namespace MachinaBridge
             {
                 if (InitializeRobot())
                 {
-                    btn_Connect.Content = "DISCONNECT";
-                    EnableElement(txtbox_Robot_Name, false);
-                    EnableElement(combo_Robot_Brand, false);
-                    EnableElement(combo_Manager, false);
-                    EnableElement(txtbox_IP, false);
-                    EnableElement(txtbox_Port, false);
-                    UpdateRobotStatus();
+                    switchConnectButtonTo("DISCONNECT");
                 }
             }
             else if (btn_Connect.Content.ToString() == "DISCONNECT")
             {
                 Disconnect();
 
+                switchConnectButtonTo("CONNECT");              
+            }
+        }
+
+        private void switchConnectButtonTo(string targetStatus)
+        {
+            if (targetStatus == "CONNECT")
+            {
                 EnableElement(txtbox_Robot_Name, true);
                 EnableElement(combo_Robot_Brand, true);
                 if (_robotBrand != "UR")
@@ -301,7 +303,19 @@ namespace MachinaBridge
                     EnableElement(txtbox_IP, true);
                     EnableElement(txtbox_Port, true);
                 }
-                btn_Connect.Content = "CONNECT";               
+
+                btn_Connect.Content = "CONNECT";
+            }
+
+            else if (targetStatus == "DISCONNECT")
+            {
+                EnableElement(txtbox_Robot_Name, false);
+                EnableElement(combo_Robot_Brand, false);
+                EnableElement(combo_Manager, false);
+                EnableElement(txtbox_IP, false);
+                EnableElement(txtbox_Port, false);
+
+                btn_Connect.Content = "DISCONNECT";
             }
         }
 

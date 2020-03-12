@@ -200,16 +200,20 @@ namespace MachinaBridge
 
             bot.ControlMode(ControlType.Online);
 
+            bool success;
             if (_connectionManager == "MACHINA")
             {
                 bot.ConnectionManager(ConnectionType.Machina);
-                return bot.Connect();
+                success = bot.Connect();
             }
             else
             {
-                return bot.Connect(txtbox_IP.Text, Convert.ToInt32(txtbox_Port.Text));
+                success = bot.Connect(txtbox_IP.Text, Convert.ToInt32(txtbox_Port.Text));
             }
 
+            UpdateRobotStatus();
+
+            return success;
         }
 
 
