@@ -228,14 +228,21 @@ namespace MachinaBridge
         {
             int index = this.dc.FlagActionAs(args.LastAction, ExecutionState.Executed);
 
-            UpdateRobotStatus();
+            // Couldn't figure out a good way to remove old executed actions but maintain good auto scrolling
+            // at the same time; stupid difference between the dispatcher and the UI thread... 
+            //uiContext.Post(x =>
+            //{
+            //    dc.CheckMaxExecutedActions();
+            //}, null);
 
             if (dc.queueFollowPointer)
             {
                 ScrollQueueToElement(index);
             }
+
+            UpdateRobotStatus();
         }
-        
+
 
         private void Bot_ActionReleased(object sender, ActionReleasedArgs args)
         {
@@ -244,7 +251,7 @@ namespace MachinaBridge
 
         private void Bot_ActionIssued(object sender, ActionIssuedArgs args)
         {
-            this.dc.ActionsQueue.Add(new ActionWrapper(args.LastAction));
+            this.dc.AddActionToQueue(new ActionWrapper(args.LastAction));
         }
         
 
@@ -451,12 +458,16 @@ namespace MachinaBridge
         }
 
 
-
-        // Doesn't really work well
+        /// <summary>
+        /// Scroll QueueScroller to item index.
+        /// </summary>
+        /// <param name="index"></param>
         public void ScrollQueueToElement(int index)
         {
             uiContext.Post(x =>
             {
+                //dc.CheckMaxExecutedActions();
+
                 // https://stackoverflow.com/a/603227/1934487
                 var item = QueueItemControl.Items.GetItemAt(index);
                 ItemsControl ic = QueueStackPanel.Children[0] as ItemsControl;
@@ -526,7 +537,7 @@ namespace MachinaBridge
                 e.ExtentHeightChange > 0)
                 return;
 
-            if (isUserScroll)
+            if (isUserScroll && dc.queueFollowPointer)
             {
                 Logger.Debug("Manual scroll detected, deactivating 'Follow Pointer'.");
                 dc.queueFollowPointer = false;

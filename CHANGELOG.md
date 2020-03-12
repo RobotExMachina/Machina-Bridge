@@ -31,8 +31,8 @@
 - [x] Console now has auto-empty buffer.
 - [x] Add "Follow Pointer" checkbox.
 - [x] Add id user touches the scroll bar, disable "follow pointer".
-- [ ] Implement auto clear executed during execution.
 - [ ] Add fractional value as to where the program pointer should stick along the queue window.
+- [ ] ~~Implement queue auto clear executed during execution.~~
 - [ ] Do not leave `MotionMode` red.
 - [ ] Turn the id counter in Machina  to non-static, so that ids reset when creating a new `Robot`.
 

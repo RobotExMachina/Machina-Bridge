@@ -71,6 +71,7 @@ namespace MachinaBridge
             if (_consoleOutput.Count > MAX_CONSOLE_ELEMENTS)
             {
                 Logger.Debug("Reducing console buffer with " + _consoleOutput.Count + " to " + MIN_CONSOLE_ELEMENTS + " entries.");
+
                 // Is this really the most optimal way of doing this? Is there no `RemoveRange`?
                 while (_consoleOutput.Count > MIN_CONSOLE_ELEMENTS)
                 {
@@ -176,8 +177,8 @@ namespace MachinaBridge
         //   ╚══▀▀═╝  ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝
         //                                             
 
-        private const int MAX_EXECUTED_ACTIONS = 100;
-        private const int MIN_EXECUTED_ACTIONS = 20;
+        private const int MAX_EXECUTED_ACTIONS = 10;
+        private const int MIN_EXECUTED_ACTIONS = 5;
         internal bool queueClearExecuted = true;
         internal bool queueFollowPointer = true;
 
@@ -211,7 +212,27 @@ namespace MachinaBridge
             { ExecutionState.Executed, 0 }
         };
 
-        private int _execLimit = 3;
+        private Dictionary<ExecutionState, int> _actionsStateCount = new Dictionary<ExecutionState, int>()
+        {
+            { ExecutionState.Issued, 0 },
+            { ExecutionState.Released, 0 },
+            { ExecutionState.Executing, 0 },
+            { ExecutionState.Executed, 0 }
+        };
+
+
+        /// <summary>
+        /// Adds a wrapped Action to the queue.
+        /// </summary>
+        /// <param name="aw"></param>
+        public void AddActionToQueue(ActionWrapper aw) 
+        {
+            _actionsQueue.Add(aw);
+
+            _actionsStateCount[aw.State]++;
+            
+            OnPropertyChanged("ActionsQueue");
+        }
 
         /// <summary>
         /// Searches the action queue for an Action by id, and changes its display state.
@@ -221,83 +242,97 @@ namespace MachinaBridge
         /// <returns></returns>
         public int FlagActionAs(MAction action, ExecutionState state)
         {
-            // Since ids are usually correlative, use last state index to quickly find the searched action.
-            bool found = false;
-            for (int i = _lastIndex[state]; i < _actionsQueue.Count; i++)
+            // Since ids are usually correlative, start by last state index to quickly find the searched action,
+            // and loop back into start if necessary. 
+            int it = _lastIndex[state];
+            for (int i = 0; i < _actionsQueue.Count; i++)
             {
-                if (_actionsQueue[i].Id == action.Id)
+                if (_actionsQueue[it].Id == action.Id)
                 {
-                    _actionsQueue[i].State = state;
-                    found = true;
+                    _actionsStateCount[_actionsQueue[it].State]--;
+                    _actionsStateCount[state]++;
+
+                    _actionsQueue[it].State = state;
                     _lastIndex[state] = i;
+
                     if (state == ExecutionState.Executed)
                     {
-                        FlagNextActionAsExecuting(i);
+                        FlagNextActionAsExecuting(it);
                     }
-                    return i;
-                }
-            }
 
-            // If it wasn't found (queue was cleared and action indices changed), start from the beginning.
-            if (!found)
-            {
-                for (int i = 0; i < _actionsQueue.Count; i++)
-                {
-                    if (_actionsQueue[i].Id == action.Id)
-                    {
-                        _actionsQueue[i].State = state;
-                        _lastIndex[state] = i;
-                        if (state == ExecutionState.Executed)
-                        {
-                            FlagNextActionAsExecuting(i);
-                        }
-                        return i;
-                    }
+                    return it;
                 }
+
+                it++;
+                if (it >= _actionsQueue.Count)
+                {
+                    it = 0;
+                }
+
             }
 
             return -1;
         }
 
+
+
         public void FlagNextActionAsExecuting(int index)
         {
             if (index < _actionsQueue.Count - 1)
             {
+                _actionsStateCount[_actionsQueue[index + 1].State]--;
+                
                 _actionsQueue[index + 1].State = ExecutionState.Executing;
+                _actionsStateCount[ExecutionState.Executing]++;
             }
         }
 
-        public void SetClearExecutedUpTo(int count)
-        {
-            _execLimit = count;
-            ClearExecutedExcess();
-        }
 
-        public void ClearExecutedExcess()
-        {
-            if (_actionsQueue.Count <= _execLimit) return;
-
-            int count = 0;
-            for (int i = 0; i < _execLimit; i++)
-            {
-                if (_actionsQueue[i].State != ExecutionState.Executed)
-                {
-                    count = i;
-                    break;
-                }
-            }
-            for (int i = 0; i < count; i++)
-            {
-                _actionsQueue.RemoveAt(0);
-            }
-
-            OnPropertyChanged("ActionsQueue");
-        }
-
+        /// <summary>
+        /// Clears all actions from the queue UI.
+        /// </summary>
         public void ClearActionsQueueAll()
         {
             _actionsQueue.Clear();
             OnPropertyChanged("ActionsQueue");
+        }
+
+        //public void CheckMaxExecutedActions()
+        //{
+        //    if (queueClearExecuted && _actionsStateCount[ExecutionState.Executed] > MAX_EXECUTED_ACTIONS)
+        //    {
+        //        int count = MAX_EXECUTED_ACTIONS - MIN_EXECUTED_ACTIONS;
+        //        RemoveActionsByState(ExecutionState.Executed, count);
+        //    }
+        //}
+
+        /// <summary>
+        /// Will remove the first count Actions that match this state. 
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="count"></param>
+        public void RemoveActionsByState(ExecutionState state, int count)
+        {
+
+            int i = 0,
+              removed = 0;
+
+            while (removed < count && i < _actionsQueue.Count)
+            {
+                var a = _actionsQueue[i];
+                if (a.State == state)
+                {
+                    ActionsQueue.RemoveAt(i);
+                    _actionsStateCount[state]--;
+                    removed++;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            Logger.Debug("Removed " + removed + " " + state.ToString() + " from queue buffer.");
         }
 
 
