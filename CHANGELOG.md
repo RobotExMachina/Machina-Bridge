@@ -26,10 +26,13 @@
 
 # v0.8.12
 - [x] Fixed bug that made it crash when sending actions to a disconnected robot
-- [x] Try out a “Clear” all button.
-- [x] Implement auto “Clear all” on disconnection. 
+- [x] Try out a "Clear" all button.
+- [x] Implement auto "Clear all" on disconnection. 
 - [x] Console now has auto-empty buffer.
+- [x] Add "Follow Pointer" checkbox.
+- [x] Add id user touches the scroll bar, disable "follow pointer".
 - [ ] Implement auto clear executed during execution.
+- [ ] Add fractional value as to where the program pointer should stick along the queue window.
 - [ ] Do not leave `MotionMode` red.
 - [ ] Turn the id counter in Machina  to non-static, so that ids reset when creating a new `Robot`.
 

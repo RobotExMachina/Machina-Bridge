@@ -230,7 +230,10 @@ namespace MachinaBridge
 
             UpdateRobotStatus();
 
-            ScrollQueueToElement(index);
+            if (dc.queueFollowPointer)
+            {
+                ScrollQueueToElement(index);
+            }
         }
         
 
@@ -464,13 +467,14 @@ namespace MachinaBridge
                 var tt = t.TransformBounds(new Rect(0, 0, 0, 1));
                 var b = tt.Bottom;
 
-                Logger.Debug("SCROLL");
-                Logger.Debug("QueueScroller.VerticalOffset: " + QueueScroller.VerticalOffset);
-                Logger.Debug(t.ToString());
-                Logger.Debug(tt.ToString());
-                Logger.Debug(b.ToString());
-                Logger.Debug("Scrolling " + b + " + " + QueueScroller.VerticalOffset);
-
+                //Logger.Debug("SCROLL");
+                //Logger.Debug("QueueScroller.VerticalOffset: " + QueueScroller.VerticalOffset);
+                //Logger.Debug(t.ToString());
+                //Logger.Debug(tt.ToString());
+                //Logger.Debug(b.ToString());
+                //Logger.Debug("Scrolling " + b + " + " + QueueScroller.VerticalOffset);
+                
+                isUserScroll = false;
                 QueueScroller.ScrollToVerticalOffset(QueueScroller.VerticalOffset + b);
 
             }, null);
@@ -490,6 +494,47 @@ namespace MachinaBridge
         {
             var foo = TypeDescriptor.GetConverter(typeof(T));
             return (T)(foo.ConvertFromInvariantString(mystring));
+        }
+
+        private void cbx_FollowPointer_Checked(object sender, RoutedEventArgs e)
+        {
+            if (dc != null)
+            {
+                Logger.Debug("Follow program pointer activated.");
+                dc.queueFollowPointer = true;
+            }
+        }
+
+        private void cbx_FollowPointer_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (dc != null)
+            {
+                Logger.Debug("Follow program pointer deactivated.");
+                dc.queueFollowPointer = false;
+            }
+        }
+
+        // A flag to signal if the scroll was caused by auto or user
+        private volatile bool isUserScroll = false;
+
+        // Figures out if auto-scroll, and deactivates follow pointer if not
+        private void QueueScroller_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            // Figure out if this was related to auto scrolling
+            if (e.VerticalChange == 0.0 ||
+                e.ExtentHeight == 0 ||
+                e.ExtentHeightChange > 0)
+                return;
+
+            if (isUserScroll)
+            {
+                Logger.Debug("Manual scroll detected, deactivating 'Follow Pointer'.");
+                dc.queueFollowPointer = false;
+                cbx_FollowPointer.IsChecked = false;
+                cbx_FollowPointer_Unchecked(null, null);
+            }
+
+            isUserScroll = true;
         }
 
         public bool ExecuteStatement(string statement)

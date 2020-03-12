@@ -306,26 +306,42 @@
         <CheckBox x:Name="cbx_ClearExecuted" 
                     IsChecked="True"
                     Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
-                    Margin="0,317,110,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="120" Height="20"
+                    Margin="0,317,120,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="120" Height="20"
                     VerticalContentAlignment="Center"
                     Foreground="White"   
-                    Visibility="Hidden"
                     Checked="cbx_ClearExecuted_Checked" 
                     Unchecked="cbx_ClearExecuted_Unchecked">
             <TextBlock x:Name="txtblck_ClearExecuted" 
                          Text="Clear Executed" 
                          Margin="0" VerticalAlignment="Top" Height="22" Padding="4"
-                         FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" TextAlignment="Right">
+                         FontFamily=".\Resources\#IBM Plex Mono Light" FontSize="10" TextAlignment="Right">
+            </TextBlock>
+        </CheckBox>
+
+        <CheckBox x:Name="cbx_FollowPointer" 
+                    IsChecked="True"
+                    Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
+                    Margin="0,317,250,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="120" Height="20"
+                    VerticalContentAlignment="Center"
+                    Foreground="White"   
+                    Checked="cbx_FollowPointer_Checked" 
+                    Unchecked="cbx_FollowPointer_Unchecked">
+            <TextBlock x:Name="txtblck_FollowPointer" 
+                         Text="Follow Pointer" 
+                         Margin="0" VerticalAlignment="Top" Height="22" Padding="4"
+                         FontFamily=".\Resources\#IBM Plex Mono Light" FontSize="10" TextAlignment="Right">
             </TextBlock>
         </CheckBox>
 
         <Button x:Name="btn_QueueClear" 
+                Visibility="Hidden"
                 Content="CLEAR" 
                 Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
                 Margin="0,317,120,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="70" Height="20" 
                 Background="White" 
                 FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="10" 
                 Click="btn_QueueClear_Click"/>
+        
         <ComboBox x:Name="combo_QueueTextMode" 
                     SelectedIndex="0" 
                     Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
@@ -343,7 +359,8 @@
                       Background="Black" Foreground="White" 
                       FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" 
                       VerticalScrollBarVisibility="Auto" 
-                      HorizontalScrollBarVisibility="Auto">
+                      HorizontalScrollBarVisibility="Auto"
+                      ScrollChanged="QueueScroller_ScrollChanged">
             <StackPanel x:Name="QueueStackPanel">
                 <ItemsControl Name="QueueItemControl" ItemsSource="{Binding ActionsQueue, Mode=OneWay}">
                     <ItemsControl.ItemTemplate>

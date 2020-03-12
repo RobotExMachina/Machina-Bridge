@@ -70,6 +70,7 @@ namespace MachinaBridge
 
             if (_consoleOutput.Count > MAX_CONSOLE_ELEMENTS)
             {
+                Logger.Debug("Reducing console buffer with " + _consoleOutput.Count + " to " + MIN_CONSOLE_ELEMENTS + " entries.");
                 // Is this really the most optimal way of doing this? Is there no `RemoveRange`?
                 while (_consoleOutput.Count > MIN_CONSOLE_ELEMENTS)
                 {
@@ -174,6 +175,12 @@ namespace MachinaBridge
         //  ╚██████╔╝╚██████╔╝███████╗╚██████╔╝███████╗
         //   ╚══▀▀═╝  ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝
         //                                             
+
+        private const int MAX_EXECUTED_ACTIONS = 100;
+        private const int MIN_EXECUTED_ACTIONS = 20;
+        internal bool queueClearExecuted = true;
+        internal bool queueFollowPointer = true;
+
         private ObservableCollection<ActionWrapper> _actionsQueue = new ObservableCollection<ActionWrapper>();
 
         /// <summary>
