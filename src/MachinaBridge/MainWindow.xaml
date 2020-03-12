@@ -303,31 +303,32 @@
                FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="18" 
                Foreground="White"/>
 
-        <CheckBox x:Name="cbx_ClearExecuted" 
-                    IsChecked="True"
-                    Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
-                    Margin="0,317,120,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="120" Height="20"
-                    VerticalContentAlignment="Center"
-                    Foreground="White"   
-                    Checked="cbx_ClearExecuted_Checked" 
-                    Unchecked="cbx_ClearExecuted_Unchecked">
-            <TextBlock x:Name="txtblck_ClearExecuted" 
-                         Text="Clear Executed" 
-                         Margin="0" VerticalAlignment="Top" Height="22" Padding="4"
-                         FontFamily=".\Resources\#IBM Plex Mono Light" FontSize="10" TextAlignment="Right">
-            </TextBlock>
-        </CheckBox>
-
         <CheckBox x:Name="cbx_FollowPointer" 
                     IsChecked="True"
                     Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
-                    Margin="0,317,250,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="120" Height="20"
+                    Margin="0,317,120,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="120" Height="20"
                     VerticalContentAlignment="Center"
                     Foreground="White"   
                     Checked="cbx_FollowPointer_Checked" 
                     Unchecked="cbx_FollowPointer_Unchecked">
             <TextBlock x:Name="txtblck_FollowPointer" 
                          Text="Follow Pointer" 
+                         Margin="0" VerticalAlignment="Top" Height="22" Padding="4"
+                         FontFamily=".\Resources\#IBM Plex Mono Light" FontSize="10" TextAlignment="Right">
+            </TextBlock>
+        </CheckBox>
+
+        <CheckBox x:Name="cbx_ClearExecuted" 
+                    Visibility="Hidden"
+                    IsChecked="True"
+                    Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
+                    Margin="0,317,250,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="120" Height="20"
+                    VerticalContentAlignment="Center"
+                    Foreground="White"   
+                    Checked="cbx_ClearExecuted_Checked" 
+                    Unchecked="cbx_ClearExecuted_Unchecked">
+            <TextBlock x:Name="txtblck_ClearExecuted" 
+                         Text="Clear Executed" 
                          Margin="0" VerticalAlignment="Top" Height="22" Padding="4"
                          FontFamily=".\Resources\#IBM Plex Mono Light" FontSize="10" TextAlignment="Right">
             </TextBlock>

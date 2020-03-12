@@ -31,10 +31,10 @@
 - [x] Console now has auto-empty buffer.
 - [x] Add "Follow Pointer" checkbox.
 - [x] Add id user touches the scroll bar, disable "follow pointer".
-- [ ] Add fractional value as to where the program pointer should stick along the queue window.
+- [x] Add fractional value as to where the program pointer should stick along the queue window.
 - [ ] ~~Implement queue auto clear executed during execution.~~
-- [ ] Do not leave `MotionMode` red.
-- [ ] Turn the id counter in Machina  to non-static, so that ids reset when creating a new `Robot`.
+- [ ] Do not leave `MotionMode` red --> Updated core to raise events even for actions that have no streamable representation, and hence do not receive acknowledgements from the robot.
+- [ ] Turn the id counter in Machina to non-static, so that ids reset when creating a new `Robot`.
 
 # v0.8.8b
 - Added `InvariantCulture` parsing for `Double` inputs: https://github.com/RobotExMachina/Machina-Bridge/issues/3
