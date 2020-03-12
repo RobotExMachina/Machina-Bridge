@@ -40,7 +40,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.9";
+        public static readonly string Version = "0.8.12";
 
         public  Robot bot;
         public  List<Tool> tools = new List<Tool>();
@@ -211,7 +211,10 @@ namespace MachinaBridge
                 success = bot.Connect(txtbox_IP.Text, Convert.ToInt32(txtbox_Port.Text));
             }
 
-            UpdateRobotStatus();
+            if (success)
+            {
+                UpdateRobotStatus();
+            }
 
             return success;
         }
@@ -229,7 +232,7 @@ namespace MachinaBridge
 
             UpdateRobotStatus();
 
-            //ScrollQueueToElement(index);
+            ScrollQueueToElement(index);
         }
         
 
@@ -448,19 +451,33 @@ namespace MachinaBridge
 
 
 
-        //// Doesn't really work well
-        //public void ScrollQueueToElement(int index)
-        //{
-        //    uiContext.Post(x => {
-        //        // https://stackoverflow.com/a/603227/1934487
-        //        var item = QueueItemControl.Items.GetItemAt(index);
-        //        ItemsControl ic = QueueStackPanel.Children[0] as ItemsControl;
-        //        var container = ic.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
-        //        var tb = ic.ItemTemplate.FindName("QueueStackLine", container) as TextBlock;
+        // Doesn't really work well
+        public void ScrollQueueToElement(int index)
+        {
+            uiContext.Post(x =>
+            {
+                // https://stackoverflow.com/a/603227/1934487
+                var item = QueueItemControl.Items.GetItemAt(index);
+                ItemsControl ic = QueueStackPanel.Children[0] as ItemsControl;
+                var container = ic.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+                var tb = ic.ItemTemplate.FindName("QueueStackLine", container) as TextBlock;
 
-        //        QueueScroller.ScrollToVerticalOffset(tb.TransformToVisual(QueueScroller).TransformBounds(new Rect(0, 0, 1, 1)).Bottom);
-        //    }, null);
-        //}
+                //QueueScroller.ScrollToVerticalOffset(tb.TransformToVisual(QueueScroller).TransformBounds(new Rect(0, 0, 1, 1)).Bottom);
+
+                var t = tb.TransformToVisual(QueueScroller);
+                var tt = t.TransformBounds(new Rect(0, 0, 0, 1));
+                var b = tt.Bottom;
+
+                Logger.Debug("SCROLL");
+                Logger.Debug("QueueScroller.VerticalOffset: " + QueueScroller.VerticalOffset);
+                Logger.Debug(t.ToString());
+                Logger.Debug(tt.ToString());
+                Logger.Debug(b.ToString());
+                Logger.Debug("Scrolling " + b + " + " + QueueScroller.VerticalOffset);
+
+                QueueScroller.ScrollToVerticalOffset(QueueScroller.VerticalOffset + b);
+            }, null);
+        }
 
 
         public bool ExecuteInstructionOnContext(string instruction)

@@ -156,7 +156,28 @@ namespace MachinaBridge
         //  ╚██████╔╝╚██████╔╝███████╗╚██████╔╝███████╗
         //   ╚══▀▀═╝  ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝
         //                                             
-        ObservableCollection<ActionWrapper> actionsQueue = new ObservableCollection<ActionWrapper>();
+        private ObservableCollection<ActionWrapper> _actionsQueue = new ObservableCollection<ActionWrapper>();
+
+        /// <summary>
+        /// An Observable Collection of Actions, to be kept track of.
+        /// </summary>
+        public ObservableCollection<ActionWrapper> ActionsQueue
+        {
+            get
+            {
+                return _actionsQueue;
+            }
+            set
+            {
+                _actionsQueue = value;
+                OnPropertyChanged("ActionsQueue");
+            }
+        }
+
+        /// <summary>
+        /// Keeps track of the last index where an action in such state was found on the queue. 
+        /// Useful to optimize searching actions by id without having to roll through the whole list...
+        /// </summary>
         private Dictionary<ExecutionState, int> _lastIndex = new Dictionary<ExecutionState, int>()
         {
             { ExecutionState.Issued, 0 },
@@ -164,29 +185,24 @@ namespace MachinaBridge
             { ExecutionState.Executing, 0 },
             { ExecutionState.Executed, 0 }
         };
+
         private int _execLimit = 3;
 
-        public ObservableCollection<ActionWrapper> ActionsQueue
-        {
-            get
-            {
-                return actionsQueue;
-            }
-            set
-            {
-                actionsQueue = value;
-                OnPropertyChanged("ActionsQueue");
-            }
-        }
-
+        /// <summary>
+        /// Searches the action queue for an Action by id, and changes its display state.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public int FlagActionAs(MAction action, ExecutionState state)
         {
+            // Since ids are usually correlative, use last state index to quickly find the searched action.
             bool found = false;
-            for (int i = _lastIndex[state]; i < actionsQueue.Count; i++)
+            for (int i = _lastIndex[state]; i < _actionsQueue.Count; i++)
             {
-                if (actionsQueue[i].Id == action.Id)
+                if (_actionsQueue[i].Id == action.Id)
                 {
-                    actionsQueue[i].State = state;
+                    _actionsQueue[i].State = state;
                     found = true;
                     _lastIndex[state] = i;
                     if (state == ExecutionState.Executed)
@@ -197,37 +213,32 @@ namespace MachinaBridge
                 }
             }
 
-            // If something went wrong with indexing, give it another round just in case
+            // If it wasn't found (queue was cleared and action indices changed), start from the beginning.
             if (!found)
             {
-                Logger.Debug($"Second round on FlagActionAs {state} for {action}");
-                for (int i = 0; i < actionsQueue.Count; i++)
+                for (int i = 0; i < _actionsQueue.Count; i++)
                 {
-                    if (actionsQueue[i].Id == action.Id)
+                    if (_actionsQueue[i].Id == action.Id)
                     {
-                        actionsQueue[i].State = state;
-                        found = true;
+                        _actionsQueue[i].State = state;
                         _lastIndex[state] = i;
                         if (state == ExecutionState.Executed)
                         {
                             FlagNextActionAsExecuting(i);
-                            //ClearExecutedExcess();
                         }
                         return i;
                     }
                 }
             }
 
-            // Very quick and dirty
-
             return -1;
         }
 
         public void FlagNextActionAsExecuting(int index)
         {
-            if (index < actionsQueue.Count - 1)
+            if (index < _actionsQueue.Count - 1)
             {
-                actionsQueue[index + 1].State = ExecutionState.Executing;
+                _actionsQueue[index + 1].State = ExecutionState.Executing;
             }
         }
 
@@ -239,12 +250,12 @@ namespace MachinaBridge
 
         public void ClearExecutedExcess()
         {
-            if (actionsQueue.Count <= _execLimit) return;
+            if (_actionsQueue.Count <= _execLimit) return;
 
             int count = 0;
             for (int i = 0; i < _execLimit; i++)
             {
-                if (actionsQueue[i].State != ExecutionState.Executed)
+                if (_actionsQueue[i].State != ExecutionState.Executed)
                 {
                     count = i;
                     break;
@@ -252,20 +263,15 @@ namespace MachinaBridge
             }
             for (int i = 0; i < count; i++)
             {
-                actionsQueue.RemoveAt(0);
+                _actionsQueue.RemoveAt(0);
             }
 
             OnPropertyChanged("ActionsQueue");
         }
 
-        public void ClearExecuted()
-        {
-
-        }
-
         public void ClearActionsQueueAll()
         {
-            actionsQueue.Clear();
+            _actionsQueue.Clear();
             OnPropertyChanged("ActionsQueue");
         }
 
