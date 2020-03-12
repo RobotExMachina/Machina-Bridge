@@ -288,7 +288,8 @@ namespace MachinaBridge
             }
             else if (btn_Connect.Content.ToString() == "DISCONNECT")
             {
-                DisposeRobot();
+                Disconnect();
+
                 EnableElement(txtbox_Robot_Name, true);
                 EnableElement(combo_Robot_Brand, true);
                 if (_robotBrand != "UR")
@@ -300,8 +301,7 @@ namespace MachinaBridge
                     EnableElement(txtbox_IP, true);
                     EnableElement(txtbox_Port, true);
                 }
-                btn_Connect.Content = "CONNECT";
-                UpdateRobotStatus();
+                btn_Connect.Content = "CONNECT";               
             }
         }
 

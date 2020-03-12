@@ -247,7 +247,9 @@ namespace MachinaBridge
 
         private void Disconnect()
         {
+            dc.ClearActionsQueueAll();
             DisposeRobot();
+            UpdateRobotStatus();
             Thread.Sleep(500);
         }
 
