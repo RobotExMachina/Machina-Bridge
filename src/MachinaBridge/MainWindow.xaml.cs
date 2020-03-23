@@ -406,7 +406,7 @@ namespace MachinaBridge
                 string oriStr = ori?.ToString(true) ?? "-";
                 lbl_Status_TCP_Orientation_Value.Content = oriStr;
 
-                Joints axes = bot.GetCurrentAxes();
+                Axes axes = bot.GetCurrentAxes();
                 string axesStr = axes?.ToString(true) ?? "-";
                 lbl_Status_Axes_Value.Content = axesStr;
 
@@ -427,12 +427,12 @@ namespace MachinaBridge
 
                 double speed = bot.GetCurrentSpeed();
                 double acc = bot.GetCurrentAcceleration();
-                string speedacc = Math.Round(speed, MGeometry.STRING_ROUND_DECIMALS_MM) + " mm/s / " + Math.Round(acc, MGeometry.STRING_ROUND_DECIMALS_MM) + " mm/s^2";
+                string speedacc = Math.Round(speed, MMath.STRING_ROUND_DECIMALS_MM) + " mm/s / " + Math.Round(acc, MMath.STRING_ROUND_DECIMALS_MM) + " mm/s^2";
                 lbl_Status_SpeedAcceleration_Value.Content = speedacc;
 
                 double precision = bot.GetCurrentPrecision();
                 lbl_Status_Precision_Value.Content =
-                    Math.Round(precision, MGeometry.STRING_ROUND_DECIMALS_MM) + " mm";
+                    Math.Round(precision, MMath.STRING_ROUND_DECIMALS_MM) + " mm";
 
                 MotionType mtype = bot.GetCurrentMotionMode();
                 lbl_Status_MotionMode_Value.Content = mtype.ToString();

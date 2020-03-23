@@ -245,7 +245,7 @@ namespace MachinaBridge
             // Since ids are usually correlative, start by last state index to quickly find the searched action,
             // and loop back into start if necessary. 
             int it = _lastIndex[state];
-            if (it > _actionsQueue.Count) it = 0;
+            if (it >= _actionsQueue.Count) it = 0;
             for (int i = 0; i < _actionsQueue.Count; i++)
             {
                 if (_actionsQueue[it].Id == action.Id)

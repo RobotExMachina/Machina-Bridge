@@ -339,9 +339,12 @@ namespace MachinaBridge
                     tm = 1;
                 }
 
-                foreach (ActionWrapper a in this.dc.ActionsQueue)
+                if (this.dc != null)
                 {
-                    a.TextMode = tm;
+                    foreach (ActionWrapper a in this.dc.ActionsQueue)
+                    {
+                        a.TextMode = tm;
+                    }
                 }
             }
             catch (Exception ex)
