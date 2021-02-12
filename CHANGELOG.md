@@ -23,6 +23,11 @@
 # TODO
 - [ ] Save last connection configuration to a JSON file, and preload it next time the user opens the app.
 - [ ] Save also something like the last 10 command blocks?
+- [ ] Looks like the `MotionMode` problem is not solved (and similar for Push/Pop, etc), take a look. use `s03_motion_mirroring.pde` for testing...
+
+# v0.8.12c
+- [x] Fixed Bridge crash on disconnect while streaming to RS
+
 
 # v0.8.12
 - [x] Fixed bug that made it crash when sending actions to a disconnected robot

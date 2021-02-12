@@ -24,7 +24,7 @@ using Machina;
 using Machina.Types.Geometry;
 using MVector = Machina.Types.Geometry.Vector;
 using MOrientation = Machina.Types.Geometry.Orientation;
-using MGeometry = Machina.Types.Geometry.Geometry;
+using MMath = Machina.Types.Geometry.Geometry;
 
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -32,6 +32,7 @@ using Logger = Machina.Logger;
 using Microsoft.Win32;
 using LogLevel = Machina.LogLevel;
 using System.Globalization;
+//using Machina.EventArgs;
 
 namespace MachinaBridge
 {
@@ -40,7 +41,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.12";
+        public static readonly string Version = "0.8.12c";
 
         public  Robot bot;
         public  List<Tool> tools = new List<Tool>();
@@ -406,7 +407,7 @@ namespace MachinaBridge
                 string oriStr = ori?.ToString(true) ?? "-";
                 lbl_Status_TCP_Orientation_Value.Content = oriStr;
 
-                Axes axes = bot.GetCurrentAxes();
+                Joints axes = bot.GetCurrentAxes();
                 string axesStr = axes?.ToString(true) ?? "-";
                 lbl_Status_Axes_Value.Content = axesStr;
 
@@ -472,6 +473,7 @@ namespace MachinaBridge
                 var item = QueueItemControl.Items.GetItemAt(index);
                 ItemsControl ic = QueueStackPanel.Children[0] as ItemsControl;
                 var container = ic.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+                container.ApplyTemplate();  // Solve the 'This operation is valid only on elements that have this template applied.' error? https://stackoverflow.com/a/15467687/1934487
                 var tb = ic.ItemTemplate.FindName("QueueStackLine", container) as TextBlock;
                 
                 var t = tb.TransformToVisual(QueueScroller);
@@ -546,8 +548,11 @@ namespace MachinaBridge
 
         public bool ExecuteStatement(string statement)
         {
-            return bot.Do(statement);
-
+            if (bot != null)
+            {
+                return bot.Do(statement);
+            }
+            return false;
         }
     }
 }
