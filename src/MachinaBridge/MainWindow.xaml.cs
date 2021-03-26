@@ -159,7 +159,10 @@ namespace MachinaBridge
                 Logger.Verbose("Trying connection to Machina Server on " + wsURL);
                 wscl = new WebSocket(wsURL);
 
+                wscl.OnOpen += Wscl_OnOpen;
                 wscl.OnMessage += Wscl_OnMessage;
+                wscl.OnClose += Wscl_OnClose;
+                wscl.OnError += Wscl_OnError;
                 wscl.Connect();
                 wscl.Send("hello from Bridge");
 
@@ -201,6 +204,21 @@ namespace MachinaBridge
 
             return true;
             //lbl_ServerURL.Content = wssvURL + wssvBehavior;
+        }
+
+        private void Wscl_OnError(object sender, WebSocketSharp.ErrorEventArgs e)
+        {
+            Logger.Error("Error on WS client connection: " + e.Message);
+        }
+
+        private void Wscl_OnClose(object sender, CloseEventArgs e)
+        {
+            Logger.Debug("Closed WS client connection: " + e.Code + " " + e.Reason);
+        }
+
+        private void Wscl_OnOpen(object sender, EventArgs e)
+        {
+            Logger.Debug("Opened WS client connection: ");
         }
 
         private void Wscl_OnMessage(object sender, MessageEventArgs e)
@@ -245,15 +263,15 @@ namespace MachinaBridge
 
             bot = Robot.Create(_robotName, _robotBrand);
 
-            bot.ActionIssued += BroadCastEvent;
-            bot.ActionReleased += BroadCastEvent;
-            bot.ActionExecuted += BroadCastEvent;
-            bot.MotionUpdate += BroadCastEvent;
+            bot.ActionIssued    += BroadCastEvent;
+            bot.ActionReleased  += BroadCastEvent;
+            bot.ActionExecuted  += BroadCastEvent;
+            bot.MotionUpdate    += BroadCastEvent;
 
-            bot.ActionIssued += Bot_ActionIssued;
-            bot.ActionReleased += Bot_ActionReleased;
-            bot.ActionExecuted += Bot_ActionExecuted;
-            bot.MotionUpdate += Bot_MotionUpdate;
+            bot.ActionIssued    += Bot_ActionIssued;
+            bot.ActionReleased  += Bot_ActionReleased;
+            bot.ActionExecuted  += Bot_ActionExecuted;
+            bot.MotionUpdate    += Bot_MotionUpdate;
 
             bot.ControlMode(ControlType.Online);
 
