@@ -159,12 +159,17 @@ namespace MachinaBridge
                 Logger.Verbose("Trying connection to Machina Server on " + wsURL);
                 wscl = new WebSocket(wsURL);
 
+                wscl.SetCookie(new WebSocketSharp.Net.Cookie("client", "bridge"));
+                wscl.SetCookie(new WebSocketSharp.Net.Cookie("name", _robotName));
+                wscl.SetCookie(new WebSocketSharp.Net.Cookie("authkey", "foobarbaz"));
+
                 wscl.OnOpen += Wscl_OnOpen;
                 wscl.OnMessage += Wscl_OnMessage;
                 wscl.OnClose += Wscl_OnClose;
                 wscl.OnError += Wscl_OnError;
+                
                 wscl.Connect();
-                wscl.Send("hello from Bridge");
+                //wscl.Send("hello from Bridge");
 
                 Logger.Info("Successful connection to Machina Remote Server on " + wsURL);
             }
