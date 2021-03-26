@@ -41,19 +41,23 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.12d";
+        public static readonly string Version = "0.8.12e";
 
-        public  Robot bot;
-        public  List<Tool> tools = new List<Tool>();
-        public  WebSocketServer wssv;
-        //public  string wssvURL = "ws://127.0.0.1:6999";
-        //public  string wssvBehavior = "/Bridge";
-        public static string wssvURL, wssvBehavior;
+        // Robot props
+        public Robot bot;
+        public List<Tool> tools = new List<Tool>();
+        
+        // WebSocket server (local mode)
+        public WebSocketServer wssv;
+        public static string wsURL, wssvBehavior;
+
+        // WebSocket client (remote mode)
+        public WebSocket wscl;
 
         // Robot options (quick and dirty defaults)
-        public  string _robotName;
-        public  string _robotBrand;
-        public  string _connectionManager;
+        public string _robotName;
+        public string _robotBrand;
+        public string _connectionManager;
 
         internal List<string> _connectedClients = new List<string>();
     
@@ -121,63 +125,117 @@ namespace MachinaBridge
                 return false;
             }
 
-            wssvURL = parts[0] + "//" + parts[1];
+            wsURL = parts[0] + "//" + parts[1];
             wssvBehavior = "/" + String.Join("/", parts, 2, parts.Length - 2);
 
-            Logger.Debug("WebSocket server URL: " + wssvURL);
+            Logger.Debug("WebSocket server URL: " + wsURL);
             Logger.Debug("WebSocket server route: " + wssvBehavior);
 
             return true;
         }
 
-        private void StopWebSocketServer()
-        {
-            if (wssv != null)
-            {
-                Logger.Verbose("Stopping WebSocket service on " + wssv.Address + ":" + wssv.Port + wssv.WebSocketServices.Paths.ElementAt(0));
-                wssv.Stop();
-                wssv = null;
-            }
-        }
 
+        /// <summary>
+        /// Initialize WebSocket communication infrastructure
+        /// </summary>
+        /// <returns></returns>
         private bool InitializeWebSocketServer()
         {
-            if (!ParseWebSocketURL())
-            {
-                Logger.Error("Invalid WebSocket URL \"" + txtbox_WSServerURL.Text + "\"; try something like \"ws://127.0.0.1/Bridge\"");
-                return false;
-            }
-
+            // Close previous instances, if applicable
             if (wssv != null && wssv.IsListening)
             {
                 StopWebSocketServer();
             }
-            
-            wssv = new WebSocketServer(wssvURL);
-            wssv.AddWebSocketService(wssvBehavior, () => new BridgeBehavior(bot, this));
-            
-            // @TODO: add a check here if the port is in use, and try a different port instead
-            try
+            if (wscl != null && wscl.IsAlive)
             {
-                wssv.Start();
-            }
-            catch
-            {
-                Logger.Error("Default websocket server is not available, please enter a new one manually...");
-                return false;
+                StopWebSocketClient();
             }
 
-            if (wssv.IsListening)
+            wsURL = txtbox_WSServerURL.Text;
+
+            // Check if given URL is a valid Machina Server
+            try
             {
-                //Machina.Logger.Info($"Listening on port {wssv.Port}, and providing WebSocket services:");
-                //foreach (var path in wssv.WebSocketServices.Paths) Machina.Logger.Info($"- {path}");
-                Logger.Info("Waiting for incoming connections on " + (wssvURL + wssvBehavior));
+                Logger.Verbose("Trying connection to Machina Server on " + wsURL);
+                wscl = new WebSocket(wsURL);
+
+                wscl.OnMessage += Wscl_OnMessage;
+                wscl.Connect();
+                wscl.Send("hello from Bridge");
+
+                Logger.Info("Successful connection to Machina Remote Server on " + wsURL);
+            }
+            catch (Exception ex)
+            {
+                Logger.Verbose("Could not connect to existing Machina Server, initializing locally...");
+                Logger.Debug(ex.ToString());
+
+                // Check validity of URL
+                if (!ParseWebSocketURL())
+                {
+                    Logger.Error("Invalid WebSocket URL \"" + txtbox_WSServerURL.Text + "\"; try something like \"ws://127.0.0.1/Bridge\"");
+                    return false;
+                }
+
+                wssv = new WebSocketServer(wsURL);
+                wssv.AddWebSocketService(wssvBehavior, () => new WSServerBehavior(bot, this));
+
+                // @TODO: add a check here if the port is in use, and try a different port instead
+                try
+                {
+                    wssv.Start();
+                }
+                catch
+                {
+                    Logger.Error("Default websocket server is not available, please enter a new one manually...");
+                    return false;
+                }
+
+                if (wssv.IsListening)
+                {
+                    //Machina.Logger.Info($"Listening on port {wssv.Port}, and providing WebSocket services:");
+                    //foreach (var path in wssv.WebSocketServices.Paths) Machina.Logger.Info($"- {path}");
+                    Logger.Info("Waiting for incoming connections on Machina Local Server " + (wsURL + wssvBehavior));
+                }
             }
 
             return true;
             //lbl_ServerURL.Content = wssvURL + wssvBehavior;
         }
 
+        private void Wscl_OnMessage(object sender, MessageEventArgs e)
+        {
+            if (bot == null)
+            {
+                wscl.Send($"{{\"event\":\"controller-disconnected\"}}");
+                return;
+            }
+
+            //Logger.Verbose("Action from \"" + _clientName + "\": " + e.Data);
+            Logger.Verbose("Instruction/s received from Machina Server: " + e.Data);
+
+            ExecuteInstructionsOnContext(e.Data);
+        }
+
+        private void StopWebSocketServer()
+        {
+            if (wssv != null)
+            {
+                Logger.Verbose("Stopping WebSocket server on " + wssv.Address + ":" + wssv.Port + wssv.WebSocketServices.Paths.ElementAt(0));
+                wssv.Stop();
+                wssv = null;
+            }
+        }
+
+        private void StopWebSocketClient()
+        {
+            if (wscl != null)
+            {
+                Logger.Verbose("Stopping WebSocket client on " + wscl.Url);
+                wscl.Close();
+                wscl = null;
+            }
+        }
 
 
 
@@ -258,7 +316,8 @@ namespace MachinaBridge
 
         public void BroadCastEvent(object sender, MachinaEventArgs e)
         {
-            wssv.WebSocketServices.Broadcast(e.ToJSONString());
+            if (wssv != null) wssv.WebSocketServices.Broadcast(e.ToJSONString());
+            else wscl.Send(e.ToJSONString());
         }
 
         private void Disconnect()

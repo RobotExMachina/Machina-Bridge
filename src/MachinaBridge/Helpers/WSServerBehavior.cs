@@ -12,14 +12,13 @@ using WebSocketSharp.Server;
 
 namespace MachinaBridge
 {
-
-    public class BridgeBehavior : WebSocketBehavior
+    public class WSServerBehavior : WebSocketBehavior
     {
         private Robot _robot;
         private MachinaBridgeWindow _parent;
         private string _clientName;
 
-        public BridgeBehavior(Robot robot, MachinaBridgeWindow parent)
+        public WSServerBehavior(Robot robot, MachinaBridgeWindow parent)
         {
             this._robot = robot;
             this._parent = parent;
