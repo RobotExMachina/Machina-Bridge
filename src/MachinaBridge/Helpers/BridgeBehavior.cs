@@ -52,7 +52,7 @@ namespace MachinaBridge
 
             Logger.Verbose("Action from \"" + _clientName + "\": " + e.Data);
 
-            _parent.ExecuteInstructionOnContext(e.Data);
+            _parent.ExecuteInstructionsOnContext(e.Data);
         }
 
         protected override void OnError(WebSocketSharp.ErrorEventArgs e)

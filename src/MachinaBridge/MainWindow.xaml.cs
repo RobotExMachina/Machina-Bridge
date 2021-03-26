@@ -41,7 +41,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.12c";
+        public static readonly string Version = "0.8.12d";
 
         public  Robot bot;
         public  List<Tool> tools = new List<Tool>();
@@ -490,11 +490,16 @@ namespace MachinaBridge
         }
 
 
-        public bool ExecuteInstructionOnContext(string instruction)
+        public bool ExecuteInstructionsOnContext(string code)
         {
             uiContext.Post(x =>
             {
-                ExecuteStatement(instruction);
+                string[] instructions = Machina.Utilities.Parsing.SplitStatements(code, ';', "//");
+
+                foreach (var ins in instructions)
+                {
+                    ExecuteStatement(ins);
+                }
             }, null);
             return false;
         }
