@@ -58,6 +58,7 @@ namespace MachinaBridge
         public string _robotName;
         public string _robotBrand;
         public string _connectionManager;
+        public string _authkey = "foobarbaz";
 
         internal List<string> _connectedClients = new List<string>();
     
@@ -79,17 +80,18 @@ namespace MachinaBridge
             _maxLogLevel = Machina.LogLevel.VERBOSE;
             Logger.CustomLogging += Logger_CustomLogging;
 
+#if DEBUG
+            var item = combo_LogLevel.Items.GetItemAt(5) as ComboBoxItem;
+            item.IsSelected = true;
+            _maxLogLevel = Machina.LogLevel.DEBUG;
+#endif
+
             Logger.Info("Machina Bridge: " + Version + "; Core: " + Robot.Version);
 
             InitializeWebSocketServer();
 
             // Handle pasting text on the input
             DataObject.AddPastingHandler(InputBlock, InputBlock_Paste);
-
-#if DEBUG
-            var item = combo_LogLevel.Items.GetItemAt(5) as ComboBoxItem;
-            item.IsSelected = true;
-#endif
         }
         
         private void Logger_CustomLogging(LoggerArgs e)
@@ -157,11 +159,14 @@ namespace MachinaBridge
             try
             {
                 Logger.Verbose("Trying connection to Machina Server on " + wsURL);
-                wscl = new WebSocket(wsURL);
 
-                wscl.SetCookie(new WebSocketSharp.Net.Cookie("client", "bridge"));
-                wscl.SetCookie(new WebSocketSharp.Net.Cookie("name", _robotName));
-                wscl.SetCookie(new WebSocketSharp.Net.Cookie("authkey", "foobarbaz"));
+                string fullURL = $"{wsURL}?name={_robotName}&client=machina-bridge&authkey={_authkey}";
+
+                wscl = new WebSocket(fullURL);
+
+                //wscl.SetCookie(new WebSocketSharp.Net.Cookie("client", "bridge"));
+                //wscl.SetCookie(new WebSocketSharp.Net.Cookie("name", _robotName));
+                //wscl.SetCookie(new WebSocketSharp.Net.Cookie("authkey", "foobarbaz"));
 
                 wscl.OnOpen += Wscl_OnOpen;
                 wscl.OnMessage += Wscl_OnMessage;
@@ -171,12 +176,22 @@ namespace MachinaBridge
                 wscl.Connect();
                 //wscl.Send("hello from Bridge");
 
-                Logger.Info("Successful connection to Machina Remote Server on " + wsURL);
+                //Logger.Debug(wscl.ToString());
+                //Logger.Debug(wscl.IsAlive.ToString());
+
+                if (wscl.IsAlive)
+                {
+                    Logger.Info("Successful connection to Machina Remote Server on " + wsURL);
+                }
+                else
+                {
+                    throw new Exception("");
+                }
+
             }
             catch (Exception ex)
             {
                 Logger.Verbose("Could not connect to existing Machina Server, initializing locally...");
-                Logger.Debug(ex.ToString());
 
                 // Check validity of URL
                 if (!ParseWebSocketURL())
@@ -203,6 +218,7 @@ namespace MachinaBridge
                 {
                     //Machina.Logger.Info($"Listening on port {wssv.Port}, and providing WebSocket services:");
                     //foreach (var path in wssv.WebSocketServices.Paths) Machina.Logger.Info($"- {path}");
+                    Logger.Verbose("Successful initialization of Machina Local Server on " + wsURL);
                     Logger.Info("Waiting for incoming connections on Machina Local Server " + (wsURL + wssvBehavior));
                 }
             }
