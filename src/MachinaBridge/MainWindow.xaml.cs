@@ -160,24 +160,17 @@ namespace MachinaBridge
             {
                 Logger.Verbose("Trying connection to Machina Server on " + wsURL);
 
+                // Add relevant auth info as query parameters
                 string fullURL = $"{wsURL}?name={_robotName}&client=machina-bridge&authkey={_authkey}";
 
+                // Establish connection
                 wscl = new WebSocket(fullURL);
-
-                //wscl.SetCookie(new WebSocketSharp.Net.Cookie("client", "bridge"));
-                //wscl.SetCookie(new WebSocketSharp.Net.Cookie("name", _robotName));
-                //wscl.SetCookie(new WebSocketSharp.Net.Cookie("authkey", "foobarbaz"));
-
                 wscl.OnOpen += Wscl_OnOpen;
                 wscl.OnMessage += Wscl_OnMessage;
                 wscl.OnClose += Wscl_OnClose;
                 wscl.OnError += Wscl_OnError;
-                
                 wscl.Connect();
                 //wscl.Send("hello from Bridge");
-
-                //Logger.Debug(wscl.ToString());
-                //Logger.Debug(wscl.IsAlive.ToString());
 
                 if (wscl.IsAlive)
                 {
@@ -185,11 +178,11 @@ namespace MachinaBridge
                 }
                 else
                 {
-                    throw new Exception("");
+                    throw new Exception();
                 }
 
             }
-            catch (Exception ex)
+            catch 
             {
                 Logger.Verbose("Could not connect to existing Machina Server, initializing locally...");
 
