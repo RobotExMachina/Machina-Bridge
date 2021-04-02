@@ -58,7 +58,7 @@ namespace MachinaBridge
         public string _robotName;
         public string _robotBrand;
         public string _connectionManager;
-        public string _authkey = "foobarbaz";
+        public string _authkey;
 
         internal List<string> _connectedClients = new List<string>();
     
@@ -154,6 +154,7 @@ namespace MachinaBridge
             }
 
             wsURL = txtbox_WSServerURL.Text;
+            _authkey = psswrdbox_Key.Password;
 
             // Check if given URL is a valid Machina Server
             try

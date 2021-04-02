@@ -154,26 +154,36 @@
                  Margin="87,557,10,0" VerticalAlignment="Top" Height="22" Padding="3"
                  FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" TextAlignment="Right"/>
 
+        <Label x:Name="lbl_Bridge_Key" 
+               Content="KEY"  
+               Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" 
+               Margin="10,587   ,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width ="72" 
+               FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
+        <PasswordBox x:Name="psswrdbox_Key" 
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
+                 Margin="87,589,10,0" VerticalAlignment="Top" Height="22" Padding="3"
+                 FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10"/>
+
         <Label x:Name="lbl_Bridge_Clients" 
                Content="CLIENTS"  
                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" 
-               Margin="10,589,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width ="72" 
+               Margin="10,622,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width ="72" 
                FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White"/>
         <Rectangle x:Name="rect_Bridge_Clients" 
                     Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" 
-                    Margin="87,589,10,0" VerticalAlignment="Top" Height="72" 
+                    Margin="87,622,10,0" VerticalAlignment="Top" Height="72" 
                     Stroke="White" StrokeThickness="1"/>
         <TextBlock x:Name="txtblock_Bridge_Clients" 
                    Text="No clients connected"
                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" 
-                   Margin="94,595,17,0" Height="60" VerticalAlignment="Top"
+                   Margin="94,628,17,0" Height="60" VerticalAlignment="Top"
                    FontFamily=".\Resources\#IBM Plex Mono Medium" FontSize="10" TextWrapping="Wrap" 
                    Foreground="White"/>
 
         <Button x:Name="btn_ResetBridge" 
                 Content="RESET BRIDGE" 
                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"
-                Margin="16,667,10,0" VerticalAlignment="Top" Height="24"
+                Margin="16,700,10,0" VerticalAlignment="Top" Height="24"
                 FontFamily=".\Resources\#IBM Plex Sans Light" FontWeight="Bold" 
                 Background="White" 
                 Click="btn_ResetBridge_Click"/>
@@ -342,7 +352,7 @@
                 Background="White" 
                 FontFamily=".\Resources\#IBM Plex Sans Light" FontSize="10" 
                 Click="btn_QueueClear_Click"/>
-        
+
         <ComboBox x:Name="combo_QueueTextMode" 
                     SelectedIndex="0" 
                     Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
