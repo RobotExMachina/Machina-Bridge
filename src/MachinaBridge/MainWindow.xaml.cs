@@ -350,7 +350,7 @@ namespace MachinaBridge
         public void BroadCastEvent(object sender, MachinaEventArgs e)
         {
             if (wssv != null) wssv.WebSocketServices.Broadcast(e.ToJSONString());
-            else wscl.Send(e.ToJSONString());
+            else if (wscl != null) wscl.Send(e.ToJSONString());
         }
 
         private void Disconnect()
