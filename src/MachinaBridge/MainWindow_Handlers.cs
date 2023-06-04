@@ -234,6 +234,19 @@ namespace MachinaBridge
                     }
                 }
             }
+            // For KUKA, there is no support for machina manager (by Arastoo Khajehee https://github.com/Arastookhajehee)
+            else if (_robotBrand.Equals("KUKA", StringComparison.CurrentCultureIgnoreCase))
+            {
+                foreach (ComboBoxItem item in combo_Manager.Items)
+                {
+                    if (item.Content.ToString() == "USER")
+                    {
+                        combo_Manager.SelectedValue = item;
+                        EnableElement(combo_Manager, false);
+                        break;
+                    }
+                }
+            }
             else
             {
                 EnableElement(combo_Manager, true);
