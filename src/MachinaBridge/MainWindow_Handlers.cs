@@ -413,6 +413,11 @@ namespace MachinaBridge
             {
                 btn_DownloadDrivers.Visibility = Visibility.Visible;
             }
+            else if (_robotBrand.Equals("KUKA") && _connectionManager.Equals("USER"))
+            {
+                btn_DownloadDrivers.Visibility = Visibility.Visible;
+                txtbox_Port.Text = "54600";
+            }
             else
             {
                 btn_DownloadDrivers.Visibility = Visibility.Hidden;
