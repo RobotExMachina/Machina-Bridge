@@ -426,6 +426,7 @@ namespace MachinaBridge
             {
                 btn_DownloadDrivers.Visibility = Visibility.Visible;
             }
+            //  (For KUKA robots: updated by Arastoo Khajehee https://github.com/Arastookhajehee)
             else if (_robotBrand.Equals("KUKA") && _connectionManager.Equals("USER"))
             {
                 btn_DownloadDrivers.Visibility = Visibility.Visible;
