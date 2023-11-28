@@ -230,6 +230,7 @@ namespace MachinaBridge
                     {
                         combo_Manager.SelectedValue = item;
                         EnableElement(combo_Manager, false);
+                        txtbox_IP.Text = "192.168.1.100";
                         break;
                     }
                 }
