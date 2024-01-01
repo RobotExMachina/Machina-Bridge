@@ -230,6 +230,20 @@ namespace MachinaBridge
                     {
                         combo_Manager.SelectedValue = item;
                         EnableElement(combo_Manager, false);
+                        txtbox_IP.Text = "192.168.1.100";
+                        break;
+                    }
+                }
+            }
+            // For KUKA, there is no support for machina manager (by Arastoo Khajehee https://github.com/Arastookhajehee)
+            else if (_robotBrand.Equals("KUKA", StringComparison.CurrentCultureIgnoreCase))
+            {
+                foreach (ComboBoxItem item in combo_Manager.Items)
+                {
+                    if (item.Content.ToString() == "USER")
+                    {
+                        combo_Manager.SelectedValue = item;
+                        EnableElement(combo_Manager, false);
                         break;
                     }
                 }
@@ -413,6 +427,12 @@ namespace MachinaBridge
                 _robotBrand.Equals("KUKA") && _connectionManager.Equals("USER"))
             {
                 btn_DownloadDrivers.Visibility = Visibility.Visible;
+            }
+            //  (For KUKA robots: updated by Arastoo Khajehee https://github.com/Arastookhajehee)
+            else if (_robotBrand.Equals("KUKA") && _connectionManager.Equals("USER"))
+            {
+                btn_DownloadDrivers.Visibility = Visibility.Visible;
+                txtbox_Port.Text = "54600";
             }
             else
             {
