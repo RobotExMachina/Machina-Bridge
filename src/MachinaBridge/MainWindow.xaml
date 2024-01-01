@@ -58,6 +58,7 @@
                 SelectionChanged="combo_Brand_SelectionChanged">
             <ComboBoxItem Content="ABB"/>
             <ComboBoxItem Content="UR"/>
+            <ComboBoxItem Content="KUKA"/>
         </ComboBox>
 
         <!--<Label x:Name="lbl_Robot_Model" Content="MODEL" Margin="10,208,10,0" VerticalAlignment="Top" FontFamily=".\Resources\#IBM Plex Sans Light" Foreground="White" Grid.ColumnSpan="1"/>-->

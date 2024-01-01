@@ -409,7 +409,8 @@ namespace MachinaBridge
         {
             if (btn_DownloadDrivers == null) return;
 
-            if (_robotBrand.Equals("ABB") && _connectionManager.Equals("USER"))
+            if (_robotBrand.Equals("ABB") && _connectionManager.Equals("USER") ||
+                _robotBrand.Equals("KUKA") && _connectionManager.Equals("USER"))
             {
                 btn_DownloadDrivers.Visibility = Visibility.Visible;
             }
