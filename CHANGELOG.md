@@ -25,6 +25,9 @@
 - [ ] Save also something like the last 10 command blocks?
 - [ ] Looks like the `MotionMode` problem is not solved (and similar for Push/Pop, etc), take a look. use `s03_motion_mirroring.pde` for testing...
 
+# v0.9.0
+- Added `KUKA` online control thanks to @Arastookhajehee! 🤓
+
 # v0.8.12e
 - [x] Added capacity for remote connections acting as a WS client to a pseudo-echo WSserver 
 - [x] Improved code parsing: comment removal, empty lines, etc. 
