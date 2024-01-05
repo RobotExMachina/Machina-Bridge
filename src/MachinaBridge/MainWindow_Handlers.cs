@@ -231,6 +231,7 @@ namespace MachinaBridge
                         combo_Manager.SelectedValue = item;
                         EnableElement(combo_Manager, false);
                         txtbox_IP.Text = "192.168.1.100";
+                        txtbox_Port.Text = "7000";
                         break;
                     }
                 }
@@ -244,6 +245,7 @@ namespace MachinaBridge
                     {
                         combo_Manager.SelectedValue = item;
                         EnableElement(combo_Manager, false);
+                        txtbox_Port.Text = "54600";
                         break;
                     }
                 }
@@ -256,6 +258,7 @@ namespace MachinaBridge
                     if (item.Content.ToString() == "USER")
                     {
                         combo_Manager.SelectedValue = item;
+                        txtbox_Port.Text = "7000";
                         break;
                     }
                 }

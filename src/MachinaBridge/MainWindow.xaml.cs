@@ -41,7 +41,7 @@ namespace MachinaBridge
     /// </summary>
     public partial class MachinaBridgeWindow : Window
     {
-        public static readonly string Version = "0.8.12e";
+        public static readonly string Version = "0.9.0";
 
         // Robot props
         public Robot bot;
